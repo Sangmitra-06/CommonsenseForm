@@ -1,0 +1,277 @@
+.App {
+  text-align: left;
+}
+
+/* Color Palette - Easy to experiment with different colors */
+:root {
+  --color-cream: #f0fdfa;      /* Clean white */
+--color-brown: #047857;      /* Medical green */
+--color-blue-gray: #e6fffa;  /* Light teal */
+--color-olive: #065f46;      /* Dark green */
+--color-dark-olive: #064e3b; /* Forest green */
+--color-dark-brown: #1f2937; /* Professional dark */
+  
+  /* Semantic color assignments */
+  --bg-primary: var(--color-cream);
+  --bg-secondary: var(--color-blue-gray);
+  --bg-card: rgba(255, 255, 255, 0.95);  /* Pure white cards */
+  --bg-card-header: var(--color-olive);
+  --bg-progress: var(--color-cream);
+  --bg-progress-fill: linear-gradient(to right, var(--color-olive), var(--color-dark-olive));
+  
+  --text-primary: var(--color-dark-brown);
+  --text-secondary: var(--color-olive);
+  --text-muted: var(--color-blue-gray);
+  --text-on-dark: var(--color-cream);
+  
+  --border-light: rgba(110, 112, 73, 0.2);
+  --border-medium: var(--color-blue-gray);
+  --border-dark: var(--color-olive);
+  
+  --accent-primary: var(--color-brown);
+  --accent-secondary: var(--color-olive);
+  --accent-warning: #d97706; /* amber for warnings */
+  --accent-success: var(--color-olive);
+  --accent-error: #dc2626; /* red for errors */
+  
+  /* Button colors */
+  --btn-primary-bg: linear-gradient(to right, var(--color-olive), var(--color-dark-olive));
+  --btn-primary-hover: linear-gradient(to right, var(--color-dark-olive), var(--color-dark-brown));
+  --btn-secondary-bg: linear-gradient(to right, var(--color-blue-gray), var(--color-olive));
+  --btn-secondary-hover: linear-gradient(to right, var(--color-olive), var(--color-brown));
+  --btn-warning-bg: linear-gradient(to right, #fef3c7, #fde68a);
+  --btn-warning-hover: linear-gradient(to right, #fde68a, #f59e0b);
+  
+  /* Tag colors */
+  --tag-category-bg: rgba(244, 228, 202, 0.7);
+  --tag-category-text: var(--color-brown);
+  --tag-subcategory-bg: rgba(135, 144, 143, 0.2);
+  --tag-subcategory-text: var(--color-dark-brown);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-olive);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-dark-olive);
+}
+
+/* Enhanced animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3) translateY(-50px);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05) translateY(-10px);
+  }
+  70% {
+    transform: scale(0.9) translateY(0);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes celebration {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.1) rotate(-5deg);
+  }
+  75% {
+    transform: scale(1.1) rotate(5deg);
+  }
+}
+
+@keyframes confetti {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+/* Animation classes */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.4s ease-out;
+}
+
+.animate-bounce-in {
+  animation: bounceIn 0.8s ease-out;
+}
+
+.animate-celebration {
+  animation: celebration 0.6s ease-in-out;
+}
+
+.animate-confetti {
+  animation: confetti 3s linear infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, var(--color-cream) 25%, var(--color-blue-gray) 50%, var(--color-cream) 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Enhanced hover effects */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 25px 50px -12px rgba(65, 61, 36, 0.25);
+}
+
+/* Glassmorphism effect */
+.glass {
+  background: rgba(244, 228, 202, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(244, 228, 202, 0.18);
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(65, 61, 36, 0.1);
+}
+
+/* Button animations */
+.btn-bounce {
+  transition: all 0.2s ease;
+}
+
+.btn-bounce:hover {
+  transform: scale(1.05);
+}
+
+.btn-bounce:active {
+  transform: scale(0.95);
+}
+
+/* Progress bar animations */
+.progress-glow {
+  box-shadow: 0 0 20px rgba(110, 112, 73, 0.4);
+}
+
+/* Celebration effects */
+.celebration-bg {
+  background: linear-gradient(45deg, var(--color-brown), var(--color-olive), var(--color-blue-gray), var(--color-cream));
+  background-size: 400% 400%;
+  animation: celebration-gradient 2s ease infinite;
+}
+
+@keyframes celebration-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Focus states for accessibility */
+button:focus,
+input:focus,
+textarea:focus {
+  outline: 3px solid var(--color-olive);
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .card-hover:hover {
+    transform: none;
+  }
+  
+  .btn-bounce:hover {
+    transform: none;
+  }
+}
+
+/* Utility classes for custom colors */
+.bg-custom-cream { background-color: var(--color-cream); }
+.bg-custom-brown { background-color: var(--color-brown); }
+.bg-custom-blue-gray { background-color: var(--color-blue-gray); }
+.bg-custom-olive { background-color: var(--color-olive); }
+.bg-custom-dark-olive { background-color: var(--color-dark-olive); }
+.bg-custom-dark-brown { background-color: var(--color-dark-brown); }
+
+.text-custom-cream { color: var(--color-cream); }
+.text-custom-brown { color: var(--color-brown); }
+.text-custom-blue-gray { color: var(--color-blue-gray); }
+.text-custom-olive { color: var(--color-olive); }
+.text-custom-dark-olive { color: var(--color-dark-olive); }
+.text-custom-dark-brown { color: var(--color-dark-brown); }
+
+.border-custom-cream { border-color: var(--color-cream); }
+.border-custom-brown { border-color: var(--color-brown); }
+.border-custom-blue-gray { border-color: var(--color-blue-gray); }
+.border-custom-olive { border-color: var(--color-olive); }
+.border-custom-dark-olive { border-color: var(--color-dark-olive); }
+.border-custom-dark-brown { border-color: var(--color-dark-brown); }
