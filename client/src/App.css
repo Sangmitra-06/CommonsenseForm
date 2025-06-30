@@ -4,12 +4,16 @@
 
 /* Color Palette - Easy to experiment with different colors */
 :root {
-  --color-cream: #f0fdfa;      /* Clean white */
---color-brown: #047857;      /* Medical green */
---color-blue-gray: #e6fffa;  /* Light teal */
---color-olive: #065f46;      /* Dark green */
---color-dark-olive: #064e3b; /* Forest green */
---color-dark-brown: #1f2937; /* Professional dark */
+  --color-cream: #fef7f0;      /* Cream */
+--color-brown: #c2410c;      /* Terracotta */
+--color-blue-gray: #fed7aa;  /* Light orange */
+--color-olive: #9a3412;      /* Burnt sienna */
+--color-dark-olive: #7c2d12; /* Dark red */
+--color-dark-brown: #431407; /* Deep brown */
+
+
+
+
   
   /* Semantic color assignments */
   --bg-primary: var(--color-cream);

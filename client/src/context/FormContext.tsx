@@ -97,6 +97,7 @@ interface FormContextType {
   saveResponse: (response: QuestionResponse) => Promise<void>;
   navigateToNext: () => void;
   navigateToPrevious: () => void;
+  navigateToPosition: (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => Promise<void>; // Add this line
   calculateProgress: () => number;
   getCurrentQuestion: () => string | null;
   getCurrentQuestionData: () => {
@@ -174,33 +175,59 @@ export function FormProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const loadUserSession = useCallback(async (sessionId: string) => {
-    try {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      const user = await api.getUser(sessionId);
-      dispatch({ type: 'SET_SESSION_ID', payload: sessionId });
-      dispatch({ type: 'SET_USER_INFO', payload: user.userInfo });
-      dispatch({ type: 'UPDATE_PROGRESS', payload: user.progress });
-      dispatch({ type: 'SET_COMPLETED', payload: user.isCompleted });
+  try {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    const user = await api.getUser(sessionId);
+    dispatch({ type: 'SET_SESSION_ID', payload: sessionId });
+    dispatch({ type: 'SET_USER_INFO', payload: user.userInfo });
+    dispatch({ type: 'UPDATE_PROGRESS', payload: user.progress });
+    dispatch({ type: 'SET_COMPLETED', payload: user.isCompleted });
+    
+    // Load responses
+    const responses = await api.getUserResponses(sessionId);
+    dispatch({ type: 'SET_RESPONSES', payload: responses });
+    
+    // FIXED: Set current position from user data, not from responses
+    // Find the furthest question answered
+    let furthestPosition = {
+      categoryIndex: 0,
+      subcategoryIndex: 0,
+      topicIndex: 0,
+      questionIndex: 0
+    };
+
+    if (responses.length > 0) {
+      // Find the last answered question
+      const sortedResponses = responses.sort((a, b) => {
+        if (a.categoryIndex !== b.categoryIndex) return b.categoryIndex - a.categoryIndex;
+        if (a.subcategoryIndex !== b.subcategoryIndex) return b.subcategoryIndex - a.subcategoryIndex;
+        if (a.topicIndex !== b.topicIndex) return b.topicIndex - a.topicIndex;
+        return b.questionIndex - a.questionIndex;
+      });
+
+      const lastResponse = sortedResponses[0];
       
-      // Load responses
-      const responses = await api.getUserResponses(sessionId);
-      dispatch({ type: 'SET_RESPONSES', payload: responses });
-      
-      // Set current position
-      dispatch({ type: 'SET_CURRENT_POSITION', payload: {
-        categoryIndex: user.progress.currentCategory,
-        subcategoryIndex: user.progress.currentSubcategory,
-        topicIndex: user.progress.currentTopic,
-        questionIndex: user.progress.currentQuestion
-      }});
-      
-    } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to load user session' });
-      throw error;
-    } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
+      // Set position to the next question after the last answered
+      furthestPosition = {
+        categoryIndex: lastResponse.categoryIndex,
+        subcategoryIndex: lastResponse.subcategoryIndex,
+        topicIndex: lastResponse.topicIndex,
+        questionIndex: lastResponse.questionIndex + 1
+      };
+
+      // If we're at the end of a topic/subcategory/category, move to next
+      // This will be handled by navigation logic
     }
-  }, []);
+
+    dispatch({ type: 'SET_CURRENT_POSITION', payload: furthestPosition });
+    
+  } catch (error) {
+    dispatch({ type: 'SET_ERROR', payload: 'Failed to load user session' });
+    throw error;
+  } finally {
+    dispatch({ type: 'SET_LOADING', payload: false });
+  }
+}, []);
 
   const resetSession = useCallback(() => {
     localStorage.removeItem('culturalSurveySessionId');
@@ -229,6 +256,31 @@ export function FormProvider({ children }: { children: ReactNode }) {
   }
 }, [state.responses, state.progress.completedQuestions]);
 
+const navigateToPosition = useCallback(async (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => {
+  try {
+    // Set the new position
+    dispatch({ type: 'SET_CURRENT_POSITION', payload: {
+      categoryIndex,
+      subcategoryIndex,
+      topicIndex,
+      questionIndex
+    }});
+
+    // Save position to database
+    if (state.sessionId) {
+      await api.updateUserProgress(state.sessionId, {
+        currentCategory: categoryIndex,
+        currentSubcategory: subcategoryIndex,
+        currentTopic: topicIndex,
+        currentQuestion: questionIndex
+      });
+    }
+  } catch (error) {
+    console.error('Failed to navigate to position:', error);
+    dispatch({ type: 'SET_ERROR', payload: 'Failed to navigate to the selected question' });
+  }
+}, [state.sessionId]);
+
   const getCurrentQuestionData = useCallback(() => {
     const { categoryIndex, subcategoryIndex, topicIndex, questionIndex } = state.currentPosition;
     
@@ -255,107 +307,116 @@ export function FormProvider({ children }: { children: ReactNode }) {
     return data?.question || null;
   }, [getCurrentQuestionData]);
 
-  const navigateToNext = useCallback(() => {
-    const { categoryIndex, subcategoryIndex, topicIndex, questionIndex } = state.currentPosition;
-    const category = state.questionsData[categoryIndex];
-    
-    if (!category) return;
-    
-    const subcategory = category.subcategories[subcategoryIndex];
-    const topic = subcategory?.topics[topicIndex];
-    
-    if (!topic) return;
-    
-    // Move to next question
-    if (questionIndex < topic.questions.length - 1) {
-      dispatch({ type: 'SET_CURRENT_POSITION', payload: {
-        categoryIndex,
-        subcategoryIndex,
-        topicIndex,
-        questionIndex: questionIndex + 1
-      }});
-    }
-    // Move to next topic
-    else if (topicIndex < subcategory.topics.length - 1) {
-      dispatch({ type: 'SET_CURRENT_POSITION', payload: {
-        categoryIndex,
-        subcategoryIndex,
-        topicIndex: topicIndex + 1,
-        questionIndex: 0
-      }});
-    
-    
-    }
-    // Move to next subcategory
-    else if (subcategoryIndex < category.subcategories.length - 1) {
-      dispatch({ type: 'SET_CURRENT_POSITION', payload: {
-        categoryIndex,
-        subcategoryIndex: subcategoryIndex + 1,
-        topicIndex: 0,
-        questionIndex: 0
-      }});
-    }
-    // Move to next category
-    else if (categoryIndex < state.questionsData.length - 1) {
-      dispatch({ type: 'SET_CURRENT_POSITION', payload: {
-        categoryIndex: categoryIndex + 1,
-        subcategoryIndex: 0,
-        topicIndex: 0,
-        questionIndex: 0
-      }});
-    }
-    // Survey completed
-    else {
-      dispatch({ type: 'SET_COMPLETED', payload: true });
-    }
-  }, [state.currentPosition, state.questionsData]);
+  const navigateToNext = useCallback(async () => {
+  const { categoryIndex, subcategoryIndex, topicIndex, questionIndex } = state.currentPosition;
+  const category = state.questionsData[categoryIndex];
+  
+  if (!category) return;
+  
+  const subcategory = category.subcategories[subcategoryIndex];
+  const topic = subcategory?.topics[topicIndex];
+  
+  if (!topic) return;
 
-  const navigateToPrevious = useCallback(() => {
-    const { categoryIndex, subcategoryIndex, topicIndex, questionIndex } = state.currentPosition;
-    
-    // Move to previous question
-    if (questionIndex > 0) {
-      dispatch({ type: 'SET_CURRENT_POSITION', payload: {
-        categoryIndex,
-        subcategoryIndex,
-        topicIndex,
-        questionIndex: questionIndex - 1
-      }});
+  let newPosition = { ...state.currentPosition };
+
+  // Move to next question
+  if (questionIndex < topic.questions.length - 1) {
+    newPosition.questionIndex = questionIndex + 1;
+  }
+  // Move to next topic
+  else if (topicIndex < subcategory.topics.length - 1) {
+    newPosition.topicIndex = topicIndex + 1;
+    newPosition.questionIndex = 0;
+  }
+  // Move to next subcategory
+  else if (subcategoryIndex < category.subcategories.length - 1) {
+    newPosition.subcategoryIndex = subcategoryIndex + 1;
+    newPosition.topicIndex = 0;
+    newPosition.questionIndex = 0;
+  }
+  // Move to next category
+  else if (categoryIndex < state.questionsData.length - 1) {
+    newPosition.categoryIndex = categoryIndex + 1;
+    newPosition.subcategoryIndex = 0;
+    newPosition.topicIndex = 0;
+    newPosition.questionIndex = 0;
+  }
+  // Survey completed
+  else {
+    dispatch({ type: 'SET_COMPLETED', payload: true });
+    return;
+  }
+
+  dispatch({ type: 'SET_CURRENT_POSITION', payload: newPosition });
+
+  // Save position to database
+  if (state.sessionId) {
+    try {
+      await api.updateUserProgress(state.sessionId, {
+        currentCategory: newPosition.categoryIndex,
+        currentSubcategory: newPosition.subcategoryIndex,
+        currentTopic: newPosition.topicIndex,
+        currentQuestion: newPosition.questionIndex
+      });
+    } catch (error) {
+      console.error('Failed to save progress:', error);
     }
-    // Move to previous topic
-    else if (topicIndex > 0) {
-      const prevTopic = state.questionsData[categoryIndex].subcategories[subcategoryIndex].topics[topicIndex - 1];
-      dispatch({ type: 'SET_CURRENT_POSITION', payload: {
-        categoryIndex,
-        subcategoryIndex,
-        topicIndex: topicIndex - 1,
-        questionIndex: prevTopic.questions.length - 1
-      }});
+  }
+}, [state.currentPosition, state.questionsData, state.sessionId]);
+
+const navigateToPrevious = useCallback(async () => {
+  const { categoryIndex, subcategoryIndex, topicIndex, questionIndex } = state.currentPosition;
+  
+  let newPosition = { ...state.currentPosition };
+
+  // Move to previous question
+  if (questionIndex > 0) {
+    newPosition.questionIndex = questionIndex - 1;
+  }
+  // Move to previous topic
+  else if (topicIndex > 0) {
+    const prevTopic = state.questionsData[categoryIndex].subcategories[subcategoryIndex].topics[topicIndex - 1];
+    newPosition.topicIndex = topicIndex - 1;
+    newPosition.questionIndex = prevTopic.questions.length - 1;
+  }
+  // Move to previous subcategory
+  else if (subcategoryIndex > 0) {
+    const prevSubcategory = state.questionsData[categoryIndex].subcategories[subcategoryIndex - 1];
+    const lastTopic = prevSubcategory.topics[prevSubcategory.topics.length - 1];
+    newPosition.subcategoryIndex = subcategoryIndex - 1;
+    newPosition.topicIndex = prevSubcategory.topics.length - 1;
+    newPosition.questionIndex = lastTopic.questions.length - 1;
+  }
+  // Move to previous category
+  else if (categoryIndex > 0) {
+    const prevCategory = state.questionsData[categoryIndex - 1];
+    const lastSubcategory = prevCategory.subcategories[prevCategory.subcategories.length - 1];
+    const lastTopic = lastSubcategory.topics[lastSubcategory.topics.length - 1];
+    newPosition.categoryIndex = categoryIndex - 1;
+    newPosition.subcategoryIndex = prevCategory.subcategories.length - 1;
+    newPosition.topicIndex = lastSubcategory.topics.length - 1;
+    newPosition.questionIndex = lastTopic.questions.length - 1;
+  }
+
+  dispatch({ type: 'SET_CURRENT_POSITION', payload: newPosition });
+
+  // Save position to database
+  if (state.sessionId) {
+    try {
+      await api.updateUserProgress(state.sessionId, {
+        currentCategory: newPosition.categoryIndex,
+        currentSubcategory: newPosition.subcategoryIndex,
+        currentTopic: newPosition.topicIndex,
+        currentQuestion: newPosition.questionIndex
+      });
+    } catch (error) {
+      console.error('Failed to save progress:', error);
     }
-    // Move to previous subcategory
-    else if (subcategoryIndex > 0) {
-      const prevSubcategory = state.questionsData[categoryIndex].subcategories[subcategoryIndex - 1];
-      const lastTopic = prevSubcategory.topics[prevSubcategory.topics.length - 1];
-      dispatch({ type: 'SET_CURRENT_POSITION', payload: {
-        categoryIndex,
-        subcategoryIndex: subcategoryIndex - 1,
-        topicIndex: prevSubcategory.topics.length - 1,
-        questionIndex: lastTopic.questions.length - 1
-      }});
-    }
-    // Move to previous category
-    else if (categoryIndex > 0) {
-      const prevCategory = state.questionsData[categoryIndex - 1];
-      const lastSubcategory = prevCategory.subcategories[prevCategory.subcategories.length - 1];
-      const lastTopic = lastSubcategory.topics[lastSubcategory.topics.length - 1];
-      dispatch({ type: 'SET_CURRENT_POSITION', payload: {
-        categoryIndex: categoryIndex - 1,
-        subcategoryIndex: prevCategory.subcategories.length - 1,
-        topicIndex: lastSubcategory.topics.length - 1,
-        questionIndex: lastTopic.questions.length - 1
-      }});
-    }
-  }, [state.currentPosition, state.questionsData]);
+  }
+}, [state.currentPosition, state.questionsData, state.sessionId]);
+
+  
 
   const calculateProgress = useCallback(() => {
     const totalQuestions = state.progress.totalQuestions;
@@ -399,6 +460,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
     getTotalQuestionsInCurrentTopic,
     getCompletedQuestionsInCurrentTopic,
     loadUserSession,
+    navigateToPosition,
     resetSession // Add this line
   };
 

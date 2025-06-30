@@ -1,5 +1,7 @@
 import React from 'react';
 import { useForm } from '../context/FormContext.tsx';
+import NavigationMenu from './NavigationMenu.tsx';
+import { useState } from 'react';
 
 export default function ProgressBar() {
   const { 
@@ -8,6 +10,9 @@ export default function ProgressBar() {
     getTotalQuestionsInCurrentTopic, 
     getCompletedQuestionsInCurrentTopic 
   } = useForm();
+
+  const [showMenu, setShowMenu] = useState(false);
+
 
   if (!state.questionsData || state.questionsData.length === 0) {
     return (
@@ -73,6 +78,11 @@ export default function ProgressBar() {
   const currentQuestionNumber = questionIndex + 1;
   const totalQuestionsInTopic = currentTopic.questions.length;
 
+  const handleNavigateToQuestion = (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => {
+  // This will be handled by the parent component
+  console.log('Navigate to:', categoryIndex, subcategoryIndex, topicIndex, questionIndex);
+};
+
   return (
     <div 
       className="backdrop-blur-sm border-b px-6 py-3 sticky top-0 z-10 shadow-sm"
@@ -82,11 +92,20 @@ export default function ProgressBar() {
       }}
     >
       <div className="max-w-4xl mx-auto">
+        
         {/* Breadcrumb Navigation */}
         <div 
           className="text-sm mb-2 flex flex-wrap items-center"
           style={{ color: 'var(--text-secondary)' }}
         >
+          <button
+          onClick={() => setShowMenu(true)}
+          className="mr-3 p-1 rounded hover:bg-white/20 transition-colors"
+          style={{ color: 'var(--text-primary)' }}
+          title="Open Navigation Menu"
+        >
+          📋
+        </button>
           <span 
             className="font-medium"
             style={{ color: 'var(--text-primary)' }}
@@ -175,6 +194,12 @@ export default function ProgressBar() {
             </span>
           </div>
         </div>
+        {/* Navigation Menu */}
+          <NavigationMenu 
+            isOpen={showMenu}
+            onClose={() => setShowMenu(false)}
+            onNavigateTo={handleNavigateToQuestion}
+          />
       </div>
     </div>
   );

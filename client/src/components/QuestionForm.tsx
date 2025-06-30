@@ -3,12 +3,16 @@ import { useForm } from '../context/FormContext.tsx';
 import { validateAnswer } from '../utils/helpers.ts';
 import AttentionCheck from './AttentionCheck.tsx';
 import ProgressBar from './ProgressBar.tsx';
+import NavigationMenu from './NavigationMenu.tsx';
+import * as api from '../services/api.ts';
 
 export default function QuestionForm() {
   const {
     state,
     saveResponse,
     navigateToNext,
+    navigateToPosition, 
+    dispatch,
     navigateToPrevious,
     getCurrentQuestionData,
     getTotalQuestionsInCurrentTopic,
@@ -30,7 +34,7 @@ export default function QuestionForm() {
   const [showCelebration, setShowCelebration] = useState<{type: string, data: any} | null>(null);
   const [completedTopicName, setCompletedTopicName] = useState<string>('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
+  const [showNavigationMenu, setShowNavigationMenu] = useState(false);
   const currentQuestionData = getCurrentQuestionData();
 
   // Reset form when question changes
@@ -241,6 +245,16 @@ export default function QuestionForm() {
     setShowCelebration(null);
   };
 
+  const handleNavigateToQuestion = async (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => {
+  // Save current response if valid
+  if (isFormValid) {
+    await handleSave();
+  }
+    
+    await navigateToPosition(categoryIndex, subcategoryIndex, topicIndex, questionIndex);
+};
+
+
   if (showAttentionCheck && attentionCheck) {
     return <AttentionCheck attentionCheck={attentionCheck} onComplete={() => {}} />;
   }
@@ -268,12 +282,33 @@ export default function QuestionForm() {
 
   return (
     <div 
+      
       className="min-h-screen"
       style={{ 
         background: `linear-gradient(135deg, var(--bg-primary) 0%, var(--color-cream) 50%, var(--bg-secondary) 100%)` 
       }}
     >
       <ProgressBar />
+      <div className="fixed top-20 right-6 z-40">
+      <button
+        onClick={() => setShowNavigationMenu(true)}
+        className="p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+        style={{ 
+          background: 'var(--btn-primary-bg)',
+          color: 'var(--text-on-dark)'
+        }}
+        title="Navigation Menu"
+      >
+        <span className="text-xl">🗂️</span>
+      </button>
+    </div>
+
+    {/* Navigation Menu */}
+    <NavigationMenu 
+      isOpen={showNavigationMenu}
+      onClose={() => setShowNavigationMenu(false)}
+      onNavigateTo={handleNavigateToQuestion}
+    />
       
       {/* Celebration Modal */}
       {showCelebration && (
