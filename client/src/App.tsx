@@ -16,49 +16,49 @@ function AppContent() {
   const [hasExistingSession, setHasExistingSession] = useState(false);
   const [existingSessionId, setExistingSessionId] = useState<string | null>(null);
 
-  // Check for existing session on load
+  // Wait for questions data to load before checking sessions
   useEffect(() => {
-    if (hasCheckedSession) return;
-    
-    const checkExistingSession = async () => {
-      const savedSessionId = localStorage.getItem('culturalSurveySessionId');
-      console.log('Checking for existing session:', savedSessionId);
-      
-      if (savedSessionId) {
-        try {
-          // Just check if the session exists, don't load it yet
-          const response = await fetch(`http://localhost:5000/api/users/${savedSessionId}`);
-          if (response.ok) {
-            const userData = await response.json();
-            console.log('Found existing session:', userData);
-            
-            if (userData.isCompleted) {
-              // If survey is completed, start fresh
+    if (state.questionsData.length > 0 && !hasCheckedSession) {
+      const checkExistingSession = async () => {
+        const savedSessionId = localStorage.getItem('culturalSurveySessionId');
+        console.log('Checking for existing session:', savedSessionId);
+        
+        if (savedSessionId) {
+          try {
+            // Just check if the session exists, don't load it yet
+            const response = await fetch(`http://localhost:5000/api/users/${savedSessionId}`);
+            if (response.ok) {
+              const userData = await response.json();
+              console.log('Found existing session:', userData);
+              
+              if (userData.isCompleted) {
+                // If survey is completed, start fresh
+                localStorage.removeItem('culturalSurveySessionId');
+                setHasExistingSession(false);
+              } else {
+                // Valid incomplete session found
+                setHasExistingSession(true);
+                setExistingSessionId(savedSessionId);
+              }
+            } else {
+              // Session doesn't exist on server, remove from localStorage
               localStorage.removeItem('culturalSurveySessionId');
               setHasExistingSession(false);
-            } else {
-              // Valid incomplete session found
-              setHasExistingSession(true);
-              setExistingSessionId(savedSessionId);
             }
-          } else {
-            // Session doesn't exist on server, remove from localStorage
+          } catch (error) {
+            console.error('Error checking existing session:', error);
             localStorage.removeItem('culturalSurveySessionId');
             setHasExistingSession(false);
           }
-        } catch (error) {
-          console.error('Error checking existing session:', error);
-          localStorage.removeItem('culturalSurveySessionId');
-          setHasExistingSession(false);
         }
-      }
-      
-      setHasCheckedSession(true);
-      setIsInitializing(false);
-    };
+        
+        setHasCheckedSession(true);
+        setIsInitializing(false);
+      };
 
-    checkExistingSession();
-  }, [hasCheckedSession]);
+      checkExistingSession();
+    }
+  }, [state.questionsData.length, hasCheckedSession]);
 
   // Update stage based on form state
   useEffect(() => {
@@ -108,12 +108,17 @@ function AppContent() {
     }
   };
 
-  if (isInitializing) {
+  if (isInitializing || state.questionsData.length === 0) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Checking for existing survey...</p>
+          <p className="text-gray-600">
+            {state.questionsData.length === 0 ? 'Loading survey questions...' : 'Checking for existing survey...'}
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            Questions loaded: {state.questionsData.length} categories
+          </p>
         </div>
       </div>
     );

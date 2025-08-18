@@ -34,7 +34,7 @@ const initialState: FormState = {
     currentTopic: 0,
     currentQuestion: 0,
     completedQuestions: 0,
-    totalQuestions: 585, // Updated to match your data
+    totalQuestions: 0, // Updated to match your data
     completedTopics: [],
     attentionChecksPassed: 0,
     attentionChecksFailed: 0
@@ -133,17 +133,10 @@ export function FormProvider({ children }: { children: ReactNode }) {
         
         dispatch({ type: 'SET_QUESTIONS_DATA', payload: data });
         
-        // Calculate total questions
-        const totalQuestions = data.reduce((total, category) => {
-          return total + category.subcategories.reduce((subTotal, subcategory) => {
-            return subTotal + subcategory.topics.reduce((topicTotal, topic) => {
-              return topicTotal + topic.questions.length;
-            }, 0);
-          }, 0);
-        }, 0);
-        
-        console.log('FormContext: Total questions calculated:', totalQuestions);
-        dispatch({ type: 'UPDATE_PROGRESS', payload: { totalQuestions } });
+      
+      const totalQuestions = getTotalQuestions(data);
+      console.log('FormContext: Total questions calculated:', totalQuestions);
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { totalQuestions } });
         
       } catch (error) {
         console.error('FormContext: Error loading questions:', error);
@@ -156,6 +149,16 @@ export function FormProvider({ children }: { children: ReactNode }) {
     loadData();
   }, []); // Empty dependency array - only run once
 
+  // Calculate total questions
+      const getTotalQuestions = (questionsData: Category[]): number => {
+        return questionsData.reduce((total, category) => {
+          return total + category.subcategories.reduce((subTotal, subcategory) => {
+            return subTotal + subcategory.topics.reduce((topicTotal, topic) => {
+              return topicTotal + topic.questions.length;
+            }, 0);
+          }, 0);
+        }, 0);
+      };
   const createUserSession = useCallback(async (userInfo: UserInfo) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
@@ -174,20 +177,32 @@ export function FormProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const loadUserSession = useCallback(async (sessionId: string) => {
+  // Update the loadUserSession function to recalculate total questions
+const loadUserSession = useCallback(async (sessionId: string) => {
   try {
     dispatch({ type: 'SET_LOADING', payload: true });
     const user = await api.getUser(sessionId);
     dispatch({ type: 'SET_SESSION_ID', payload: sessionId });
     dispatch({ type: 'SET_USER_INFO', payload: user.userInfo });
-    dispatch({ type: 'UPDATE_PROGRESS', payload: user.progress });
-    dispatch({ type: 'SET_COMPLETED', payload: user.isCompleted });
     
-    // Load responses
+    // Load responses first
     const responses = await api.getUserResponses(sessionId);
     dispatch({ type: 'SET_RESPONSES', payload: responses });
     
-    // FIXED: Set current position from user data, not from responses
+    // IMPORTANT: Recalculate total questions from current data, not from saved user data
+    // This ensures we use the latest question count even if questions were added/removed
+    const totalQuestions = getTotalQuestions(state.questionsData);
+    
+    // Update progress with recalculated total
+    const updatedProgress = {
+      ...user.progress,
+      totalQuestions, // Use the recalculated total, not the saved one
+      completedQuestions: responses.length // Update with actual response count
+    };
+    
+    dispatch({ type: 'UPDATE_PROGRESS', payload: updatedProgress });
+    dispatch({ type: 'SET_COMPLETED', payload: user.isCompleted });
+    
     // Find the furthest question answered
     let furthestPosition = {
       categoryIndex: 0,
@@ -215,8 +230,8 @@ export function FormProvider({ children }: { children: ReactNode }) {
         questionIndex: lastResponse.questionIndex + 1
       };
 
-      // If we're at the end of a topic/subcategory/category, move to next
-      // This will be handled by navigation logic
+      // TODO: Handle topic/subcategory/category boundaries
+      // For now, this basic logic should work
     }
 
     dispatch({ type: 'SET_CURRENT_POSITION', payload: furthestPosition });
@@ -227,7 +242,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
   } finally {
     dispatch({ type: 'SET_LOADING', payload: false });
   }
-}, []);
+}, [state.questionsData]); // Add questionsData as dependency
 
   const resetSession = useCallback(() => {
     localStorage.removeItem('culturalSurveySessionId');

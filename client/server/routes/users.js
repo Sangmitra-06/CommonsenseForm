@@ -1,6 +1,7 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
+const questionsService = require('../services/questionsService');
 const { v4: uuidv4 } = require('uuid');
 
 const router = express.Router();
@@ -25,9 +26,16 @@ router.post('/create', [
 
     console.log('Creating user with sessionId:', sessionId);
 
+    // Get current total questions count
+    const totalQuestions = questionsService.getTotalQuestions();
+    console.log('Current total questions:', totalQuestions);
+
     const user = new User({
       sessionId,
-      userInfo: { region, age, yearsInRegion }
+      userInfo: { region, age, yearsInRegion },
+      progress: {
+        totalQuestions // This will be set dynamically
+      }
     });
 
     const savedUser = await user.save();
@@ -35,12 +43,12 @@ router.post('/create', [
 
     res.status(201).json({ 
       sessionId,
+      totalQuestions,
       message: 'User session created successfully' 
     });
   } catch (error) {
     console.error('Error creating user:', error);
     
-    // Handle specific MongoDB errors
     if (error.code === 11000) {
       return res.status(400).json({ error: 'Session ID already exists. Please try again.' });
     }
@@ -64,7 +72,16 @@ router.get('/:sessionId', async (req, res) => {
       return res.status(404).json({ error: 'User session not found' });
     }
 
-    console.log('User found:', user._id);
+    // Always return current total questions count
+    const currentTotalQuestions = questionsService.getTotalQuestions();
+    user.progress.totalQuestions = currentTotalQuestions;
+    
+    // Save the updated total if it changed
+    if (user.progress.totalQuestions !== currentTotalQuestions) {
+      await user.save();
+    }
+
+    console.log('User found:', user._id, 'Total questions:', currentTotalQuestions);
     res.json(user);
   } catch (error) {
     console.error('Error fetching user:', error);
@@ -92,6 +109,10 @@ router.put('/:sessionId/progress', [
     const progressData = req.body;
 
     console.log('Updating progress for sessionId:', sessionId, progressData);
+
+    // Ensure we always have the current total questions
+    const currentTotalQuestions = questionsService.getTotalQuestions();
+    progressData.totalQuestions = currentTotalQuestions;
 
     const user = await User.findOneAndUpdate(
       { sessionId },
@@ -149,6 +170,42 @@ router.put('/:sessionId/complete', async (req, res) => {
       error: 'Failed to complete survey',
       details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
+  }
+});
+
+// Get questions info endpoint
+router.get('/info/questions', (req, res) => {
+  try {
+    const totalQuestions = questionsService.getTotalQuestions();
+    const questionsData = questionsService.getQuestionsData();
+    
+    const info = {
+      totalQuestions,
+      totalCategories: questionsData.length,
+      totalSubcategories: questionsData.reduce((sum, cat) => sum + cat.subcategories.length, 0),
+      totalTopics: questionsData.reduce((sum, cat) => 
+        sum + cat.subcategories.reduce((subSum, sub) => subSum + sub.topics.length, 0), 0)
+    };
+    
+    res.json(info);
+  } catch (error) {
+    console.error('Error getting questions info:', error);
+    res.status(500).json({ error: 'Failed to get questions info' });
+  }
+});
+
+// Reload questions endpoint (useful for development)
+router.post('/admin/reload-questions', (req, res) => {
+  try {
+    questionsService.reloadQuestions();
+    const totalQuestions = questionsService.getTotalQuestions();
+    res.json({ 
+      message: 'Questions reloaded successfully',
+      totalQuestions 
+    });
+  } catch (error) {
+    console.error('Error reloading questions:', error);
+    res.status(500).json({ error: 'Failed to reload questions' });
   }
 });
 

@@ -55,7 +55,6 @@ export default function Introduction({ onStartNew, onResume, hasExistingSession 
             <h2 className="text-2xl font-semibold text-custom-dark-brown mb-4">What to Expect</h2>
             <ul className="list-disc list-inside space-y-2 text-custom-dark-brown">
               <li>Questions about various aspects of cultural life in your region</li>
-              <li>Topics covering interpersonal relations, traditions, and social practices</li>
               <li>Estimated completion time: 2-3 hours (you can save and continue later)</li>
               <li>Your progress will be automatically saved as you go</li>
             </ul>

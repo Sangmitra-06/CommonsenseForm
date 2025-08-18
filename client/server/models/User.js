@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const questionsService = require('../services/questionsService');
 
 const userSchema = new mongoose.Schema({
   sessionId: {
@@ -31,7 +32,12 @@ const userSchema = new mongoose.Schema({
     currentTopic: { type: Number, default: 0 },
     currentQuestion: { type: Number, default: 0 },
     completedQuestions: { type: Number, default: 0 },
-    totalQuestions: { type: Number, default: 585 }, // 39 topics × 15 questions
+    totalQuestions: { 
+      type: Number, 
+      default: function() {
+        return questionsService.getTotalQuestions();
+      }
+    },
     completedTopics: [String],
     attentionChecksPassed: { type: Number, default: 0 },
     attentionChecksFailed: { type: Number, default: 0 }
@@ -51,10 +57,19 @@ const userSchema = new mongoose.Schema({
 // Index for performance
 userSchema.index({ sessionId: 1, lastActiveAt: -1 });
 
-// Update lastActiveAt on save
+// Update lastActiveAt and ensure totalQuestions is current on save
 userSchema.pre('save', function(next) {
   this.lastActiveAt = new Date();
+  
+  // Always update totalQuestions to current value
+  this.progress.totalQuestions = questionsService.getTotalQuestions();
+  
   next();
 });
+
+// Static method to get current total questions
+userSchema.statics.getCurrentTotalQuestions = function() {
+  return questionsService.getTotalQuestions();
+};
 
 module.exports = mongoose.model('User', userSchema);

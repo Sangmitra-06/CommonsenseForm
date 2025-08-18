@@ -2,6 +2,7 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const Response = require('../models/Response');
 const User = require('../models/User');
+const questionsService = require('../services/questionsService');
 
 const router = express.Router();
 
@@ -23,11 +24,28 @@ router.post('/', [
     }
 
     const responseData = req.body;
+    const { categoryIndex, subcategoryIndex, topicIndex, questionIndex } = responseData;
+
+    // Validate question exists
+    if (!questionsService.isValidQuestion(categoryIndex, subcategoryIndex, topicIndex, questionIndex)) {
+      return res.status(400).json({ 
+        error: 'Invalid question indices',
+        details: `Question at position ${categoryIndex}-${subcategoryIndex}-${topicIndex}-${questionIndex} does not exist`
+      });
+    }
 
     // Check if user session exists
     const user = await User.findOne({ sessionId: responseData.sessionId });
     if (!user) {
       return res.status(404).json({ error: 'User session not found' });
+    }
+
+    // Get the actual question text to verify
+    const actualQuestion = questionsService.getQuestion(categoryIndex, subcategoryIndex, topicIndex, questionIndex);
+    if (actualQuestion && responseData.question !== actualQuestion) {
+      console.warn('Question text mismatch for', responseData.questionId);
+      // Update with correct question text
+      responseData.question = actualQuestion;
     }
 
     // Check if response already exists and update, otherwise create new
@@ -53,6 +71,7 @@ router.post('/', [
       }
     );
 
+    console.log('Response saved for question:', responseData.questionId);
     res.status(201).json({ 
       message: 'Response saved successfully',
       responseId: response._id 
@@ -101,10 +120,19 @@ router.post('/batch', [
       return res.status(404).json({ error: 'User session not found' });
     }
 
-    // Validate each response
+    // Validate each response and question existence
     for (let response of responses) {
       if (!response.questionId || !response.answer || response.answer.length < 10) {
         return res.status(400).json({ error: 'Invalid response data' });
+      }
+
+      // Validate question exists
+      const { categoryIndex, subcategoryIndex, topicIndex, questionIndex } = response;
+      if (!questionsService.isValidQuestion(categoryIndex, subcategoryIndex, topicIndex, questionIndex)) {
+        return res.status(400).json({ 
+          error: 'Invalid question indices in batch',
+          details: `Question at position ${categoryIndex}-${subcategoryIndex}-${topicIndex}-${questionIndex} does not exist`
+        });
       }
     }
 

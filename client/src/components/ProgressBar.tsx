@@ -98,23 +98,16 @@ export default function ProgressBar() {
           className="text-sm mb-2 flex flex-wrap items-center"
           style={{ color: 'var(--text-secondary)' }}
         >
-          <button
-          onClick={() => setShowMenu(true)}
-          className="mr-3 p-1 rounded hover:bg-white/20 transition-colors"
-          style={{ color: 'var(--text-primary)' }}
-          title="Open Navigation Menu"
-        >
-          📋
-        </button>
+          
           <span 
             className="font-medium"
-            style={{ color: 'var(--text-primary)' }}
+            style={{ color: 'var(--color-dark-olive)' }}
           >
             {currentCategory.category}
           </span>
           <span 
             className="mx-2"
-            style={{ color: 'var(--text-muted)' }}
+            style={{ color: 'var(--text-primary)' }}
           >
             →
           </span>
@@ -126,13 +119,13 @@ export default function ProgressBar() {
           </span>
           <span 
             className="mx-2"
-            style={{ color: 'var(--text-muted)' }}
+            style={{ color: 'var(--text-primary)' }}
           >
             →
           </span>
           <span 
             className="font-medium"
-            style={{ color: 'var(--text-secondary)' }}
+            style={{ color: 'var(--accent-primary)' }}
           >
             {currentTopic.topic}
           </span>
@@ -159,7 +152,7 @@ export default function ProgressBar() {
             </span>
             <span 
               className="flex items-center text-xs"
-              style={{ color: 'var(--text-secondary)' }}
+              style={{ color: 'var(--text-primary)' }}
             >
               <span 
                 className="font-semibold"

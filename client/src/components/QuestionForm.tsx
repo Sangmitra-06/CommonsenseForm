@@ -344,7 +344,7 @@ export default function QuestionForm() {
                     background: 'var(--btn-primary-bg)' 
                   }}
                 >
-                  <span className="mr-2">🍃</span>
+                  
                   Question {currentQuestionInTopic} of {topicProgress}
                 </div>
                 
@@ -507,7 +507,7 @@ export default function QuestionForm() {
                     className="font-medium mb-3 text-base"
                     style={{ color: 'var(--text-primary)' }}
                   >
-                    🧠 Cultural Commonsense Assessment
+                    Cultural Commonsense Assessment
                   </h3>
                   <p 
                     className="text-sm mb-3 leading-relaxed"
