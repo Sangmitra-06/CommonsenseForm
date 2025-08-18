@@ -1,144 +1,45 @@
 [
   {
-    "category": "Interpersonal Relations",
+    "category": "Clothing and adornment",
     "subcategories": [
       {
-        "subcategory": "Visiting and hospitality",
+        "subcategory": "Ornament",
         "topics": [
           {
-            "topic": "Etiquette in the reception of visitors",
+            "topic": "Occasions for Wearing Specific Ornaments",
             "questions": [
-              "In your region, what are the two most common things visitors do upon entering a home (excluding greetings)?",
-              "In your region, what are the two most common traditional beverages (excluding water) offered to guests upon arrival?",
-              "In your region, what four popular dishes (main, dessert, or appetizer) are typically served to welcome visiting relatives?",
-              "In your region, what three common preparations, such as cleaning, decorating, or traditional practices, are usually done before guests arrive?",
-              "In your region, what utensils or serving dishes are used for guests, and how do they differ from those used daily?",
-              "In your region, what are the common customs or expectations when an out-of-town guest arrives, such as from an airport or train station, in terms of how they come to your home?",
-              "In your region, what are some traditional sweets or snacks that are typically prepared or bought when expecting guests? Please list 2 snacks and 2 sweets.",
-              "In your region, what are the two most common actions taken to greet guests when they arrive at your home?",
-              "In your region, what are the two most common traditional gifts or souvenirs given to guests during their visit?",
-              "In your region, what are the two most common customs or traditions followed when receiving elderly guests?",
-              "In your region, how is food usually served to guests, by the host, a family member (specify the member), or by guests themselves?",
-              "In your region, as a guest, what are the two most common ways to show gratitude before leaving a host’s home?",
-              "In your region, what are the two most common follow-up actions after a guest has visited your home?",
-              "In your region, how is it usually handled when a guest offers to help with meal preparation or cleaning up?",
-              "In your region, what are the two most common rituals or traditions followed when someone visits your home for the first time?",
-              "In your region, what is the traditional order of serving food to guests, and who is typically served first?",
-              "In your region, what is the usual sequence of serving food to guests? For example, starting with appetizers, then main dishes, then desserts.",
-              "In your region, what is the common proper etiquette for sending off a guest who is visiting from another city?"
+              "In your region, what types of ornaments are typically avoided by women during mourning periods or at funerals? Please name two most common ones.",
+              "In your region, what ornaments are commonly worn by men during major religious festivals or celebrations? Please specify two most common ones.",
+              "In your region, what types of ornaments are commonly worn by a child during their first birthday celebration? Please name two most common ones."
             ]
           },
           {
-            "topic": "Occasions for visiting",
+            "topic": "Ornamental Attire and Status Indication",
             "questions": [
-              "In your region, what is the most common festival that involves visiting or celebrating with relatives?",
-              "In your region, what are the 3 most common personal occasions for visiting relatives? Examples of personal occasions could include weddings, births, funerals, etc.",
-              "In your region, what are two common situations where visiting others is considered inappropriate?",
-              "In your region, on what two occasions do people usually visit family elders?",
-              "In your region, which two national holidays are most often for visiting family or friends?",
-              "In your region, on what two common occasions do people visit their in-laws?",
-              "In your region, on what two occasions do people visit teachers or mentors?",
-              "In your region, what two occasions bring neighbors together at someone’s house?",
-              "In your region, on what two occasions do people return to their hometown or village?",
-              "In your region, what is the most common reason family visits late at night?",
-              "In your region, what is the most common reason to visit a friend or colleague at work?",
-              "In your region, do people visit friends or relatives unannounced or with prior notice?",
-              "In your region, what two career events most often prompt visits from friends or family? Examples could include a promotion, retirement, opening a shop, etc.",
-              "In your region, what two occasions involving children prompt visits from relatives or neighbors?",
-              "In your region, what two everyday reasons (outside major events) lead to visits between friends or relatives?"
+              "In your region, which ornaments worn by women are commonly seen as symbols of higher social status? Please name two most common ones.",
+              "In your region, what types of head ornaments or hair accessories worn by men are considered markers of higher social class? Please name two most common ones.",
+              "In your region, what types of ornaments are worn by government or community leaders, dignitaries, or respected elders? Please name two most common ones."
             ]
           }
         ]
       },
       {
-        "subcategory": "Gift giving",
+        "subcategory": "Special garments",
         "topics": [
           {
-            "topic": "Gift Giving Etiquette",
+            "topic": "Headgear and Footwear Norms",
             "questions": [
-              "In your region, are gifts opened in front of the giver or later? Name two occasions when they’re opened right away.",
-              "In your region, what two types of gifts are seen as inappropriate or unlucky?",
-              "In your region, is giving cash as a gift respectful or impersonal? Name two occasions when it’s common and how it’s usually presented, for example, in envelopes, decorated packets, as gift cards, etc.",
-              "In your region, are return gifts expected? Name two occasions when they’re usually given.",
-              "In your region, what two gifts are most common for colleagues or business associates?",
-              "In your region, what colors or numbers are seen as unlucky for gifts? Name the most common ones.",
-              "In your region, what two gifts are believed to bring good luck, and on what occasions are they given?",
-              "In your region, when and how are gifts given to teachers or mentors, and what gifts are most common?",
-              "In your region, how is a gift typically wrapped or presented before it is given?",
-              "In your region, what two materials or wrapping styles are most common for formal or traditional occasions?",
-              "In your region, what colors, patterns, or designs are traditionally used or avoided for gift wrapping?",
-              "In your region, is it polite to ask what someone wants as a gift? On which occasions is this okay or not okay?",
-              "In your region, what two handmade or personalized gifts are most common, and on what occasions are they given?",
-              "In your region, what two types of gifts are most common between couples?",
-              "In your region, what two types of gifts are most common between siblings?"
+              "In your region, what types of head coverings are traditionally worn by brides during wedding ceremonies that are not part of everyday attire?",
+              "In your region, what types of head coverings are typically worn by men during funeral ceremonies?",
+              "In your region, what traditional types of footwear or footgear are associated with cultural performances but not worn in daily life?",
+              "In your region, what types of head coverings are commonly worn by widows or mourners during extended periods of mourning that differ from daily headwear?"
             ]
           },
           {
-            "topic": "Ceremonial gift giving",
+            "topic": "Special Occasion Clothing",
             "questions": [
-              "In your region, what are the three most common gifts for a wedding ceremony?",
-              "In your region, what are the three most common and traditional gifts given to a child on its naming ceremony?",
-              "In your region, what are the three most common and traditional gifts given to a child on its first birthday?",
-              "In your region, are gifts for new parents given before birth, after birth, or both? What are the occasions called, and what three gifts are most common?",
-              "In your region, what are the three most common gifts that are typically brought when attending a religious function at someone’s home?",
-              "In your region, what two common souvenirs or gifts are brought back after a religious pilgrimage?",
-              "In your region, what two common souvenirs or gifts are brought back after a trip abroad?",
-              "In your region, what are three most common gifts to bring to someone’s housewarming ceremony?",
-              "In your region, what three gifts are believed to bring good luck or ward off evil, and on what occasions are they given?",
-              "In your region, what are two traditional and common gifts given during harvest festivals or agricultural celebrations?",
-              "In your region, what are two traditional and common gifts exchanged between the bride and the groom’s families during a wedding ceremony?",
-              "In your region, on what two occasions are gifts given to household helpers, staff, or community workers, and what two gifts are most common?",
-              "In your region, what are the two most common gifts given to a newlywed couple by their friends or family?",
-              "In your region, what are the two most common gifts given during a landmark birthday celebration such as 50th or 60th birthday celebrations?",
-              "In your region, what are the two most common and traditional gifts given during an engagement ceremony?"
-            ]
-          }
-        ]
-      },
-      {
-        "subcategory": "Etiquette",
-        "topics": [
-          {
-            "topic": "Greeting and Salutation Etiquette",
-            "questions": [
-              "In your region, what are the two most common physical gestures that accompany greetings?",
-              "In your region, what is the most common physical gesture done to greet an elder?",
-              "In your region, what is the most common greeting for morning, afternoon, evening, and night?",
-              "In your region, how is a religious leader or spiritual figure traditionally greeted? Name common phrases and gestures.",
-              "In your region, how do people greet each other on the phone when answering and when calling?",
-              "In your region, how is a friend's parent usually greeted? Focus on the titles used to greet them.",
-              "In your region, how do students or younger people traditionally greet teachers or mentors? Focus on the titles used.",
-              "In your region, is it common to greet an unknown person on the street? If so, how are they normally greeted?",
-              "In your region, what phrases are typically used when beginning and ending a formal letter or email?",
-              "In your region, if one receives a greeting from a stranger, is it common to respond? If yes, how are they commonly responded to?",
-              "In your region, what is the traditional way of saying goodbye to guests after a gathering?",
-              "In your region, what titles or terms are used someone else's parents?",
-              "In your region, how do people greet shopkeepers or service workers in everyday settings?",
-              "In your region, what is the typical greeting exchanged during national holidays?",
-              "In your region, what typical greeting is used during mourning periods or when offering condolences?"
-            ]
-          },
-          {
-            "topic": "Eating, drinking, and smoking etiquette",
-            "questions": [
-              "In your region, what holidays are the two most common holidays during which smoking and drinking are widespread?",
-              "In your region, what are the two most common customs observed before beginning a meal?",
-              "In your region, what is the traditional way to sit when eating a full meal at home?",
-              "In your region, what are the three most common alcohol-and-occasion pairs (e.g., wine at weddings, whisky during festivals)?",
-              "In your region, what are the general practices and expectations regarding tipping when dining at a restaurant?",
-              "In your region, what are the two most common traditional ways of showing respect to elders during shared meals?",
-              "In your region, what are the two most common customs followed immediately after finishing a meal?",
-              "In your region, what are the two most common social occasions where offering a cigarette is expected?",
-              "In your region, what are the two most common alcoholic drinks offered to guests during home gatherings?",
-              "In your region, what are the two most common areas where smoking is considered inappropriate?",
-              "In your region, what is the typical way guests clean their hands after a meal when dining at a restaurant?",
-              "In your region, what are the two most common methods of serving food at weddings or large gatherings (e.g., plated, buffet, communal)?",
-              "In your region, what are the two most common types of food that are considered inappropriate to waste?",
-              "In your region, who are the first two groups served food at formal or ceremonial meals (such as weddings, religious feasts, or community events)?",
-              "In your region, how is rice most commonly eaten—by hand, with a spoon, or using another method?",
-              "In your region, how is any form of bread typically eaten during meals? Describe the usual way it is eaten.",
-              "In your region, which two foods are traditionally eaten using hands rather than utensils?",
-              "In your region, what traditional utensils or tools are commonly used to serve food? Please name two that are widely used."
+              "In your region, what is the traditional outfit worn by women during the most prominent festival (except harvest) in your culture? Name the festival and the outfit worn.",
+              "In your region, what is the appropriate attire for a man attending a funeral?"
             ]
           }
         ]
@@ -146,298 +47,44 @@
     ]
   },
   {
-    "category": "Festivals and Rituals",
+    "category": "Communication",
     "subcategories": [
       {
-        "subcategory": "Rest days and holidays",
+        "subcategory": "Dissemination of News and Information",
         "topics": [
           {
-            "topic": "Conceptualization of Holidays",
+            "topic": "Navigating the \"Grapevine\"",
             "questions": [
-              "In your region, what is the most widely celebrated festival or holiday known for its grandeur and elaborate traditions?",
-              "In your region, what holiday or festival is most popular among the younger generation, and what does it represent or celebrate?",
-              "In your region, what is the most significant holiday celebrated by the local Indigenous community?",
-              "In your region, what festival commemorates the harvest season?",
-              "In your region, what holiday is dedicated to honoring teachers/mentors and what is its origin?",
-              "In your region, what holiday is dedicated to honoring farmers?",
-              "In your region, what holiday is dedicated to honoring children and what is its origin?",
-              "In your region, what holiday is dedicated to honoring parents?",
-              "In your region, what holiday is dedicated to honoring military personnel?",
-              "In your region, what festival/holiday is celebrated that marks the beginning of a new year?",
-              "In your region, what traditional holiday specifically honors ancestors or departed family members?",
-              "In your region, what holiday specifically celebrates the relationship between siblings?",
-              "In your region, what are the two most common holidays that are believed to bring good fortune or spiritual protection?",
-              "In your region, what holiday is traditionally viewed as a time to ward off misfortune or evil influences?"
+              "In your region, what two digital platforms are most commonly used by schools to share informal updates or announcements with parents or students?",
+              "In your region, what digital platform is most commonly used to circulate missing person or lost pet notices?",
+              "In your region, what is the common platform used to order takeout/food?"
             ]
           },
           {
-            "topic": "Secular Festival Practices",
+            "topic": "Trustworthiness of Information Sources",
             "questions": [
-              "In your region, how is heritage honored by the local community during the most important holiday? Name the holiday and two forms of tribute.",
-              "In your region, during which month is the harvest festival most commonly celebrated?",
-              "In your region, what are two key rituals typically performed during a traditional housewarming ceremony?",
-              "In your region, what are two traditional games or activities commonly conducted during harvest festivals?",
-              "In your region, what are two things people use to decorate the entrance of the home during a housewarming ceremony?",
-              "In your region, during which month is the festival that marks the beginning of the new year usually celebrated?",
-              "In your region, what are two symbols or motifs that are commonly used in decorations for festivals?",
-              "In your region, what customs mark the end of a festival? Name two festivals and one or two closing practices for each.",
-              "In your region, what is the culturally appropriate time of day to conduct the main rituals of the harvest festival?",
-              "In your region, according to traditional housewarming customs, what is the first household item that must be brought into a new home?",
-              "In your region, what are the most commonly used colors for decorating during festivals?",
-              "In your region, what kinds of decorations are typically used during the celebration of festivals? Name two decorations.",
-              "In your region, what traditional games or activities are linked to festivals? Name one activity for two festivals.",
-              "In your region, what are two common public rituals observed during patriotic holidays?",
-              "In your region, what month is the most prominent patriotic holiday celebrated?"
-            ]
-          },
-          {
-            "topic": "Commemoration of Personal Milestones",
-            "questions": [
-              "In your region, what is the first major event celebrated after the birth of a child?",
-              "In your region, what are the four most common birthdays considered most important in a person’s life, and why are they significant?",
-              "In your region, what is a common cultural custom or celebration commonly observed on a couple’s first wedding anniversary?",
-              "In your region, what personal milestones, aside from birthdays and anniversaries, are commonly celebrated? Please name up to four most common ones.",
-              "In your region, what cultural traditions or rituals are associated with the birth of a child? Please name up to two.",
-              "In your region, what customs or ceremonies are associated with a person’s coming of age? Please name the event and approximate age.",
-              "In your region, what are the common ways to mark a baby’s first steps or first spoken words?",
-              "In your region, how are professional milestones such as promotions, retirements, or job appointments typically celebrated? Please name one or two examples.",
-              "In your region, how are major anniversaries of a deceased loved one typically commemorated? Please name up to two common customs.",
-              "In your region, what are the typical customs or gatherings held to welcome a newborn baby?",
-              "In your region, how is the purchase of a person’s first car traditionally celebrated, if at all?",
-              "In your region, what customs or traditions are associated with celebrating a woman’s first pregnancy? Please name any common ceremony or practice.",
-              "In your region, what common customs or traditions are observed during a child's naming ceremony? Please name two.",
-              "In your region, what traditional rituals or practices are followed during a child’s first haircut? Please name two.",
-              "In your region, what are the two most common customs associated with celebrating a couple’s 10th wedding anniversary?"
-            ]
-          },
-          {
-            "topic": "Religious Taboos on Holidays",
-            "questions": [
-              "In your region, what are the two most common religious holidays that involve fasting, and what are the specific rules or forms of fasting observed?",
-              "In your region, what are two religious holidays during which certain foods are traditionally avoided? Please name both the holiday and the restricted food items.",
-              "In your region, what personal grooming or appearance-related restrictions are observed during specific religious holidays? Please specify the holiday and the restriction.",
-              "In your region, what religious holidays prohibit specific types of work or leisure activities? Please name the holiday and describe the restriction.",
-              "In your region, what days of the week require abstinence from certain foods or drinks? Please name the day and the items restricted.",
-              "In your region, what religious holidays or observances restrict certain types of purchases or economic transactions? Please name the observance and describe the restriction.",
-              "In your region, what religious holidays require people to avoid wearing or displaying certain colors? Please specify the holiday and the restricted color(s).",
-              "In your region, what religious holidays prohibit the consumption of alcohol or intoxicating substances? Please list the two most commonly observed holidays with such restrictions.",
-              "In your region, during which religious holidays or periods is it considered inappropriate to hold weddings or engagement ceremonies? Please name at least two such periods.",
-              "In your region, what are two religious observances during which the use of technology or entertainment is restricted? Please specify the observance and the type of restriction.",
-              "In your region, what are two holidays that require waking early or staying up late for a specific ritual? Please name the holidays and describe the custom.",
-              "In your region, what are two most common holidays when people are expected to wear new clothes?",
-              "In your region, what religious holidays prohibit eating during daylight hours? Please name the holidays and explain the rules.",
-              "In your region, what occasions require people to avoid wearing jewelry or makeup?",
-              "In your region, what religious holidays require people to avoid attending celebrations, parties, or social gatherings? Please name the holidays and explain the reason for this restriction."
+              "In your region, how does trust in local-language media compare with trust in English-language media? Name one trusted local-language source.",
+              "In your region, which two social media accounts or pages are widely followed for local news and announcements?"
             ]
           }
         ]
       },
       {
-        "subcategory": "Ritual",
+        "subcategory": "Gestures & Signs",
         "topics": [
           {
-            "topic": "Symbolic Act Performance",
+            "topic": "Non-Verbal Expression of Respect or Disrespect",
             "questions": [
-              "In your region, what are two most common types of ceremonial lamps that are typically lit?",
-              "In your region, what is one commonly performed religious ritual, and what are the step-by-step actions involved in performing it correctly?",
-              "In your region, what are the specific actions performed when entering or visiting a religious institution? Please name three.",
-              "In your region, what items are commonly offered to deities during rituals? Please name at least two.",
-              "In your region, what is the correct ritual action performed toward a ceremonial fire?",
-              "In your region, how is holy water typically used during rituals, and what symbolic meaning is associated with its use?",
-              "In your region, what are the traditional ritual actions performed when visiting a sacred river or body of water? Please describe two most common ones.",
-              "In your region, what is the correct way to ring a prayer or temple bell during worship, including how many times and in what sequence?",
-              "In your region, what is the proper technique for lighting and offering incense during rituals, including how it is held, moved, or circled?",
-              "In your region, what type of circumambulation is traditionally performed around sacred objects, spaces, or deities? Please specify the direction and number of rotations.",
-              "In your region, what is the prescribed method for lighting ceremonial lamps, including which oil is used and the order in which wicks are lit?",
-              "In your region, what ritual objects are typically circled around a sacred flame during ceremonies, and in what order or pattern are they moved?",
-              "In your region, how is sacred ash or powder properly applied during rituals, and to which parts of the body?",
-              "In your region, what is the most common type of ritual powders or pastes applied during rituals?",
-              "In your region, what is the prescribed way to dispose of ritual items (such as used incense sticks, leftover offerings, or flowers) after a ceremony is completed?"
+              "In your region, what gestures are commonly used to show respect toward public officials?",
+              "In your region, what is the usual nonverbal gesture used to excuse oneself?"
             ]
           },
           {
-            "topic": "Ritual Gestures",
+            "topic": "Social Expression of Emotions",
             "questions": [
-              "In your region, what is the customary gesture for showing reverence to a sacred text, and why is it performed?",
-              "In your region, what common gesture is associated with sacred fires?",
-              "In your region, what is the customary gesture for offering food to a deity, and how is it performed?",
-              "In your region, what gesture is typically associated with honoring or remembering a religion?",
-              "In your region, what is the traditional gesture performed to express gratitude during or after a religious ceremony?",
-              "In your region, what gesture is commonly performed when entering or leaving a religious site or monument, and what is its purpose?",
-              "In your region, what is the appropriate gesture when receiving a sacred item or blessing from a religious leader?",
-              "In your region, what gesture is performed to show respect to departed souls during a religious ritual?",
-              "In your region, what is the common gesture performed when taking a religious oath or vow?",
-              "In your region, what is the customary gesture for blessing someone younger?",
-              "In your region, what gesture is performed when asking for forgiveness during a ritual or religious setting?",
-              "In your region, what gesture is performed after accidentally touching a book or written material with your feet?",
-              "In your region, what gesture is performed to show reverence to a sacred tree or plant?",
-              "In your region, what gesture is done when first entering a religious institution?",
-              "In your region, what gesture is performed to welcome participants or guests into a religious ceremony?"
-            ]
-          },
-          {
-            "topic": "Pilgrimage Practices",
-            "questions": [
-              "In your region, what is the most well-known pilgrimage site?",
-              "In your region, what are the common time(s) of the year that pilgrimages are most commonly undertaken?",
-              "In your region, what types of physical challenges are commonly experienced or expected by pilgrims during their journey?",
-              "In your region, what dietary restrictions are typically followed by pilgrims during the pilgrimage? Please specify the types of food or beverages avoided.",
-              "In your region, what sacred or symbolic items do pilgrims usually bring back from their destination, and how are these used after returning home?",
-              "In your region, are there any cultural or religious restrictions on who is allowed to undertake specific pilgrimages? If so, please specify the restriction and the pilgrimage.",
-              "In your region, what is the typical attire or dress code observed by pilgrims during their journey?",
-              "In your region, what are the cultural expectations for a person after completing a pilgrimage? Please name one or two expected actions or behaviors.",
-              "In your region, do people observe any specific rituals or customs after returning from a pilgrimage? If so, please describe them.",
-              "In your region, what gestures or actions do pilgrims typically perform to express devotion or respect upon reaching the pilgrimage site?",
-              "In your region, how do pilgrims typically travel to pilgrimage sites, and are there any traditional routes or modes of transport associated with the journey?",
-              "In your region, how long does a typical pilgrimage last, and what factors determine the duration?",
-              "In your region, are there any behavioral codes or vows pilgrims are expected to observe during the pilgrimage? If yes, please specify.",
-              "In your region, what types of offerings are commonly carried by pilgrims to present at the pilgrimage site?",
-              "In your region, are there any major festivals or holidays that are directly linked to pilgrimages? If so, please name the event and describe the connection."
-            ]
-          }
-        ]
-      },
-      {
-        "subcategory": "Organized ceremonial",
-        "topics": [
-          {
-            "topic": "Engaging with Religious Music and Dance",
-            "questions": [
-              "In your region, what is the traditional dance form associated with your culture or rituals?",
-              "In your region, what is the traditional music form associated with your culture or rituals?",
-              "In your region, what musical instruments are traditionally used in religious ceremonies? Please specify the instrument and the ceremony it is used in.",
-              "In your region, during which times of the year is traditional religious music or dance most commonly performed? Please name the festival or season.",
-              "In your region, what special attire is traditionally worn by women when performing the traditional dance associated with your culture?",
-              "In your region, what special attire is traditionally worn by men when performing the traditional dance associated with your culture?",
-              "In your region, what special attire is traditionally worn by women when performing the traditional music associated with your culture?",
-              "In your region, what special attire is traditionally worn by men when performing the traditional music associated with your culture?",
-              "In your region, what common religious themes or stories are portrayed through traditional music and dance? Please name one or two examples.",
-              "In your region, can anyone participate in the traditional dance performed during religious rituals, or are there restrictions on who may perform? Please specify.",
-              "In your region, what are the common settings or locations where traditional religious music and dance are typically performed?",
-              "In your region, what are the two most common ways the audience participates during traditional religious music or dance performances?",
-              "In your region, what is the most common time of day when religious music or dance performances usually take place?",
-              "In your region, where do people most commonly learn the traditional dance form, and from whom do they typically learn it?",
-              "In your region, where do people most commonly learn the traditional music form, and from whom do they typically learn it?",
-              "In your region, if applicable, what is the common prop used during the traditional dance performance?",
-              "In your region, if applicable, what is the common prop used during the traditional music performance?"
-            ]
-          },
-          {
-            "topic": "Timing of Ceremonies",
-            "questions": [
-              "In your region, how is an auspicious time for important ceremonies such as weddings typically chosen, and who is involved in making that decision?",
-              "In your region, what traditional calendar that differs from the international calendar is followed to schedule religious or cultural ceremonies?",
-              "In your region, which days or timings are commonly avoided for starting journeys or taking flights?",
-              "In your region, how do the phases of the moon influence the timing of religious festivals or ceremonies? Please provide examples.",
-              "In your region, which days of the week are considered inauspicious for conducting important ceremonies?",
-              "In your region, what types of common sources, such as religious texts, calendars, or astrological systems, are used to determine the best times for important events?",
-              "In your region, which periods of the year are typically avoided for making major decisions or starting new ventures, and why?",
-              "In your region, how is the date or time of the annual harvest festival decided, and what factors influence that decision?",
-              "In your region, which times of the year are considered unfavorable for purchasing new items or property?",
-              "In your region, at what periods during the year are major activities paused or avoided?",
-              "In your region, which life events (such as childbirth or naming ceremonies) are most sensitive to timing, and how is that timing determined?",
-              "In your region, what are the most commonly used terms or names for inauspicious periods in the local calendar system?",
-              "In your region, what are the most common names or labels given to periods considered especially favorable for beginning new ventures?",
-              "In your region, what are the most typical rules about waiting periods before scheduling a new event after a funeral or death in the family?",
-              "In your region, what are the most frequently consulted community-level sources (such as temples, elders, or religious leaders) for guidance on selecting dates?"
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "category": "Traffic and transport behavior",
-    "subcategories": [
-      {
-        "subcategory": "Streets and traffic",
-        "topics": [
-          {
-            "topic": "Understanding Local Traffic Regulations",
-            "questions": [
-              "In your region, what are the two most common rules followed when yielding to emergency vehicles like ambulances or fire trucks?",
-              "In your region, what do the colors of a standard traffic signal typically indicate, and how do drivers usually respond to each one?",
-              "In your region, which passengers in a car are most commonly expected to wear seatbelts (e.g., driver, front-seat passenger, back-seat passenger)?",
-              "In your region, for which passengers is wearing a helmet mandatory on a scooter or motorcycle?",
-              "In your region, is there a designated spot where pedestrians normally cross the road? If not, specify where and how the pedestrians normally cross the road.",
-              "In your region, what are the two most common ways drivers signal their intention to turn or change lanes?",
-              "In your region, how do drivers typically behave toward pedestrians waiting at zebra crossings?",
-              "In your region, from which side, if any, are vehicles most commonly overtaken?",
-              "In your region, is there usually a separate lane for cyclists? If not, where do cyclists typically ride?",
-              "In your region, during what hours are heavy vehicles typically restricted from entering city roads or residential areas?",
-              "In your region, what are the common consequences for repeated traffic violations, such as fines, license suspension, or point systems?",
-              "In your region, where are cars most commonly parked when not in residential areas, and is there usually a fee for parking in those locations?",
-              "In your region, how common is frequent honking while driving, and in what situations is it typically used?",
-              "In your region, what is the legal minimum age to obtain a driving license?",
-              "In your region, what are two most common rules regarding child safety in vehicles, such as seating position or use of child restraints?",
-              "In your region, what are the two most widely known rules about vehicle emissions or pollution control for regular vehicles?",
-              "In your region, are tinted windows allowed on vehicles, and what types of vehicles most commonly have them?",
-              "In your region, what animals most commonly appear on roads and occasionally disrupt regular traffic?"
-            ]
-          },
-          {
-            "topic": "Adapting to Local Transportation Modes",
-            "questions": [
-              "In your region, what types of animals, if any, are commonly permitted on public buses or trains? Please specify the animal and transport they’re allowed on.",
-              "In your region, what are two festivals or public events that feature animals as part of the transportation or procession? Please name the event and the animal involved.",
-              "In your region, what are the two most common public or local transportation methods used by students to commute to school or college?",
-              "In your region, which public or local transport options typically operate through the night? If applicable, please name two .",
-              "In your region, what are the three most widely used forms of public or local transportation?",
-              "In your region, what is a unique local transportation mode that may not be commonly found in other regions?",
-              "In your region, which two public transport modes also carry goods or services, and what do they carry?",
-              "In your region, what payment options are most used and convenient for public transport?",
-              "In your region, what are the two most common ways people get to airports or railway stations?",
-              "In your region, on which public transport modes are vendors or entertainers most commonly seen, and what types of goods or performances are typical?",
-              "In your region, what are the most common methods or gestures used to hail a taxi or auto-rickshaw? Please describe two.",
-              "In your region, what officials other than the driver are typically present on buses, and what are their responsibilities?",
-              "In your region, what officials other than the driver are typically present on trains, and what are their roles?",
-              "In your region, what types of public transport offer separate seating or compartments for women, and what are they usually called? Please specify two.",
-              "In your region, what digital tools or systems are used to check delays or updates for public transport? Please specify the tool and the type of transport."
-            ]
-          }
-        ]
-      },
-      {
-        "subcategory": "Transportation",
-        "topics": [
-          {
-            "topic": "Carrying Capacity of Transport",
-            "questions": [
-              "In your region, what is the typical number of passengers allowed in an auto-rickshaw, and how many usually travel in practice?",
-              "In your region, what is the most commonly observed number of people riding on a single motorcycle or scooter?",
-              "In your region, what visible signs indicate that a public bus is carrying more passengers than its safe capacity?",
-              "In your region, what visible signs indicate that a train is operating beyond its safe passenger capacity?",
-              "In your region, how many passengers do hand-pulled or cycle rickshaws typically carry under normal conditions?",
-              "In your region, how do passengers usually arrange themselves when more than three people ride together in a standard three-seater auto-rickshaw?",
-              "In your region, which public transport mode is usually the most crowded, especially during peak hours?",
-              "In your region, which public transport mode is usually the most crowded, especially during peak hours?",
-              "In your region, what is the common workaround when a passenger’s luggage does not fit in the trunk of a taxi or cab?",
-              "In your region, what is the most common way people carry more than the recommended number of passengers on a motorcycle or scooter?",
-              "In your region, what is the most commonly exceeded passenger capacity among public transport options?",
-              "In your region, how do people usually adjust themselves or their belongings when boarding already full public transport?",
-              "In your region, what types of goods are commonly seen overflowing from transport vehicles? Please specify two.",
-              "In your region, which types of vehicles are commonly seen with people riding on the back, roof, or sides when they are full? Name two most common ones.",
-              "In your region, what kinds of goods are commonly carried on motorcycles or scooters along with the rider? Please specify two."
-            ]
-          },
-          {
-            "topic": "Transport during Special Events",
-            "questions": [
-              "In your region, what are the most commonly used transportation modes for getting to sports events like cricket matches?",
-              "In your region, during which two festivals are extra transport services added, and what types of transport are used?",
-              "In your region, what temporary changes are made to transport when government officials or famous celebrities visit an area?",
-              "In your region, during major festivals, what changes do people usually make to their regular transportation habits? Please name the regular mode, the changed mode, and the festival.",
-              "In your region, what transportation arrangements are usually made for visitors from other areas during large events or festivals?",
-              "In your region, what transportation methods are traditionally used to carry deities or religious symbols during processions?",
-              "In your region, what areas typically become pedestrian-only zones during festivals or celebrations, and during which festivals does this occur?",
-              "In your region, what decorated vehicles are commonly part of wedding processions, and what features make them stand out?",
-              "In your region, how do drivers usually decorate their commercial vehicles during major festivals?",
-              "In your region, what changes are made to public transport schedules (buses/trains) during evening performances, concerts, or sports events?",
-              "In your region, what vehicle-sharing practices (e.g., carpooling, shared shuttles), if any, are commonly adopted by attendees during large public events?",
-              "In your region, how is transportation affected during local or national strikes? What alternative transport methods do people commonly rely on?",
-              "In your region, what adjustments are made to road traffic when political rallies or election campaigns are held?",
-              "In your region, what types of vehicles are used in parades or public displays during national celebrations? Specify two most common vehicles.",
-              "In your region, during annual school functions or inter-school competitions, what transportation is typically arranged by schools for students?"
+              "In your region, what is the most common way sympathy or condolence is expressed without speaking?",
+              "In your region, how is deep thought shown nonverbally?",
+              "In your region, what common gestures indicate agreement or affirmation?"
             ]
           }
         ]
@@ -451,43 +98,18 @@
         "subcategory": "Education system",
         "topics": [
           {
-            "topic": "Formal Educational Structure",
+            "topic": "Attitudes toward Education",
             "questions": [
-              "In your region, what are the most common school boards that students attend? Please list all major boards.",
-              "In your region, what are the two most commonly taken entrance exams for college or university admissions?",
-              "In your region, how does the medium of instruction differ across various school boards?",
-              "In your region, what are the specific common subject combinations or streams that students need to choose from in high school?",
-              "In your region, what are the popular international school boards, and how commonly are they chosen?",
-              "In your region, what are the major exams taken during the school years, and at what grade levels are they typically held?",
-              "In your region, what grading system is most commonly used in schools (e.g., letter grades, percentages, GPA)?",
-              "In your region, what grading system is typically used in colleges or universities?",
-              "In your region, do students usually remain in the same classroom while teachers rotate, or do they move between classes for different subjects?",
-              "In your region, what range of grades are typically offered within a single school (e.g., pre-primary to Grade 10)? Please be as specific as possible.",
-              "In your region, what are the standard school levels (e.g., pre-primary, primary, middle, secondary) and the grades they include?",
-              "In your region, what types of schools (e.g., government-run, private, religious, or community-based) are most common?",
-              "In your region, what are the common ways schools communicate important announcements or updates to parents? Specify two most common ways.",
-              "In your region, what is the most common structure for dividing the academic year (e.g., semesters, trimesters), if any?",
-              "In your region, what are the typical administrative roles found in schools (e.g., headmaster, principal, coordinator)? Please name 4 most common ones."
+              "In your region, at what age are students generally expected to complete formal education?",
+              "In your region, what university-level fields of study are most popular or respected?",
+              "In your region, what forms of student discipline are most commonly used in schools (e.g., detention, parent calls, counseling)? Name two most common ones."
             ]
           },
           {
-            "topic": "Attitudes toward Education",
+            "topic": "Formal Educational Structure",
             "questions": [
-              "In your region, what levels of education are typically considered essential for a child to complete?",
-              "In your region, at what age do children usually begin formal education, such as primary or elementary school?",
-              "In your region, at what age are students generally expected to complete formal education?",
-              "In your region, what educational streams or subject areas are generally considered most beneficial for a child’s future?",
-              "In your region, what two types of post-secondary education, such as university, technical training, or apprenticeships, are seen as most useful for jobs?",
-              "In your region, which educational boards or systems (e.g., local, international, private) are considered the most effective or prestigious?",
-              "In your region, how is homeschooling or alternative education viewed—respected, doubted, or growing?",
-              "In your region, what two careers are seen as prestigious, and what education is usually needed for them?",
-              "In your region, what university-level fields of study are most popular or respected?",
-              "In your region, what are the most common types of private tutoring or academic coaching that students use, especially when preparing for important exams?",
-              "In your region, what kinds of scholarships or financial aid are most widely available or commonly used by students pursuing higher education?",
-              "In your region, who are the two most common sources of pressure on students to perform well academically?",
-              "In your region, what are the two most common kinds of academic achievements that are most publicly celebrated or recognized (e.g., high exam scores, scholarships, awards)?",
-              "In your region, how is student success commonly measured, by test scores, class rank, or other forms of evaluation? Name two most common ways.",
-              "In your region, what forms of student discipline are most commonly used in schools (e.g., detention, parent calls, counseling)? Name two most common ones."
+              "In your region, what are the major exams taken during the school years, and at what grade levels are they typically held?",
+              "In your region, what types of schools (e.g., government-run, private, religious, or community-based) are most common?"
             ]
           }
         ]
@@ -498,42 +120,16 @@
           {
             "topic": "Norms for Interacting with Teachers",
             "questions": [
-              "In your region, how are teachers typically greeted or acknowledged when they enter the classroom? Focus on common actions and sayings.",
-              "In your region, what is considered the appropriate way to address a teacher during class? Focus on common titles or phrases used.",
-              "In your region, how do students typically begin a written communication, such as an email, when addressing a teacher?",
-              "In your region, what is the common classroom protocol if a student arrives late and the teacher is already teaching?",
-              "In your region, what is the usual and respectful way for a student to interrupt a teacher during a lesson to ask a question?",
               "In your region, how are teachers usually addressed by parents or other adults in school settings?",
-              "In your region, what behaviors are commonly considered disrespectful while a teacher is speaking in class?",
-              "In your region, how do students typically respond when a teacher asks a question to the class?",
-              "In your region, what actions do students usually need to request permission from a teacher to do during class time? Name two of the most common examples.",
-              "In your region, how are students expected to respond when a teacher takes attendance?",
-              "In your region, how do students typically address school principals or head teachers, and how does this differ—if at all—from addressing regular teachers?",
-              "In your region, what types of punishments or disciplinary actions are commonly used by teachers when students break classroom rules or misbehave?",
-              "In your region, what is the common expectation regarding students standing or sitting when speaking to a teacher during class?",
-              "In your region, what kinds of classroom tasks or responsibilities are typically assigned by teachers to students (e.g., distributing materials, cleaning the board)?",
-              "In your region, what behaviors are automatically interpreted as rudeness or defiance toward a teacher, even if nothing is said? Please specify two."
+              "In your region, what types of punishments or disciplinary actions are commonly used by teachers when students break classroom rules or misbehave?"
             ]
           },
           {
             "topic": "Student Extracurricular Activities",
             "questions": [
-              "In your region, what are the most common after-school activities that students typically engage in outside of formal school hours? Please name two.",
-              "In your region, what are the four most common extracurricular activities offered within schools?",
               "In your region, are certain types of extracurricular activities commonly expected or required for university or college admission? If so, which ones?",
-              "In your region, what cultural or traditional activities are commonly offered as part of school extracurricular programs?",
-              "In your region, what extracurricular activities related to science and technology are most commonly available to students?",
-              "In your region, what opportunities do students typically have to start their own clubs or groups in school, and what types of student-led activities are most common?",
-              "In your region, what kinds of community service or volunteering activities are commonly included in school-sponsored extracurricular programs?",
-              "In your region, what types of student leadership roles are typically offered to students?",
               "In your region, during which periods of the school year do students typically pause or reduce participation in extracurricular activities?",
-              "In your region, what national or international competitions are schools most likely to encourage student participation in as part of extracurricular involvement?",
-              "In your region, how are extracurricular activities usually scheduled in relation to academic classes?",
-              "In your region, what are the most commonly played sports in schools as part of extracurricular offerings? Please name three.",
-              "In your region, what types of extracurricular activities are commonly organized around national holidays or cultural celebrations?",
-              "In your region, how do schools typically recognize or reward students for participation or achievement in extracurricular activities?",
-              "In your region, who is usually responsible for organizing and supervising extracurricular activities in schools?",
-              "In your region, what are the common school events or festivals where students are expected to perform or display their extracurricular skills?"
+              "In your region, who is usually responsible for organizing and supervising extracurricular activities in schools?"
             ]
           }
         ]
@@ -541,298 +137,87 @@
     ]
   },
   {
-    "category": "Clothing and adornment",
+    "category": "Festivals and Rituals",
     "subcategories": [
       {
-        "subcategory": "Special garments",
+        "subcategory": "Organized ceremonial",
         "topics": [
           {
-            "topic": "Special Occasion Clothing",
+            "topic": "Engaging with Religious Music and Dance",
             "questions": [
-              "In your region, what is the traditional attire for the bride during a wedding ceremony?",
-              "In your region, what is the traditional color of the bride’s outfit?",
-              "In your region, what is the traditional attire for the groom during a wedding ceremony?",
-              "In your region, what is the traditional outfit associated with the harvest festival of your region?",
-              "In your region, what is the traditional outfit worn by women during the most prominent festival (except harvest) in your culture? Name the festival and the outfit worn.",
-              "In your region, what is the traditional outfit worn by men during the most prominent festival (except harvest) in your culture? Name the festival and the outfit worn.",
-              "In your region, what is the typical attire worn by the child during its naming ceremony?",
-              "In your region, what would be the appropriate attire for a woman to wear to a religious establishment?",
-              "In your region, what would be the appropriate attire for a man to wear to a religious establishment?",
-              "In your region, what is the appropriate attire for a woman attending a funeral?",
-              "In your region, what is the appropriate attire for a man attending a funeral?",
-              "In your region, what type of attire is considered appropriate for a university graduation ceremony for a women?",
-              "In your region, what is the traditional attire for a woman attending a formal business event?",
-              "In your region, what is the traditional attire for a man attending a formal business event?",
-              "In your region, what fabrics are seen as auspicious for celebration wear? Please name two.",
-              "In your region, what is the appropriate attire worn by government officials or public servants during national celebrations or flag-hoisting events?"
+              "In your region, what special attire is traditionally worn by women when performing the traditional dance associated with your culture?",
+              "In your region, what are the common settings or locations where traditional religious music and dance are typically performed?",
+              "In your region, if applicable, what is the common prop used during the traditional music performance?"
             ]
           },
           {
-            "topic": "Headgear and Footwear Norms",
+            "topic": "Timing of Ceremonies",
             "questions": [
-              "In your region, what types of head coverings are traditionally worn by brides during wedding ceremonies that are not part of everyday attire?",
-              "In your region, what types of head coverings are traditionally worn by grooms during wedding ceremonies that are not part of everyday attire?",
-              "In your region, what special types of footwear are typically worn by grooms during wedding ceremonies that differ from everyday footwear?",
-              "In your region, what traditional footwear is commonly worn by brides during wedding ceremonies?",
-              "In your region, what are the common cultural norms regarding footwear when entering religious spaces?",
-              "In your region, what types of head coverings are typically worn by women during funeral ceremonies?",
-              "In your region, what types of head coverings are typically worn by men during funeral ceremonies?",
-              "In your region, what types of headgear are commonly worn during religious festivals by women that are not part of regular daily wear?",
-              "In your region, what types of headgear are commonly worn during religious festivals by men that are not part of regular daily wear?",
-              "In your region, what types of formal footwear are commonly worn by men that are not part of everyday use?",
-              "In your region, what types of formal footwear are commonly worn by women that are not part of everyday use?",
-              "In your region, what materials are commonly preferred for formal footwear for men or women, and how do they differ from materials used in daily footwear?",
-              "In your region, what traditional types of footwear or footgear are associated with cultural performances but not worn in daily life?",
-              "In your region, what types of headgear are commonly worn by religious leaders that are not part of everyday attire?",
-              "In your region, what types of footwear are traditionally handmade or handcrafted and reserved for special occasions or ceremonial use?",
-              "In your region, what specific types of headgear are commonly worn during pilgrimages or religious journeys by women that are not worn at regular religious services?",
-              "In your region, what specific types of headgear are commonly worn during pilgrimages or religious journeys by men that are not worn at regular religious services?",
-              "In your region, what types of headgear are worn by political or community leaders during formal public events?",
-              "In your region, what types of head coverings are commonly worn by widows or mourners during extended periods of mourning that differ from daily headwear?",
-              "In your region, what headgear is traditionally worn during national or military commemorations that is not used in everyday settings?"
+              "In your region, what types of common sources, such as religious texts, calendars, or astrological systems, are used to determine the best times for important events?",
+              "In your region, what are the most commonly used terms or names for inauspicious periods in the local calendar system?"
             ]
           }
         ]
       },
       {
-        "subcategory": "Ornament",
+        "subcategory": "Rest days and holidays",
         "topics": [
           {
-            "topic": "Ornamental Attire and Status Indication",
+            "topic": "Commemoration of Personal Milestones",
             "questions": [
-              "In your region, which gemstones or ornamental stones are most commonly associated with wealth or high social rank? Please name two most common ones.",
-              "In your region, which metals are most commonly associated with wealth or high social rank?  Please name two most common ones.",
-              "In your region, what specific ornaments worn by a bride are seen as indicators of her family's social status? Please name two most common ones.",
-              "In your region, what specific ornaments worn by a groom during weddings reflect his family's social status? Please name two most common ones.",
-              "In your region, which ornaments worn by women are commonly seen as symbols of higher social status? Please name two most common ones.",
-              "In your region, which ornaments worn by men are commonly seen as symbols of higher social status? Please name two most common ones.",
-              "In your region, what types of ornaments are commonly passed down through generations as symbols of family heritage or status? Please name two most common ones.",
-              "In your region, which traditional ornaments are widely recognized as symbols of high status within the community? Please name two most common ones.",
-              "In your region, what types of ornaments are typically worn by children from high-status families during special events? Please name two most common ones.",
-              "In your region, what types of head ornaments or hair accessories worn by women are considered markers of higher social class? Please name two most common ones.",
-              "In your region, what types of head ornaments or hair accessories worn by men are considered markers of higher social class? Please name two most common ones.",
-              "In your region, what types of ornaments are typically worn by women during high-status family celebrations other than weddings? Please mention in detail three most common ones.",
-              "In your region, what types of ornaments are typically worn by men during high-status family celebrations other than weddings? Please mention in detail three most common ones.",
-              "In your region, what kinds of ornaments are most often worn in large quantities by women during important social functions? Please specify the most common one.",
-              "In your region, what kinds of ornaments are most often worn in large quantities by men during important social functions? Please specify the most common one.",
-              "In your region, what types of ornaments are commonly gifted at weddings or major events to reflect the giver’s social standing? Please name two most common ones.",
-              "In your region, what types of ornaments are worn by government or community leaders, dignitaries, or respected elders? Please name two most common ones."
+              "In your region, what are the four most common birthdays considered most important in a person’s life, and why are they significant?",
+              "In your region, how are professional milestones such as promotions, retirements, or job appointments typically celebrated? Please name one or two examples.",
+              "In your region, what traditional rituals or practices are followed during a child’s first haircut? Please name two."
             ]
           },
           {
-            "topic": "Occasions for Wearing Specific Ornaments",
+            "topic": "Conceptualization of Holidays",
             "questions": [
-              "In your region, what types of ornaments are traditionally worn by a bride during wedding ceremonies? Name the two most common ones.",
-              "In your region, what types of ornaments are traditionally worn by a groom during wedding ceremonies? Name the two most common ones.",
-              "In your region, what is the most common ornament worn by a woman to indicate marital status?",
-              "In your region, what is the most common ornament worn by a man to indicate marital status?",
-              "In your region, what specific ornaments are traditionally given to a newborn as part of cultural customs? Please name two most common ones.",
-              "In your region, what types of ornaments are typically avoided by women during mourning periods or at funerals? Please name two most common ones.",
-              "In your region, what types of ornaments are typically avoided by men during mourning periods or at funerals? Please name two most common ones.",
-              "In your region, what types of ornaments are commonly avoided by women while travelling or visiting crowded public places? Please name two most common ones.",
-              "In your region, what types of ornaments are commonly avoided by men while travelling or visiting crowded public places? Please name two most common ones.",
-              "In your region, what types of ornaments are traditionally believed to bring good luck or offer protection? Please name two most common ones.",
-              "In your region, what ornaments are commonly worn by women during major religious festivals or celebrations? Please specify two most common ones.",
-              "In your region, what ornaments are commonly worn by men during major religious festivals or celebrations? Please specify two most common ones.",
-              "In your region, what ornaments are commonly worn by women on a daily basis? Please specify two most common ones.",
-              "In your region, what ornaments are commonly worn by men on a daily basis? Please specify two most common ones.",
-              "In your region, what are two most common ornaments worn by the child during its naming ceremony (excluding those gifted to the child)?",
-              "In your region, what types of ornaments are typically worn during religious pilgrimages or long-distance spiritual journeys by women? Please specify the most common ornament.",
-              "In your region, what types of ornaments are typically worn during religious pilgrimages or long-distance spiritual journeys by men? Please specify the most common ornament.",
-              "In your region, what types of ornaments are commonly worn by a child during their first birthday celebration? Please name two most common ones."
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "category": "Food processing and consumption",
-    "subcategories": [
-      {
-        "subcategory": "Food preparation",
-        "topics": [
-          {
-            "topic": "Food Preparation Techniques",
-            "questions": [
-              "In your region, what is the traditional method for making yogurt at home without using store-bought cultures?",
-              "In your region, what is the most traditional way to make ghee from butter or cream at home?",
-              "In your region what are the traditional tools utilized for grinding spices for food preparation?",
-              "In your region, what are the two most common techniques for marinating meat for daily meals?",
-              "In your region, how are pickles typically prepared and stored?",
-              "In your region, how is coconut milk traditionally extracted from fresh coconut?",
-              "In your region, what are the usual steps for cleaning and marinating fish before cooking?",
-              "In your region, how are leafy greens usually washed and prepared for cooking?",
-              "In your region, how is tea most commonly prepared, and what is usually added during the process?",
-              "In your region, how is rice typically prepared before cooking?",
-              "In your region, what traditional methods are used to ferment batter for foods like idli or dosa?",
-              "In your region, how is paneer usually prepared and stored after being made at home?",
-              "In your region, how is oil traditionally extracted from seeds or nuts for home use?",
-              "In your region, what is the most common method used to prepare lentils like dal before cooking?",
-              "In your region what are typical methods used for preserving food for long periods without using a refrigerator?",
-              "In your region what types of stove or cooking setup is used for making traditional dishes?",
-              "In your region, what is the most common traditional method for drying food items, like chillies, before storage?"
+              "In your region, what is the most widely celebrated festival or holiday known for its grandeur and elaborate traditions?",
+              "In your region, what holiday is dedicated to honoring children and what is its origin?",
+              "In your region, what are the two most common holidays that are believed to bring good fortune or spiritual protection?"
             ]
           },
           {
-            "topic": "Cultural Recipes and Ingredients",
+            "topic": "Religious Taboos on Holidays",
             "questions": [
-              "In your region, how are traditional recipes usually passed down, example through demonstration, oral instruction, or written notes?",
-              "In your region, what food item is considered essential during major religious festivals in your region? Name two major festivals and two associated food items for each.",
-              "In your region, what are two common ingredients used in home-cooked remedies believed to promote healing?",
-              "In your region, what cooking methods are considered traditional or culturally unique, such as cooking in clay pots or over woodfires?",
-              "In your region, what dish is traditionally prepared during harvest festivals, and what are its two main ingredients?",
-              "In your region, what traditional dish is prepared during marriage ceremonies, and what are its most essential ingredients?",
-              "In your region, what are two traditional dishes prepared for childbirth-related rituals, and what are their key ingredients?",
-              "In your region, what are two traditional dishes prepared for new year related rituals, and what are their key ingredients?",
-              "In your region, what is a traditional beverage served during festivals, and what two ingredients define its flavor?",
-              "In your region, what food ceremony is traditionally associated with a major festival? Please name both the ceremony and the festival it belongs to.",
-              "In your region, what is a dish made during fasting days, and what are two ingredients typically used?",
-              "In your region, what is a traditional dish commonly offered as blessed food?",
-              "In your region, what food item or meal is traditionally used to break a religious fast?",
-              "In your region, what is the most common traditional dish prepared by a daughter-in-law when she first cooks for the family after marriage?",
-              "In your region, what dish is traditionally prepared when inaugurating a new kitchen or stove, and what two ingredients are always included?"
+              "In your region, what days of the week require abstinence from certain foods or drinks? Please name the day and the items restricted.",
+              "In your region, what are two holidays that require waking early or staying up late for a specific ritual? Please name the holidays and describe the custom."
+            ]
+          },
+          {
+            "topic": "Secular Festival Practices",
+            "questions": [
+              "In your region, what are two things people use to decorate the entrance of the home during a housewarming ceremony?",
+              "In your region, what are the most commonly used colors for decorating during festivals?"
             ]
           }
         ]
       },
       {
-        "subcategory": "Diet",
+        "subcategory": "Ritual",
         "topics": [
           {
-            "topic": "Staple Food Consumption",
+            "topic": "Pilgrimage Practices",
             "questions": [
-              "In your region, what is the most typical source of dietary protein in everyday meals?",
-              "In your region, which type of bread is most commonly eaten as an accompaniment?",
-              "In your region, what are two most common spices typically added to everyday staple dishes?",
-              "In your region, what type of cooking oil is most commonly used for preparing daily meals?",
-              "In your region, which type of lentil is most frequently used in home-cooked meals?",
-              "In your region, what are two common vegetables eaten alongside staple grains in daily meals?",
-              "In your region, what is the most commonly eaten breakfast dish?",
-              "In your region, what is the most commonly eaten snack alongside tea or coffee?",
-              "In your region, what is most commonly eaten animal protein in your traditional dishes?",
-              "In your region, what is the most common accompaniment served with rice?",
-              "In your region, what is the most commonly used flour in daily cooking?",
-              "In your region, what is the most common drink served with meals at home?",
-              "In your region, what type of rice is most commonly used in everyday meals?",
-              "In your region, what type of millet, if any, is commonly used in daily meals?",
-              "In your region, what type of pickled or fermented food is regularly eaten with meals at home?"
+              "In your region, what are the common time(s) of the year that pilgrimages are most commonly undertaken?",
+              "In your region, what are the cultural expectations for a person after completing a pilgrimage? Please name one or two expected actions or behaviors.",
+              "In your region, what types of offerings are commonly carried by pilgrims to present at the pilgrimage site?"
             ]
           },
           {
-            "topic": "Seasonal Diet Modifications",
+            "topic": "Ritual Gestures",
             "questions": [
-              "What foods are commonly consumed in your region during summer to reduce body heat? Specify at least two most common ones.",
-              "What types of warm or energy-rich foods are typically prepared in winter across your region? Specify at least two most common ones.",
-              "What traditional drinks or beverages are commonly consumed in summer to stay cool? Specify at least two most common ones.",
-              "What kinds of foods are commonly associated with springtime festivals in your region? Specify the most common.",
-              "What kinds of desserts are only prepared during certain seasons? Please specify the dessert and the season it is associated with.",
-              "Which spices or herbs are used seasonally? Specify the common herbs associated with the seasons.",
-              "What types of snacks are commonly prepared at home during the monsoon? Specify at least two most common ones.",
-              "What traditional foods are believed to help with seasonal allergies or throat irritation in your region?",
-              "What types of vegetables are commonly used in everyday meals during the summer? Specify at least two most common.",
-              "What types of vegetables are commonly used in everyday meals during the winter? Specify at least two most common.",
-              "What types of vegetables are commonly used in everyday meals during the monsoon season? Specify at least two most common.",
-              "What types of vegetables are commonly used in everyday meals during the spring season? Specify at least two most common.",
-              "What foods are commonly avoided during the summer because they are considered too heat-inducing? Specify at least two most common.",
-              "What traditional drinks or beverages are commonly consumed in winter? Specify at least two most common ones.",
-              "What traditional drinks or beverages are commonly consumed in the monsoon season? Specify at least two most common ones."
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "category": "Communication",
-    "subcategories": [
-      {
-        "subcategory": "Gestures & Signs",
-        "topics": [
-          {
-            "topic": "Social Expression of Emotions",
-            "questions": [
-              "In your region, what is the most common way people express affection without using words?",
-              "In your region, what is the most common way to convey an apology nonverbally?",
-              "In your region, what common gestures or facial expressions show confusion or lack of understanding?",
-              "In your region, what is the most common way sympathy or condolence is expressed without speaking?",
-              "In your region, what common gestures are used to show admiration or praise?",
-              "In your region, how do people most commonly nonverbally express embarrassment or shame?",
-              "In your region, how do people most commonly show nervousness or anxiety through body language?",
-              "In your region, what is the most common way people show pride or accomplishment through gestures or body language?",
-              "In your region, what are the common hand gestures done to ward off evil?",
-              "In your region, how is deep thought shown nonverbally?",
-              "In your region, how do people commonly signal they are full after a meal without speaking?",
-              "In your region, what common gestures indicate a need for help or assistance?",
-              "In your region, how do people commonly indicate they are leaving or saying goodbye?",
-              "In your region, how is surprise or shock commonly shown through gestures?",
-              "In your region, how do people commonly and nonverbally express grief or sadness?",
-              "In your region, what common gestures indicate agreement or affirmation?"
+              "In your region, what is the traditional gesture performed to express gratitude during or after a religious ceremony?",
+              "In your region, what gesture is performed when asking for forgiveness during a ritual or religious setting?"
             ]
           },
           {
-            "topic": "Non-Verbal Expression of Respect or Disrespect",
+            "topic": "Symbolic Act Performance",
             "questions": [
-              "In your region, what is the most common nonverbal gesture used to show respect to elders?",
-              "In your region, what nonverbal actions are considered disrespectful when interacting with elders?",
-              "In your region, what hand gestures are considered offensive or inappropriate in social settings? Please describe two.",
-              "In your region, what are common nonverbal ways to show respect to someone senior in the workplace?",
-              "In your region, what gestures are typically used to show respect to guests upon their arrival?",
-              "In your region, what gestures are commonly used to show respect toward public officials?",
-              "In your region, what are the typical gestures used to show respect to soldiers or members of the military?",
-              "In your region, what gestures or actions are used to show respect for the national flag or anthem?",
-              "In your region, how is nonverbal respect commonly shown to someone giving a public speech or presentation?",
-              "In your region, what is the respectful nonverbal gesture used when ending a conversation with someone older or senior?",
-              "In your region, what is the common nonverbal way to respectfully decline an offer made by someone?",
-              "In your region, what is the usual nonverbal gesture used to excuse oneself?",
-              "In your region, what gesture is typically used to silently invite someone senior to speak or proceed first?",
-              "In your region, what is the nonverbal way of signaling that you are giving full attention to someone while they speak?",
-              "In your region, what is the respectful way to accept money from someone?"
-            ]
-          }
-        ]
-      },
-      {
-        "subcategory": "Dissemination of News and Information",
-        "topics": [
-          {
-            "topic": "Navigating the \"Grapevine\"",
-            "questions": [
-              "In your region, what two social media platforms are most commonly used to share informal or local news?",
-              "In your region, which two festivals or community gatherings are commonly used to circulate news or community updates?",
-              "In your region, what two digital platforms are most commonly used by schools to share informal updates or announcements with parents or students?",
-              "In your region, what two small businesses or local services are most promoted on social media, and on which platform?",
-              "In your region, what is a digital platform used by religious institutions to share information about religious practices?",
-              "In your region, what is the most common digital platform used by residential groups or housing societies to share informal updates?",
-              "In your region, what digital platform is most commonly used by neighborhood shops or vendors to announce promotions or new stock?",
-              "In your region, what is the most common platform or method used to spread news of local strikes or transportation disruptions?",
-              "In your region, what digital platform is most commonly used to circulate missing person or lost pet notices?",
-              "In your region, what platform is most commonly used to alert residents about nearby construction or roadwork updates?",
-              "In your region, how do residents most commonly find out about potential power of water shortages?",
-              "In your region, what are the two most commonly used platforms for getting informal recommendations about places to visit in a new city or town?",
-              "In your region, what platform is most commonly used to rent a house or an apartment?",
-              "In your region, what platform is most commonly used by families to share informal news about engagements, weddings, or childbirth?",
-              "In your region, what is the common platform used to order takeout/food?"
-            ]
-          },
-          {
-            "topic": "Trustworthiness of Information Sources",
-            "questions": [
-              "In your region, which two TV national news channels are most widely regarded as reliable sources of information?",
-              "In your region, which two TV local news channels are most widely regarded as reliable sources of information?",
-              "In your region, which two newspapers are most trusted for accurate reporting?",
-              "In your region, which newspaper is unique to your region?",
-              "In your region, which magazines are commonly read by school-aged children for general knowledge or news?",
-              "In your region, how does trust in local-language media compare with trust in English-language media? Name one trusted local-language source.",
-              "In your region, what traits or qualities make a news source widely trusted in the community? Mention two common ones.",
-              "In your region, which international news outlets are most often followed for information about the world?",
-              "In your region, which two radio stations are most commonly listened to?",
-              "In your region, which two digital news websites or apps are most commonly visited for reliable daily updates?",
-              "In your region, which two news anchors or journalists are widely regarded as trustworthy public figures?",
-              "In your region, which two social media accounts or pages are widely followed for local news and announcements?",
-              "In your region, what are the two most common platforms used to get real time updates on ongoing sports matches?",
-              "In your region, what is a common source used to track real-time election updates?",
-              "In your region, what are two common magazines people normally subscribe to?"
+              "In your region, what is one commonly performed religious ritual, and what are the step-by-step actions involved in performing it correctly?",
+              "In your region, what is the correct way to ring a prayer or temple bell during worship, including how many times and in what sequence?",
+              "In your region, what is the most common type of ritual powders or pastes applied during rituals?"
             ]
           }
         ]
@@ -846,43 +231,18 @@
         "subcategory": "Credit",
         "topics": [
           {
-            "topic": "Negotiating Credit Advances and Discounts",
+            "topic": "Navigating Installment Buying",
             "questions": [
-              "In your region, what two common types of products are most commonly associated with price negotiation before purchase?",
-              "In your region, what two common types of services are most commonly associated with price negotiation before purchase?",
-              "In your region, what two common kinds of goods are most likely to be discounted when bought in bulk?",
-              "In your region, which social groups or professions, if any, are most commonly offered discounts or allowed to buy on credit?",
-              "In your region, for which two common types of products or services are loyal or repeat customers most likely to receive discounts?",
-              "In your region, for which types of professional services is price negotiation considered acceptable (e.g., tutoring, private medical, legal consultation, etc.)?",
-              "In your region, in what most common situation do people typically try to negotiate interest rates with banks or lenders (e.g., for home loans, credit cards, etc.)?",
-              "In your region, during which times of the year are discounts most commonly offered? Please specify two typical occasions or seasons.",
-              "In your region, which markets or localities are most known for active bargaining culture? Please mention by name or type.",
-              "In your region, what aspects of the purchase are usually negotiated when buying a vehicle or property (e.g., price, registration fees, add-ons)?",
-              "In your region, which two products are most likely to see a small discount if purchased toward the end of the day?",
-              "In your region, what kind of freebies or items are typically offered if change is unavailable? Please specify two most common ones.",
-              "In your region, what kinds of relationships most commonly lead to informal discounts? Specify two most common.",
-              "In your region, what types of products are most commonly offered at a discount only during festivals, but not at other times of the year? Specify two most common.",
-              "In your region, what types of shops are least likely to allow price negotiation? Please name two types."
+              "In your region, what two personal factors most affect eligibility for an installment plan? Please name two common ones (e.g., monthly income, employment type).",
+              "In your region, which two types of sellers are most likely to offer zero-interest installment plans?"
             ]
           },
           {
-            "topic": "Navigating Installment Buying",
+            "topic": "Negotiating Credit Advances and Discounts",
             "questions": [
-              "In your region, what are the two most commonly purchased items through installment plans?",
-              "In your region, what types of sellers or providers most frequently advertise installment offers? (e.g., appliance stores, coaching centers)",
-              "In your region, how are installment schemes for electronics, smartphones, or gold typically structured? (e.g., duration, interest, down payment)",
-              "In your region, what kinds of education or health-related expenses are most commonly paid through installment plans? Please give two examples.",
-              "In your region, during which times of year are installment purchases most common? Please name two such occasions (e.g., festivals, school admissions).",
-              "In your region, what two personal factors most affect eligibility for an installment plan? Please name two common ones (e.g., monthly income, employment type).",
-              "In your region, what installment terms are most commonly negotiated—interest rate, down payment, or repayment period?",
-              "In your region, what types of documentation are most commonly required to approve an installment purchase?",
-              "In your region, how do sellers or lenders usually remind customers about upcoming installment payments?",
-              "In your region, what kinds of penalties are typically applied when someone misses an installment payment?",
-              "In your region, what is the most common duration offered for installment plans on high-cost goods like electronics, houses, or vehicles?",
-              "In your region, which two types of sellers are most likely to offer zero-interest installment plans?",
-              "In your region, what two types of goods are least likely to be available for purchase through installment plans?",
-              "In your region, what are the two most common reasons someone might be denied an installment plan by a seller or provider?",
-              "In your region, what form of installment payment is most commonly used—cash, bank transfer, or digital wallet?"
+              "In your region, what two common kinds of goods are most likely to be discounted when bought in bulk?",
+              "In your region, which markets or localities are most known for active bargaining culture? Please mention by name or type.",
+              "In your region, what types of shops are least likely to allow price negotiation? Please name two types."
             ]
           }
         ]
@@ -891,43 +251,175 @@
         "subcategory": "Saving & Investment",
         "topics": [
           {
-            "topic": "Safekeeping of Valuables",
+            "topic": "Preferable Investment Forms",
             "questions": [
-              "In your region, what are the two most common places where people store cash or gold at home?",
-              "In your region, which valuables are most commonly kept in a bank locker or safe deposit box?",
-              "In your region, what are the most common methods used to protect important documents like property papers or wills?",
-              "In your region, which valuables are most commonly insured, and for what types of risks?",
-              "In your region, what digital methods are commonly used to safeguard important records or documents (e.g., cloud storage, scanned copies)?",
-              "In your region, what are two traditional hiding places used in homes for storing valuables discreetly?",
-              "In your region, what are the two most common materials or containers used to store valuables safely at home (e.g., metal boxes, wooden lockers)?",
-              "In your region, what are two common methods used to transport valuables like jewelry or cash securely when travelling?",
-              "In your region, how are keys or passwords to lockers or safes typically stored?",
-              "In your region, what small daily habits are followed to ensure valuables remain secure inside the home?",
-              "In your region, what are two common visual or physical signs used to indicate that a storage area (like a cupboard or drawer) contains valuables?",
-              "In your region, what are two common precautions taken when strangers or workers visit the home to protect valuables?",
-              "In your region, what are the two most common situations when people temporarily move valuables out of the home for safekeeping?",
-              "In your region, what are two common reasons people choose not to store valuables in a bank locker or safe deposit box?",
-              "In your region, what two types of people in a household are usually given the responsibility of managing access to valuables?"
+              "In your region, what are two most common physical assets (e.g., jewelry, land deeds) passed down as inherited family wealth?",
+              "In your region, what are the two most common types of property (e.g., residential, agricultural) used as long-term investments?"
             ]
           },
           {
-            "topic": "Preferable Investment Forms",
+            "topic": "Safekeeping of Valuables",
             "questions": [
-              "In your region, what are the two most commonly preferred forms of long-term investment (e.g., gold, land, property)?",
-              "In your region, what two types of ancestral or agricultural assets (e.g., land, livestock) are commonly maintained as investments?",
-              "In your region, what two types of group-based savings or investment systems (e.g., chit funds, rotating savings) are commonly used?",
-              "In your region, what two types of spiritual offerings or donations are culturally understood as ways to attract future prosperity?",
-              "In your region, what are the two most significant life events during which families make their largest investments?",
-              "In your region, what are two most common physical assets (e.g., jewelry, land deeds) passed down as inherited family wealth?",
-              "In your region, what two forms of investment are considered the safest during times of economic uncertainty?",
-              "In your region, what are the two most common forms of investment used to prepare for children's futures (e.g., education, marriage)?",
-              "In your region, what two types of investments are most commonly made by people nearing retirement?",
-              "In your region, what two forms of investment are widely believed to hold or increase value over several generations?",
-              "In your region, what two kinds of physical assets are most commonly displayed as signs of financial success?",
-              "In your region, what are the two most common types of property (e.g., residential, agricultural) used as long-term investments?",
-              "In your region, what two types of durable goods (e.g., vehicles, machinery) are often treated as investment assets?",
-              "In your region, what two types of trees or crops are commonly planted because they are seen as long-term investments?",
-              "In your region, what types of infrastructure (e.g., wells, irrigation systems, shops, etc.) are commonly built as shared family investments?"
+              "In your region, what are the most common methods used to protect important documents like property papers or wills?",
+              "In your region, how are keys or passwords to lockers or safes typically stored?",
+              "In your region, what two types of people in a household are usually given the responsibility of managing access to valuables?"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Food processing and consumption",
+    "subcategories": [
+      {
+        "subcategory": "Diet",
+        "topics": [
+          {
+            "topic": "Seasonal Diet Modifications",
+            "questions": [
+              "What foods are commonly consumed in your region during summer to reduce body heat? Specify at least two most common ones.",
+              "What types of snacks are commonly prepared at home during the monsoon? Specify at least two most common ones.",
+              "What foods are commonly avoided during the summer because they are considered too heat-inducing? Specify at least two most common."
+            ]
+          },
+          {
+            "topic": "Staple Food Consumption",
+            "questions": [
+              "In your region, what type of cooking oil is most commonly used for preparing daily meals?",
+              "In your region, what is the most common accompaniment served with rice?"
+            ]
+          }
+        ]
+      },
+      {
+        "subcategory": "Food preparation",
+        "topics": [
+          {
+            "topic": "Cultural Recipes and Ingredients",
+            "questions": [
+              "In your region, how are traditional recipes usually passed down, example through demonstration, oral instruction, or written notes?",
+              "In your region, what are two traditional dishes prepared for childbirth-related rituals, and what are their key ingredients?",
+              "In your region, what food item or meal is traditionally used to break a religious fast?"
+            ]
+          },
+          {
+            "topic": "Food Preparation Techniques",
+            "questions": [
+              "In your region, how is coconut milk traditionally extracted from fresh coconut?",
+              "In your region, how is paneer usually prepared and stored after being made at home?"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Interpersonal Relations",
+    "subcategories": [
+      {
+        "subcategory": "Etiquette",
+        "topics": [
+          {
+            "topic": "Eating, drinking, and smoking etiquette",
+            "questions": [
+              "In your region, what holidays are the two most common holidays during which smoking and drinking are widespread?",
+              "In your region, what are the two most common customs followed immediately after finishing a meal?",
+              "In your region, what are the two most common types of food that are considered inappropriate to waste?"
+            ]
+          },
+          {
+            "topic": "Greeting and Salutation Etiquette",
+            "questions": [
+              "In your region, how is a religious leader or spiritual figure traditionally greeted? Name common phrases and gestures.",
+              "In your region, if one receives a greeting from a stranger, is it common to respond? If yes, how are they commonly responded to?"
+            ]
+          }
+        ]
+      },
+      {
+        "subcategory": "Gift giving",
+        "topics": [
+          {
+            "topic": "Ceremonial gift giving",
+            "questions": [
+              "In your region, what are the three most common gifts for a wedding ceremony?",
+              "In your region, what two common souvenirs or gifts are brought back after a trip abroad?",
+              "In your region, what are the two most common gifts given to a newlywed couple by their friends or family?"
+            ]
+          },
+          {
+            "topic": "Gift Giving Etiquette",
+            "questions": [
+              "In your region, are return gifts expected? Name two occasions when they’re usually given.",
+              "In your region, what two materials or wrapping styles are most common for formal or traditional occasions?"
+            ]
+          }
+        ]
+      },
+      {
+        "subcategory": "Visiting and hospitality",
+        "topics": [
+          {
+            "topic": "Etiquette in the reception of visitors",
+            "questions": [
+              "In your region, what are the two most common things visitors do upon entering a home (excluding greetings)?",
+              "In your region, what are some traditional sweets or snacks that are typically prepared or bought when expecting guests? Please list 2 snacks and 2 sweets.",
+              "In your region, what are the two most common follow-up actions after a guest has visited your home?"
+            ]
+          },
+          {
+            "topic": "Occasions for visiting",
+            "questions": [
+              "In your region, what is the most common festival that involves visiting or celebrating with relatives?",
+              "In your region, on what two occasions do people visit teachers or mentors?",
+              "In your region, what two career events most often prompt visits from friends or family? Examples could include a promotion, retirement, opening a shop, etc."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Traffic and transport behavior",
+    "subcategories": [
+      {
+        "subcategory": "Streets and traffic",
+        "topics": [
+          {
+            "topic": "Adapting to Local Transportation Modes",
+            "questions": [
+              "In your region, what are the two most common public or local transportation methods used by students to commute to school or college?",
+              "In your region, what are the two most common ways people get to airports or railway stations?",
+              "In your region, what digital tools or systems are used to check delays or updates for public transport? Please specify the tool and the type of transport."
+            ]
+          },
+          {
+            "topic": "Understanding Local Traffic Regulations",
+            "questions": [
+              "In your region, which passengers in a car are most commonly expected to wear seatbelts (e.g., driver, front-seat passenger, back-seat passenger)?",
+              "In your region, is there usually a separate lane for cyclists? If not, where do cyclists typically ride?",
+              "In your region, what are two most common rules regarding child safety in vehicles, such as seating position or use of child restraints?"
+            ]
+          }
+        ]
+      },
+      {
+        "subcategory": "Transportation",
+        "topics": [
+          {
+            "topic": "Carrying Capacity of Transport",
+            "questions": [
+              "In your region, how do passengers usually arrange themselves when more than three people ride together in a standard three-seater auto-rickshaw?",
+              "In your region, how do people usually adjust themselves or their belongings when boarding already full public transport?"
+            ]
+          },
+          {
+            "topic": "Transport during Special Events",
+            "questions": [
+              "In your region, what temporary changes are made to transport when government officials or famous celebrities visit an area?",
+              "In your region, how do drivers usually decorate their commercial vehicles during major festivals?",
+              "In your region, during annual school functions or inter-school competitions, what transportation is typically arranged by schools for students?"
             ]
           }
         ]

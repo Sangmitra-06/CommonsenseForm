@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, ReactNode, useCallback, useRef } from 'react';
 import { FormState, UserInfo, QuestionResponse, Category, Progress } from '../types/index.ts';
 import { loadQuestionsData } from '../utils/helpers.ts';
 import * as api from '../services/api.ts';
@@ -97,7 +97,6 @@ interface FormContextType {
   saveResponse: (response: QuestionResponse) => Promise<void>;
   navigateToNext: () => void;
   navigateToPrevious: () => void;
-  navigateToPosition: (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => Promise<void>; // Add this line
   calculateProgress: () => number;
   getCurrentQuestion: () => string | null;
   getCurrentQuestionData: () => {
@@ -110,20 +109,24 @@ interface FormContextType {
   getTotalQuestionsInCurrentTopic: () => number;
   getCompletedQuestionsInCurrentTopic: () => number;
   loadUserSession: (sessionId: string) => Promise<void>;
-  resetSession: () => void; // Add this line
+  navigateToPosition: (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => Promise<void>;
+  resetSession: () => void;
 }
 
 const FormContext = createContext<FormContextType | undefined>(undefined);
 
 export function FormProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(formReducer, initialState);
+  const hasLoadedQuestions = useRef(false); // Prevent double loading
+  const isLoadingSession = useRef(false); // Prevent double session loading
 
-  // Load questions data only once on mount
-  // In the FormProvider component, update the useEffect that loads questions:
-
+  // Load questions data only once
   useEffect(() => {
+    if (hasLoadedQuestions.current) return; // Prevent double loading
+    
     const loadData = async () => {
       try {
+        hasLoadedQuestions.current = true;
         dispatch({ type: 'SET_LOADING', payload: true });
         dispatch({ type: 'SET_ERROR', payload: null });
         
@@ -133,21 +136,23 @@ export function FormProvider({ children }: { children: ReactNode }) {
         
         dispatch({ type: 'SET_QUESTIONS_DATA', payload: data });
         
-      
-      const totalQuestions = getTotalQuestions(data);
-      console.log('FormContext: Total questions calculated:', totalQuestions);
-      dispatch({ type: 'UPDATE_PROGRESS', payload: { totalQuestions } });
+        // Calculate total questions from the actual loaded data
+        const totalQuestions = getTotalQuestions(data);
+        console.log('FormContext: Total questions calculated:', totalQuestions);
+        
+        dispatch({ type: 'UPDATE_PROGRESS', payload: { totalQuestions } });
         
       } catch (error) {
         console.error('FormContext: Error loading questions:', error);
         dispatch({ type: 'SET_ERROR', payload: 'Failed to load questions data. Please refresh the page.' });
+        hasLoadedQuestions.current = false; // Allow retry
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false });
       }
     };
 
     loadData();
-  }, []); // Empty dependency array - only run once
+  }, []); // Keep empty dependency array
 
   // Calculate total questions
       const getTotalQuestions = (questionsData: Category[]): number => {
@@ -179,75 +184,100 @@ export function FormProvider({ children }: { children: ReactNode }) {
 
   // Update the loadUserSession function to recalculate total questions
 const loadUserSession = useCallback(async (sessionId: string) => {
-  try {
-    dispatch({ type: 'SET_LOADING', payload: true });
-    const user = await api.getUser(sessionId);
-    dispatch({ type: 'SET_SESSION_ID', payload: sessionId });
-    dispatch({ type: 'SET_USER_INFO', payload: user.userInfo });
+    if (isLoadingSession.current) return; // Prevent double loading
     
-    // Load responses first
-    const responses = await api.getUserResponses(sessionId);
-    dispatch({ type: 'SET_RESPONSES', payload: responses });
-    
-    // IMPORTANT: Recalculate total questions from current data, not from saved user data
-    // This ensures we use the latest question count even if questions were added/removed
-    const totalQuestions = getTotalQuestions(state.questionsData);
-    
-    // Update progress with recalculated total
-    const updatedProgress = {
-      ...user.progress,
-      totalQuestions, // Use the recalculated total, not the saved one
-      completedQuestions: responses.length // Update with actual response count
-    };
-    
-    dispatch({ type: 'UPDATE_PROGRESS', payload: updatedProgress });
-    dispatch({ type: 'SET_COMPLETED', payload: user.isCompleted });
-    
-    // Find the furthest question answered
-    let furthestPosition = {
-      categoryIndex: 0,
-      subcategoryIndex: 0,
-      topicIndex: 0,
-      questionIndex: 0
-    };
-
-    if (responses.length > 0) {
-      // Find the last answered question
-      const sortedResponses = responses.sort((a, b) => {
-        if (a.categoryIndex !== b.categoryIndex) return b.categoryIndex - a.categoryIndex;
-        if (a.subcategoryIndex !== b.subcategoryIndex) return b.subcategoryIndex - a.subcategoryIndex;
-        if (a.topicIndex !== b.topicIndex) return b.topicIndex - a.topicIndex;
-        return b.questionIndex - a.questionIndex;
-      });
-
-      const lastResponse = sortedResponses[0];
+    try {
+      isLoadingSession.current = true;
+      dispatch({ type: 'SET_LOADING', payload: true });
       
-      // Set position to the next question after the last answered
-      furthestPosition = {
-        categoryIndex: lastResponse.categoryIndex,
-        subcategoryIndex: lastResponse.subcategoryIndex,
-        topicIndex: lastResponse.topicIndex,
-        questionIndex: lastResponse.questionIndex + 1
+      console.log('FormContext: Loading user session...');
+      const user = await api.getUser(sessionId);
+      
+      dispatch({ type: 'SET_SESSION_ID', payload: sessionId });
+      dispatch({ type: 'SET_USER_INFO', payload: user.userInfo });
+      dispatch({ type: 'SET_COMPLETED', payload: user.isCompleted });
+      
+      // Load responses
+      console.log('FormContext: Loading user responses...');
+      const responses = await api.getUserResponses(sessionId);
+      console.log('FormContext: Responses loaded:', responses.length);
+      
+      dispatch({ type: 'SET_RESPONSES', payload: responses });
+      
+      // IMPORTANT: Recalculate total questions from current data
+      const totalQuestions = getTotalQuestions(state.questionsData);
+      
+      // Update progress with recalculated total
+      const updatedProgress = {
+        ...user.progress,
+        totalQuestions, // Use the recalculated total
+        completedQuestions: responses.length // Update with actual response count
       };
-
-      // TODO: Handle topic/subcategory/category boundaries
-      // For now, this basic logic should work
+      
+      dispatch({ type: 'UPDATE_PROGRESS', payload: updatedProgress });
+      
+      // Find the correct starting position
+      const nextPosition = findNextUnansweredQuestion(responses, state.questionsData);
+      console.log('FormContext: Setting position to:', nextPosition);
+      
+      dispatch({ type: 'SET_CURRENT_POSITION', payload: nextPosition });
+      
+    } catch (error) {
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to load user session' });
+      throw error;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+      isLoadingSession.current = false;
     }
+  }, [state.questionsData]);
 
-    dispatch({ type: 'SET_CURRENT_POSITION', payload: furthestPosition });
+  const findNextUnansweredQuestion = useCallback((responses: QuestionResponse[], questionsData: Category[]) => {
+    const answeredQuestions = new Set(responses.map(r => r.questionId));
     
-  } catch (error) {
-    dispatch({ type: 'SET_ERROR', payload: 'Failed to load user session' });
-    throw error;
-  } finally {
-    dispatch({ type: 'SET_LOADING', payload: false });
-  }
-}, [state.questionsData]); // Add questionsData as dependency
-
-  const resetSession = useCallback(() => {
-    localStorage.removeItem('culturalSurveySessionId');
-    dispatch({ type: 'RESET_FORM' });
+    // Iterate through all questions to find the first unanswered one
+    for (let categoryIndex = 0; categoryIndex < questionsData.length; categoryIndex++) {
+      const category = questionsData[categoryIndex];
+      
+      for (let subcategoryIndex = 0; subcategoryIndex < category.subcategories.length; subcategoryIndex++) {
+        const subcategory = category.subcategories[subcategoryIndex];
+        
+        for (let topicIndex = 0; topicIndex < subcategory.topics.length; topicIndex++) {
+          const topic = subcategory.topics[topicIndex];
+          
+          for (let questionIndex = 0; questionIndex < topic.questions.length; questionIndex++) {
+            const questionId = `${categoryIndex}-${subcategoryIndex}-${topicIndex}-${questionIndex}`;
+            
+            if (!answeredQuestions.has(questionId)) {
+              return {
+                categoryIndex,
+                subcategoryIndex,
+                topicIndex,
+                questionIndex
+              };
+            }
+          }
+        }
+      }
+    }
+    
+    // If all questions are answered, return the last position
+    if (questionsData.length > 0) {
+      const lastCategory = questionsData[questionsData.length - 1];
+      const lastSubcategory = lastCategory.subcategories[lastCategory.subcategories.length - 1];
+      const lastTopic = lastSubcategory.topics[lastSubcategory.topics.length - 1];
+      
+      return {
+        categoryIndex: questionsData.length - 1,
+        subcategoryIndex: lastCategory.subcategories.length - 1,
+        topicIndex: lastSubcategory.topics.length - 1,
+        questionIndex: lastTopic.questions.length - 1
+      };
+    }
+    
+    return { categoryIndex: 0, subcategoryIndex: 0, topicIndex: 0, questionIndex: 0 };
   }, []);
+
+  
 
 
   const saveResponse = useCallback(async (response: QuestionResponse) => {
@@ -271,30 +301,25 @@ const loadUserSession = useCallback(async (sessionId: string) => {
   }
 }, [state.responses, state.progress.completedQuestions]);
 
-const navigateToPosition = useCallback(async (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => {
-  try {
-    // Set the new position
-    dispatch({ type: 'SET_CURRENT_POSITION', payload: {
-      categoryIndex,
-      subcategoryIndex,
-      topicIndex,
-      questionIndex
-    }});
+// Add navigation function
+  const navigateToPosition = useCallback(async (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => {
+    const newPosition = { categoryIndex, subcategoryIndex, topicIndex, questionIndex };
+    dispatch({ type: 'SET_CURRENT_POSITION', payload: newPosition });
 
     // Save position to database
     if (state.sessionId) {
-      await api.updateUserProgress(state.sessionId, {
-        currentCategory: categoryIndex,
-        currentSubcategory: subcategoryIndex,
-        currentTopic: topicIndex,
-        currentQuestion: questionIndex
-      });
+      try {
+        await api.updateUserProgress(state.sessionId, {
+          currentCategory: categoryIndex,
+          currentSubcategory: subcategoryIndex,
+          currentTopic: topicIndex,
+          currentQuestion: questionIndex
+        });
+      } catch (error) {
+        console.error('Failed to save navigation progress:', error);
+      }
     }
-  } catch (error) {
-    console.error('Failed to navigate to position:', error);
-    dispatch({ type: 'SET_ERROR', payload: 'Failed to navigate to the selected question' });
-  }
-}, [state.sessionId]);
+  }, [state.sessionId]);
 
   const getCurrentQuestionData = useCallback(() => {
     const { categoryIndex, subcategoryIndex, topicIndex, questionIndex } = state.currentPosition;
@@ -462,22 +487,28 @@ const navigateToPrevious = useCallback(async () => {
     return completed;
   }, [state.currentPosition, state.questionsData, state.responses]);
 
-  const value: FormContextType = {
-    state,
-    dispatch,
-    createUserSession,
-    saveResponse,
-    navigateToNext,
-    navigateToPrevious,
-    calculateProgress,
-    getCurrentQuestion,
-    getCurrentQuestionData,
-    getTotalQuestionsInCurrentTopic,
-    getCompletedQuestionsInCurrentTopic,
-    loadUserSession,
-    navigateToPosition,
-    resetSession // Add this line
-  };
+ const resetSession = useCallback(() => {
+    localStorage.removeItem('culturalSurveySessionId');
+    dispatch({ type: 'RESET_FORM' });
+  }, []);
+
+  
+    const value: FormContextType = {
+      state,
+      dispatch,
+      createUserSession,
+      saveResponse,
+      navigateToNext,
+      navigateToPrevious,
+      calculateProgress,
+      getCurrentQuestion,
+      getCurrentQuestionData,
+      getTotalQuestionsInCurrentTopic,
+      getCompletedQuestionsInCurrentTopic,
+      loadUserSession,
+      navigateToPosition,
+      resetSession
+    };
 
   return (
     <FormContext.Provider value={value}>

@@ -513,14 +513,13 @@ export default function QuestionForm() {
                     className="text-sm mb-3 leading-relaxed"
                     style={{ color: 'var(--text-secondary)' }}
                   >
-                    Cultural commonsense refers to everyday beliefs, behaviors, values, and practices 
-                    that are perceived as "natural" and widely shared within a cultural group.
+                    Cultural commonsense, as conceptualized in anthropological and cognitive literature, refers to the set of everyday beliefs, behaviors, values, and practices that are perceived as “natural,” self-evident, and widely shared within a cultural group.
                   </p>
                   <p 
                     className="font-medium mb-3 text-sm"
                     style={{ color: 'var(--text-primary)' }}
                   >
-                    Does this question pertain to cultural commonsense in your region? *
+                    Would most people in your region know the answer to this question? *
                   </p>
                   
                   <div className="space-y-2">
@@ -694,17 +693,17 @@ function CelebrationModal({ celebration, onClose }: {
     topic: {
       icon: '🎯',
       title: 'Topic Completed!',
-      emoji: '🌱🌿✨',
+      emoji: '',
     },
     subcategory: {
       icon: '🏆',
       title: 'Subcategory Mastered!',
-      emoji: '🌿🎋🌟💫',
+      emoji: '',
     },
     category: {
       icon: '👑',
       title: 'Category Champion!',
-      emoji: '🌿🎋🌟💫✨🎯',
+      emoji: '',
     }
   };
 

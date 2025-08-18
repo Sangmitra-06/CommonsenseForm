@@ -16,32 +16,28 @@ function AppContent() {
   const [hasExistingSession, setHasExistingSession] = useState(false);
   const [existingSessionId, setExistingSessionId] = useState<string | null>(null);
 
-  // Wait for questions data to load before checking sessions
+  // Wait for questions data to load AND only check once
   useEffect(() => {
-    if (state.questionsData.length > 0 && !hasCheckedSession) {
+    if (state.questionsData.length > 0 && !hasCheckedSession && !state.isLoading) {
       const checkExistingSession = async () => {
+        console.log('App: Checking for existing session...');
         const savedSessionId = localStorage.getItem('culturalSurveySessionId');
-        console.log('Checking for existing session:', savedSessionId);
         
         if (savedSessionId) {
           try {
-            // Just check if the session exists, don't load it yet
             const response = await fetch(`http://localhost:5000/api/users/${savedSessionId}`);
             if (response.ok) {
               const userData = await response.json();
-              console.log('Found existing session:', userData);
+              console.log('App: Found existing session');
               
               if (userData.isCompleted) {
-                // If survey is completed, start fresh
                 localStorage.removeItem('culturalSurveySessionId');
                 setHasExistingSession(false);
               } else {
-                // Valid incomplete session found
                 setHasExistingSession(true);
                 setExistingSessionId(savedSessionId);
               }
             } else {
-              // Session doesn't exist on server, remove from localStorage
               localStorage.removeItem('culturalSurveySessionId');
               setHasExistingSession(false);
             }
@@ -58,7 +54,8 @@ function AppContent() {
 
       checkExistingSession();
     }
-  }, [state.questionsData.length, hasCheckedSession]);
+  }, [state.questionsData.length, state.isLoading, hasCheckedSession]);
+
 
   // Update stage based on form state
   useEffect(() => {
