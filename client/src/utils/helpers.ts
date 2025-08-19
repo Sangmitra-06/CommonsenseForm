@@ -110,8 +110,8 @@ export const validateAnswer = (answer: string): { isValid: boolean; message?: st
     return { isValid: false, message: 'Please provide an answer' };
   }
   
-  if (answer.trim().length < 10) {
-    return { isValid: false, message: 'Please provide a more detailed answer (at least 10 characters)' };
+  if (answer.trim().length < 4) {
+    return { isValid: false, message: 'Please provide a more detailed answer (at least 4 characters)' };
   }
   
   if (answer.length > 5000) {
@@ -123,7 +123,7 @@ export const validateAnswer = (answer: string): { isValid: boolean; message?: st
 
 export const shouldShowAttentionCheck = (questionCount: number): boolean => {
   // Re-enable attention checks every 15 questions
-  return questionCount > 0 && questionCount % 15 === 0;
+  return questionCount > 0 && questionCount % 5 === 0;
 };
 
 export const generateAttentionCheck = (
@@ -189,7 +189,7 @@ export const debounce = <T extends (...args: any[]) => any>(
   func: T,
   wait: number
 ): ((...args: Parameters<T>) => void) => {
-  let timeout: NodeJS.Timeout;
+  let timeout: ReturnType<typeof setTimeout>;
   
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);

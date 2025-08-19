@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from '../context/FormContext.tsx';
 import * as api from '../services/api.ts';
 
 export default function CompletionPage() {
   const { state, calculateProgress } = useForm();
+  const [actualTimeSpent, setActualTimeSpent] = useState<number>(0);
   const progress = calculateProgress();
 
   useEffect(() => {
@@ -18,80 +19,229 @@ export default function CompletionPage() {
       }
     };
 
+    // Calculate actual time spent from responses
+    const calculateActualTime = () => {
+      if (state.responses.size > 0) {
+        const responses = Array.from(state.responses.values());
+        
+        // Method 1: Sum of individual question times
+        const totalTimeFromResponses = responses.reduce((total, response) => {
+          return total + (response.timeSpent || 0);
+        }, 0);
+
+        // Method 2: Calculate from start time to now (if available)
+        const sessionDuration = state.startTime > 0 
+          ? Math.floor((Date.now() - state.startTime) / 1000)
+          : 0;
+
+        // Method 3: Calculate from first response to last response
+        const timestamps = responses
+          .map(r => new Date(r.timestamp).getTime())
+          .sort((a, b) => a - b);
+        
+        const firstResponseTime = timestamps[0];
+        const lastResponseTime = timestamps[timestamps.length - 1];
+        const responseSpanTime = firstResponseTime && lastResponseTime 
+          ? Math.floor((lastResponseTime - firstResponseTime) / 1000)
+          : 0;
+
+        console.log('Time calculations:', {
+          totalTimeFromResponses,
+          sessionDuration,
+          responseSpanTime,
+          responseCount: responses.length
+        });
+
+        // Use the most reasonable time calculation
+        // Usually responseSpanTime + some buffer is most accurate
+        const estimatedTime = Math.max(
+          totalTimeFromResponses,
+          responseSpanTime,
+          sessionDuration * 0.8 // Assume 80% of session time was active
+        );
+
+        setActualTimeSpent(estimatedTime);
+      }
+    };
+
     markCompleted();
-  }, [state.sessionId]);
+    calculateActualTime();
+  }, [state.sessionId, state.responses, state.startTime]);
+
+  const formatTime = (seconds: number): string => {
+    if (seconds === 0) return 'Less than a minute';
+    
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+
+    const parts: string[] = [];
+    if (hours > 0) parts.push(`${hours} hour${hours !== 1 ? 's' : ''}`);
+    if (minutes > 0) parts.push(`${minutes} minute${minutes !== 1 ? 's' : ''}`);
+    if (remainingSeconds > 0 && hours === 0) parts.push(`${remainingSeconds} second${remainingSeconds !== 1 ? 's' : ''}`);
+    
+    return parts.join(', ');
+  };
 
   const stats = {
     totalQuestions: state.progress.totalQuestions,
     answeredQuestions: state.responses.size,
     completionRate: progress,
-    timeSpent: state.lastSaveTime - state.startTime,
+    timeSpent: actualTimeSpent,
     categoriesCompleted: state.questionsData.length,
-    topicsCompleted: 39 // This would be calculated based on actual completion
-  };
-
-  const formatTime = (milliseconds: number) => {
-    const totalMinutes = Math.floor(milliseconds / (1000 * 60));
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    
-    if (hours > 0) {
-      return `${hours} hour${hours !== 1 ? 's' : ''} and ${minutes} minute${minutes !== 1 ? 's' : ''}`;
-    } else {
-      return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
-    }
+    topicsCompleted: state.questionsData.reduce((total, category) => {
+      return total + category.subcategories.reduce((subTotal, subcategory) => {
+        return subTotal + subcategory.topics.length;
+      }, 0);
+    }, 0),
+    averageTimePerQuestion: actualTimeSpent > 0 && state.responses.size > 0 
+      ? Math.round(actualTimeSpent / state.responses.size) 
+      : 0
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex items-center justify-center p-4">
-      <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-2xl p-8 md:p-12 animate-fade-in">
+    <div 
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{ 
+        background: `linear-gradient(135deg, var(--bg-primary) 0%, var(--color-cream) 50%, var(--bg-secondary) 100%)` 
+      }}
+    >
+      <div 
+        className="max-w-4xl mx-auto rounded-3xl shadow-2xl p-8 md:p-12 animate-fade-in"
+        style={{ backgroundColor: 'var(--bg-card)' }}
+      >
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-green-100 rounded-full mb-6 animate-bounce-in">
+          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 animate-bounce-in"
+               style={{ backgroundColor: 'var(--accent-success)' }}>
             <span className="text-4xl">🎉</span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
+          <h1 
+            className="text-4xl md:text-5xl font-bold mb-4"
+            style={{ color: 'var(--text-primary)' }}
+          >
             Congratulations!
           </h1>
           
-          <p className="text-xl text-gray-600 mb-6">
-            You have successfully completed the Cultural Practices Survey
+          <p 
+            className="text-xl mb-6"
+            style={{ color: 'var(--text-secondary)' }}
+          >
+            You have successfully completed the Survey
           </p>
           
-          <div className="w-32 h-1 bg-gradient-to-r from-green-500 to-blue-500 mx-auto rounded-full"></div>
+          <div 
+            className="w-32 h-1 mx-auto rounded-full"
+            style={{ background: 'var(--bg-progress-fill)' }}
+          ></div>
         </div>
 
         {/* Statistics */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-2xl border border-blue-200">
-            <div className="text-3xl font-bold text-blue-600 mb-2">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div 
+            className="p-6 rounded-2xl"
+            style={{ 
+              background: 'var(--tag-category-bg)',
+              border: '1px solid var(--border-light)'
+            }}
+          >
+            <div 
+              className="text-3xl font-bold mb-2"
+              style={{ color: 'var(--tag-category-text)' }}
+            >
               {stats.answeredQuestions}
             </div>
-            <div className="text-blue-800 font-medium">Questions Answered</div>
+            <div 
+              className="font-medium"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Questions Answered
+            </div>
           </div>
           
-          <div className="bg-gradient-to-r from-green-50 to-green-100 p-6 rounded-2xl border border-green-200">
-            <div className="text-3xl font-bold text-green-600 mb-2">
+          <div 
+            className="p-6 rounded-2xl"
+            style={{ 
+              background: 'var(--tag-subcategory-bg)',
+              border: '1px solid var(--border-light)'
+            }}
+          >
+            <div 
+              className="text-3xl font-bold mb-2"
+              style={{ color: 'var(--tag-subcategory-text)' }}
+            >
               {stats.completionRate.toFixed(1)}%
             </div>
-            <div className="text-green-800 font-medium">Completion Rate</div>
+            <div 
+              className="font-medium"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Completion Rate
+            </div>
           </div>
           
-          <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-6 rounded-2xl border border-purple-200">
-            <div className="text-3xl font-bold text-purple-600 mb-2">
+          <div 
+            className="p-6 rounded-2xl"
+            style={{ 
+              background: 'var(--tag-category-bg)',
+              border: '1px solid var(--border-light)'
+            }}
+          >
+            <div 
+              className="text-2xl font-bold mb-2"
+              style={{ color: 'var(--tag-category-text)' }}
+            >
               {formatTime(stats.timeSpent)}
             </div>
-            <div className="text-purple-800 font-medium">Time Invested</div>
+            <div 
+              className="font-medium"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Time Invested
+            </div>
+          </div>
+          
+          <div 
+            className="p-6 rounded-2xl"
+            style={{ 
+              background: 'var(--tag-subcategory-bg)',
+              border: '1px solid var(--border-light)'
+            }}
+          >
+            <div 
+              className="text-3xl font-bold mb-2"
+              style={{ color: 'var(--tag-subcategory-text)' }}
+            >
+              {stats.averageTimePerQuestion}s
+            </div>
+            <div 
+              className="font-medium"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Avg per Question
+            </div>
           </div>
         </div>
 
         {/* Thank You Message */}
-        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-8 mb-8">
-          <h2 className="text-2xl font-bold text-amber-800 mb-4">
+        <div 
+          className="border rounded-2xl p-8 mb-8"
+          style={{ 
+            background: 'var(--accent-success)',
+            borderColor: 'var(--border-dark)'
+          }}
+        >
+          <h2 
+            className="text-2xl font-bold mb-4"
+            style={{ color: 'var(--text-on-dark)' }}
+          >
             Thank You for Your Valuable Contribution!
           </h2>
-          <div className="text-amber-700 space-y-4">
+          <div 
+            className="space-y-4"
+            style={{ color: 'var(--text-on-dark)' }}
+          >
             <p>
               Your responses will contribute to a comprehensive understanding of India's rich cultural diversity. 
               The insights you've shared about cultural practices in your region are invaluable for research 
@@ -106,9 +256,23 @@ export default function CompletionPage() {
 
         {/* Impact Statement */}
         <div className="grid md:grid-cols-2 gap-8 mb-8">
-          <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 p-6 rounded-2xl border border-indigo-200">
-            <h3 className="text-lg font-bold text-indigo-800 mb-3">Your Impact</h3>
-            <ul className="text-indigo-700 space-y-2 text-sm">
+          <div 
+            className="p-6 rounded-2xl"
+            style={{ 
+              background: 'var(--tag-category-bg)',
+              border: '1px solid var(--border-light)'
+            }}
+          >
+            <h3 
+              className="text-lg font-bold mb-3"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              Your Impact
+            </h3>
+            <ul 
+              className="space-y-2 text-sm"
+              style={{ color: 'var(--text-secondary)' }}
+            >
               <li>• Contributed to cultural documentation efforts</li>
               <li>• Helped preserve regional knowledge</li>
               <li>• Supported academic research initiatives</li>
@@ -116,9 +280,23 @@ export default function CompletionPage() {
             </ul>
           </div>
           
-          <div className="bg-gradient-to-r from-teal-50 to-teal-100 p-6 rounded-2xl border border-teal-200">
-            <h3 className="text-lg font-bold text-teal-800 mb-3">What Happens Next</h3>
-            <ul className="text-teal-700 space-y-2 text-sm">
+          <div 
+            className="p-6 rounded-2xl"
+            style={{ 
+              background: 'var(--tag-subcategory-bg)',
+              border: '1px solid var(--border-light)'
+            }}
+          >
+            <h3 
+              className="text-lg font-bold mb-3"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              What Happens Next
+            </h3>
+            <ul 
+              className="space-y-2 text-sm"
+              style={{ color: 'var(--text-secondary)' }}
+            >
               <li>• Your responses are securely stored</li>
               <li>• Data will be analyzed for research purposes</li>
               <li>• Findings may be published in academic journals</li>
@@ -128,9 +306,20 @@ export default function CompletionPage() {
         </div>
 
         {/* Session Information */}
-        <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 mb-8">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">Survey Summary</h3>
-          <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600">
+        <div 
+          className="border rounded-2xl p-6 mb-8"
+          style={{ 
+            backgroundColor: 'rgba(135, 144, 143, 0.1)',
+            borderColor: 'var(--border-light)'
+          }}
+        >
+          <h3 
+            className="text-lg font-bold mb-4"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Survey Summary
+          </h3>
+          <div className="grid md:grid-cols-2 gap-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
             <div>
               <strong>Session ID:</strong> {state.sessionId}
             </div>
@@ -143,30 +332,24 @@ export default function CompletionPage() {
             <div>
               <strong>Total Categories:</strong> {stats.categoriesCompleted}
             </div>
+            <div>
+              <strong>Topics Covered:</strong> {stats.topicsCompleted}
+            </div>
+            <div>
+              <strong>Response Quality:</strong> {stats.averageTimePerQuestion > 30 ? 'Detailed' : 'Concise'}
+            </div>
           </div>
         </div>
 
-        {/* Contact Information */}
-        <div className="text-center bg-blue-50 border border-blue-200 rounded-2xl p-6">
-          <h3 className="text-lg font-bold text-blue-800 mb-3">Questions or Feedback?</h3>
-          <p className="text-blue-700 mb-4">
-            If you have any questions about this research or would like to learn more about the findings, 
-            please don't hesitate to contact our research team.
-          </p>
-          <div className="text-sm text-blue-600">
-            <p>Research Team: Cultural Studies Initiative</p>
-            <p>Email: research@culturalsurvey.edu</p>
-          </div>
-        </div>
 
         {/* Final Thank You */}
         <div className="text-center mt-8">
-          <p className="text-lg text-gray-600 font-medium">
+          <p 
+            className="text-lg font-medium"
+            style={{ color: 'var(--text-secondary)' }}
+          >
             Thank you once again for your time and valuable insights!
           </p>
-          <div className="mt-4 text-4xl animate-pulse-slow">
-            🙏
-          </div>
         </div>
       </div>
     </div>

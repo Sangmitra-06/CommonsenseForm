@@ -278,7 +278,7 @@ export default function QuestionForm() {
                          state.currentPosition.topicIndex === 0 && 
                          state.currentPosition.questionIndex === 0;
 
-  const isFormValid = answer.trim().length >= 10 && culturalCommonsense !== null;
+  const isFormValid = answer.trim().length >= 4 && culturalCommonsense !== null;
 
   return (
     <div 
@@ -435,7 +435,7 @@ export default function QuestionForm() {
                       className="block text-base font-medium"
                       style={{ color: 'var(--text-primary)' }}
                     >
-                      Your Answer *
+                      Your Answer (please specify 'none' if no answer exists)*
                     </label>
                     <button
                       onClick={handleClear}
@@ -479,12 +479,12 @@ export default function QuestionForm() {
                     <div 
                       className={`absolute bottom-3 right-3 px-2 py-1 rounded-lg text-xs border`}
                       style={{
-                        backgroundColor: answer.length >= 10 ? 'var(--color-cream)' : '#fef3c7',
-                        color: answer.length >= 10 ? 'var(--text-secondary)' : 'var(--accent-warning)',
-                        borderColor: answer.length >= 10 ? 'var(--border-light)' : '#fbbf24'
+                        backgroundColor: answer.length >= 4 ? 'var(--color-cream)' : '#fef3c7',
+                        color: answer.length >= 4 ? 'var(--text-secondary)' : 'var(--accent-warning)',
+                        borderColor: answer.length >= 4 ? 'var(--border-light)' : '#fbbf24'
                       }}
                     >
-                      {answer.length}/5000 {answer.length < 10 && `(${10 - answer.length} more needed)`}
+                      {answer.length}/5000 {answer.length < 4 && `(${4 - answer.length} more needed)`}
                     </div>
                   </div>
                   
@@ -606,7 +606,7 @@ export default function QuestionForm() {
                       <div className="text-sm" style={{ color: '#92400e' }}>
                         <p className="font-medium mb-1">Please complete the following:</p>
                         <ul className="text-xs space-y-1">
-                          {answer.trim().length < 10 && <li>• Add at least 10 characters to your answer</li>}
+                          {answer.trim().length < 4 && <li>• Add at least 4 characters to your answer</li>}
                           {culturalCommonsense === null && <li>• Select whether this relates to cultural commonsense</li>}
                         </ul>
                       </div>

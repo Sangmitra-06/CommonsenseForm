@@ -10,7 +10,7 @@ const router = express.Router();
 router.post('/', [
   body('sessionId').notEmpty().withMessage('Session ID is required'),
   body('questionId').notEmpty().withMessage('Question ID is required'),
-  body('answer').isLength({ min: 10, max: 5000 }).withMessage('Answer must be between 10 and 5000 characters'),
+  body('answer').isLength({ min: 4, max: 5000 }).withMessage('Answer must be between 4 and 5000 characters'),
   body('culturalCommonsense').isBoolean().withMessage('Cultural commonsense must be boolean'),
   body('categoryIndex').isInt({ min: 0 }).withMessage('Category index must be a non-negative integer'),
   body('subcategoryIndex').isInt({ min: 0 }).withMessage('Subcategory index must be a non-negative integer'),
@@ -122,7 +122,7 @@ router.post('/batch', [
 
     // Validate each response and question existence
     for (let response of responses) {
-      if (!response.questionId || !response.answer || response.answer.length < 10) {
+      if (!response.questionId || !response.answer || response.answer.length < 4) {
         return res.status(400).json({ error: 'Invalid response data' });
       }
 

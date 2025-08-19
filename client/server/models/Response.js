@@ -45,7 +45,7 @@ const responseSchema = new mongoose.Schema({
   answer: {
     type: String,
     required: true,
-    minlength: 10,
+    minlength: 4,
     maxlength: 5000
   },
   culturalCommonsense: {
