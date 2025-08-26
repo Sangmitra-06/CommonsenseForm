@@ -17,92 +17,25 @@ export const loadQuestionsData = async (): Promise<Category[]> => {
       throw new Error('Questions data is not in the expected format');
     }
     
-    // Validate that each category has the required structure
-    for (const category of data) {
-      if (!category.category || !Array.isArray(category.subcategories)) {
-        throw new Error(`Invalid category structure: ${JSON.stringify(category)}`);
-      }
-      
-      for (const subcategory of category.subcategories) {
-        if (!subcategory.subcategory || !Array.isArray(subcategory.topics)) {
-          throw new Error(`Invalid subcategory structure: ${JSON.stringify(subcategory)}`);
-        }
-        
-        for (const topic of subcategory.topics) {
-          if (!topic.topic || !Array.isArray(topic.questions)) {
-            throw new Error(`Invalid topic structure: ${JSON.stringify(topic)}`);
-          }
-          
-          if (topic.questions.length === 0) {
-            console.warn(`Topic "${topic.topic}" has no questions`);
-          }
-        }
-      }
-    }
+    // Calculate totals for logging
+    const totalQuestions = data.reduce((sum, cat) => 
+      sum + cat.subcategories.reduce((subSum, sub) => 
+        subSum + sub.topics.reduce((topicSum, topic) => topicSum + topic.questions.length, 0), 0), 0);
     
     console.log('Questions loaded successfully:', {
       categories: data.length,
       totalSubcategories: data.reduce((sum, cat) => sum + cat.subcategories.length, 0),
       totalTopics: data.reduce((sum, cat) => 
         sum + cat.subcategories.reduce((subSum, sub) => subSum + sub.topics.length, 0), 0),
-      totalQuestions: data.reduce((sum, cat) => 
-        sum + cat.subcategories.reduce((subSum, sub) => 
-          subSum + sub.topics.reduce((topicSum, topic) => topicSum + topic.questions.length, 0), 0), 0)
+      totalQuestions
     });
     
     return data;
     
   } catch (error) {
     console.error('Error loading questions data:', error);
-    
-    // Fallback to test data if loading fails
-    console.log('Falling back to test data...');
-    const fallbackData: Category[] = [
-      {
-        "category": "Interpersonal Relations",
-        "subcategories": [
-          {
-            "subcategory": "Visiting and hospitality",
-            "topics": [
-              {
-                "topic": "Etiquette in the reception of visitors",
-                "questions": [
-                  "In your region, what are the typical ways people prepare their homes for the arrival of guests? Describe three common preparations that are usually done, such as cleaning, decorating, arranging guest rooms, or any traditional practices.",
-                  "In your region, what is the first most common thing a visitor does when they enter your house? Focus on actions and not greetings and provide two most common ones.",
-                  "In your region, if applicable, what are some traditional gifts or souvenirs given to guests during their visit? Specify two most common ones.",
-                  "In your region, what is the common proper etiquette for sending off a guest who is visiting from another city?",
-                  "In your region, what specific rituals or traditions are followed when someone visits your home for the first time? Specify two most common."
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ];
-    
-    return fallbackData;
+    throw new Error('Failed to load questions data');
   }
-};
-
-// Rest of your helper functions remain the same...
-export const generateQuestionId = (
-  categoryIndex: number,
-  subcategoryIndex: number,
-  topicIndex: number,
-  questionIndex: number
-): string => {
-  return `${categoryIndex}-${subcategoryIndex}-${topicIndex}-${questionIndex}`;
-};
-
-export const parseQuestionId = (questionId: string) => {
-  const [categoryIndex, subcategoryIndex, topicIndex, questionIndex] = questionId.split('-').map(Number);
-  return { categoryIndex, subcategoryIndex, topicIndex, questionIndex };
-};
-
-export const formatTime = (seconds: number): string => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
 export const validateAnswer = (answer: string): { isValid: boolean; message?: string } => {
@@ -122,67 +55,367 @@ export const validateAnswer = (answer: string): { isValid: boolean; message?: st
 };
 
 export const shouldShowAttentionCheck = (questionCount: number): boolean => {
-  // Re-enable attention checks every 15 questions
-  return questionCount > 0 && questionCount % 5 === 0;
+  return questionCount > 0 && questionCount % 15 === 0;
 };
 
+// Comprehensive quality analysis
+export const analyzeResponseQuality = (answer: string): {
+  isLowQuality: boolean;
+  issues: string[];
+  score: number;
+  isNoneResponse: boolean;
+  isGibberish: boolean;
+} => {
+  const issues: string[] = [];
+  let score = 100;
+  let isNoneResponse = false;
+  let isGibberish = false;
+
+  const text = answer.toLowerCase().trim();
+  
+  // Check for "none" type responses
+  const nonePatterns = [
+    /^(none|n\/a|na|nothing|no|idk|i don't know|dk|dunno)$/i,
+    /^(none that i know|nothing that i know|no idea|not sure|dont know|don't know)$/i,
+    /^(same|similar|normal|usual|regular|typical|standard|common)$/i,
+    /^(not applicable|not available|no information|no data)$/i,
+  ];
+
+  nonePatterns.forEach(pattern => {
+    if (pattern.test(text)) {
+      isNoneResponse = true;
+      issues.push('Generic "none" or non-informative response');
+      score -= 40;
+    }
+  });
+
+  // Check for gibberish patterns
+  const gibberishPatterns = [
+    /^[bcdfghjklmnpqrstvwxyz]{6,}$/i, // Too many consonants
+    /^[aeiou]{6,}$/i, // Too many vowels
+    /(.{3,})\1{2,}/, // Repeated patterns (abcabc)
+    /^[^a-z\s]*$/i, // No letters at all
+    /^[a-z]{8,}$/i, // Long strings without spaces
+  ];
+
+  // Keyboard mashing patterns
+  const mashingPatterns = [
+    /qwerty|asdf|zxcv|hjkl|yuiop/i,
+    /abcd|1234|test|xxx|yyy|zzz/i,
+    /(.)\1{4,}/, // Same character repeated 5+ times
+  ];
+
+  gibberishPatterns.forEach(pattern => {
+    if (pattern.test(text)) {
+      isGibberish = true;
+      issues.push('Appears to be random characters or gibberish');
+      score -= 60;
+    }
+  });
+
+  mashingPatterns.forEach(pattern => {
+    if (pattern.test(text)) {
+      isGibberish = true;
+      issues.push('Keyboard mashing or test input detected');
+      score -= 50;
+    }
+  });
+
+  // Check for excessive repetition of words
+  const words = text.split(/\s+/).filter(word => word.length > 2);
+  const wordCount = {};
+  words.forEach(word => {
+    wordCount[word] = (wordCount[word] || 0) + 1;
+  });
+
+  const repeatedWords = Object.entries(wordCount).filter(([word, count]) => (count as number) > 3);
+  if (repeatedWords.length > 0) {
+    issues.push('Excessive word repetition');
+    score -= 30;
+  }
+
+  // Check for lack of specificity
+  const vaguePhrases = ['something', 'things', 'stuff', 'anything', 'everything'];
+  const vagueCount = vaguePhrases.reduce((count, phrase) => 
+    count + (text.match(new RegExp(`\\b${phrase}\\b`, 'g')) || []).length, 0
+  );
+  
+  if (vagueCount > 3) {
+    issues.push('Response lacks specific details');
+    score -= 15;
+  }
+
+  // Positive indicators
+  const positiveIndicators = [
+    /\b(example|for instance|specifically|traditionally|commonly|usually|typically)\b/i,
+    /\b(in my region|in our area|locally|here we|we usually|in our culture)\b/i,
+    /\b(such as|like|including|consists of|involves|includes)\b/i,
+  ];
+
+  let positiveCount = 0;
+  positiveIndicators.forEach(pattern => {
+    if (pattern.test(text)) positiveCount++;
+  });
+
+  if (positiveCount > 0) {
+    score += Math.min(positiveCount * 8, 20);
+  }
+
+  score = Math.max(0, Math.min(100, score));
+  
+  return {
+    isLowQuality: score < 30,
+    issues,
+    score,
+    isNoneResponse,
+    isGibberish
+  };
+};
+
+// Comprehensive pattern analysis
+export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: number}>): {
+  suspiciousPattern: boolean;
+  warnings: string[];
+  noneResponseRate: number;
+  gibberishResponseRate: number;
+  fastResponseRate: number;
+  issueType: 'none' | 'gibberish' | 'speed' | 'repetition' | 'quality' | 'multiple' | null;
+} => {
+  const warnings: string[] = [];
+  let suspiciousPattern = false;
+
+  if (responses.length < 5) {
+    return { 
+      suspiciousPattern, 
+      warnings, 
+      noneResponseRate: 0,
+      gibberishResponseRate: 0,
+      fastResponseRate: 0,
+      issueType: null
+    };
+  }
+
+  // Analyze response patterns
+  let noneCount = 0;
+  let gibberishCount = 0;
+  let fastResponseCount = 0;
+
+  responses.forEach(response => {
+    const analysis = analyzeResponseQuality(response.answer);
+    
+    if (analysis.isNoneResponse) noneCount++;
+    if (analysis.isGibberish) gibberishCount++;
+    if (response.timeSpent < 8) fastResponseCount++;
+  });
+
+  const noneResponseRate = (noneCount / responses.length) * 100;
+  const gibberishResponseRate = (gibberishCount / responses.length) * 100;
+  const fastResponseRate = (fastResponseCount / responses.length) * 100;
+
+  let issueType: 'none' | 'gibberish' | 'speed' | 'repetition' | 'quality' | 'multiple' | null = null;
+
+  // Check for problematic patterns (30% threshold for all)
+  if (noneResponseRate >= 30) {
+    warnings.push(`High rate of "none" responses (${noneResponseRate.toFixed(1)}%)`);
+    suspiciousPattern = true;
+    issueType = 'none';
+  }
+
+  if (gibberishResponseRate >= 30) {
+    warnings.push(`High rate of gibberish responses (${gibberishResponseRate.toFixed(1)}%)`);
+    suspiciousPattern = true;
+    issueType = issueType ? 'multiple' : 'gibberish';
+  }
+
+  if (fastResponseRate >= 30) {
+    warnings.push(`High rate of very fast responses (${fastResponseRate.toFixed(1)}%)`);
+    suspiciousPattern = true;
+    issueType = issueType ? 'multiple' : 'speed';
+  }
+
+  // Check for similar responses
+  const answers = responses.map(r => r.answer.toLowerCase().trim());
+  const uniqueAnswers = new Set(answers);
+  if (uniqueAnswers.size < answers.length * 0.6) {
+    warnings.push('Many similar or identical responses');
+    suspiciousPattern = true;
+    issueType = issueType ? 'multiple' : 'repetition';
+  }
+
+  // Check for overall quality decline
+  const recentResponses = responses.slice(-5);
+  const recentQualityScores = recentResponses.map(r => analyzeResponseQuality(r.answer).score);
+  const avgRecentQuality = recentQualityScores.reduce((sum, score) => sum + score, 0) / recentQualityScores.length;
+  
+  if (avgRecentQuality < 25) {
+    warnings.push('Overall response quality is very low');
+    suspiciousPattern = true;
+    issueType = issueType ? 'multiple' : 'quality';
+  }
+
+  return { 
+    suspiciousPattern, 
+    warnings, 
+    noneResponseRate,
+    gibberishResponseRate,
+    fastResponseRate,
+    issueType
+  };
+};
+
+// Enhanced attention check questions
 export const generateAttentionCheck = (
   currentCategory: string,
-  currentTopic: string
+  currentTopic: string,
+  userInfo?: { region: string; age: number }
 ): AttentionCheck => {
   const checks = [
     {
-      question: `What category are you currently answering questions about?`,
-      options: [
-        currentCategory,
-        'Food and Cuisine',
-        'Religious Practices',
-        'Economic Activities'
-      ],
-      correctAnswer: 0
+      question: `You are currently answering questions about "${currentCategory}". Which category are you working on?`,
+      options: [currentCategory, 'Food and Cuisine', 'Religious Practices', 'Economic Activities'],
+      correctAnswer: 0,
+      type: 'context'
     },
     {
-      question: `What topic within ${currentCategory} are you currently focusing on?`,
-      options: [
-        currentTopic,
-        'Traditional Ceremonies',
-        'Seasonal Celebrations',
-        'Community Gatherings'
-      ],
-      correctAnswer: 0
+      question: `Within ${currentCategory}, you're focusing on "${currentTopic}". What is your current topic?`,
+      options: [currentTopic, 'Traditional Ceremonies', 'Seasonal Celebrations', 'Community Gatherings'],
+      correctAnswer: 0,
+      type: 'context'
     },
     {
-      question: 'What type of questions are you answering in this survey?',
+      question: 'What is the main focus of this cultural survey?',
       options: [
-        'Cultural practices and commonsense in your region',
-        'Personal preferences and opinions',
-        'Historical facts and dates',
-        'Mathematical problems'
+        'Understanding cultural practices and traditions in different regions of India',
+        'Collecting political opinions about government policies',
+        'Reviewing consumer products and services',
+        'Gathering medical and health information'
       ],
-      correctAnswer: 0
+      correctAnswer: 0,
+      type: 'comprehension'
+    },
+    {
+      question: 'When answering questions, you should base your responses on:',
+      options: [
+        'Your personal knowledge and experience of cultural practices in your region',
+        'What you think researchers want to hear',
+        'Random guesses or made-up information',
+        'Practices from other countries or regions you\'ve seen in movies'
+      ],
+      correctAnswer: 0,
+      type: 'instruction'
+    },
+    {
+      question: 'What should you do if you encounter a question about a practice you\'re not familiar with?',
+      options: [
+        'Explain what you do know or indicate that the practice is uncommon in your area',
+        'Just write "none" or "don\'t know"',
+        'Copy your answer from a previous question',
+        'Make up a detailed but false answer'
+      ],
+      correctAnswer: 0,
+      type: 'instruction'
+    },
+    {
+      question: 'If a cultural practice is described as "cultural commonsense," it means:',
+      options: [
+        'It is widely shared and considered natural within a cultural group',
+        'It is a rare or unusual practice',
+        'It comes from foreign cultural influence',
+        'It is a personal individual preference'
+      ],
+      correctAnswer: 0,
+      type: 'definition'
+    },
+    {
+      question: 'Which of these would be the BEST type of answer for cultural questions?',
+      options: [
+        'Detailed explanations with specific examples from your region',
+        'One-word answers like "yes" or "no"',
+        'Identical responses copied for every question',
+        'Random letters and symbols'
+      ],
+      correctAnswer: 0,
+      type: 'instruction'
+    },
+    {
+      question: 'This survey is about cultural practices in which country?',
+      options: ['India', 'China', 'United States', 'United Kingdom'],
+      correctAnswer: 0,
+      type: 'basic'
+    },
+    {
+      question: 'How many regions of India are you asked to choose from in this survey?',
+      options: [
+        'Five regions (North, South, East, West, Central)',
+        'Three regions',
+        'Ten regions',
+        'Two regions'
+      ],
+      correctAnswer: 0,
+      type: 'basic'
+    },
+    {
+      question: 'According to the survey instructions, what should you NOT do when answering questions?',
+      options: [
+        'Provide random, meaningless responses or keyboard mashing',
+        'Share your genuine knowledge about cultural practices',
+        'Give specific examples when possible',
+        'Explain regional variations you\'re aware of'
+      ],
+      correctAnswer: 0,
+      type: 'instruction'
     }
   ];
+
+  // Add personal verification if userInfo available
+  if (userInfo) {
+    checks.push({
+      question: `You indicated that you are from ${userInfo.region} India. Which region did you select?`,
+      options: [
+        `${userInfo.region} India`,
+        userInfo.region === 'North' ? 'South India' : 'North India',
+        userInfo.region === 'East' ? 'West India' : 'East India',
+        'I did not specify a region'
+      ],
+      correctAnswer: 0,
+      type: 'personal'
+    });
+  }
   
+  // Select random check and shuffle options
   const randomCheck = checks[Math.floor(Math.random() * checks.length)];
-  
-  // Shuffle options
+  const correctOption = randomCheck.options[randomCheck.correctAnswer];
   const shuffledOptions = [...randomCheck.options];
-  const correctOption = shuffledOptions[randomCheck.correctAnswer];
   
   for (let i = shuffledOptions.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
   }
   
-  const newCorrectAnswer = shuffledOptions.indexOf(correctOption);
-  
   return {
     question: randomCheck.question,
     options: shuffledOptions,
-    correctAnswer: newCorrectAnswer,
+    correctAnswer: shuffledOptions.indexOf(correctOption),
     currentTopic,
-    currentCategory
+    currentCategory,
+    type: randomCheck.type
   };
+};
+
+// Utility functions
+export const generateQuestionId = (
+  categoryIndex: number,
+  subcategoryIndex: number,
+  topicIndex: number,
+  questionIndex: number
+): string => {
+  return `${categoryIndex}-${subcategoryIndex}-${topicIndex}-${questionIndex}`;
+};
+
+export const formatTime = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
 };
 
 export const debounce = <T extends (...args: any[]) => any>(

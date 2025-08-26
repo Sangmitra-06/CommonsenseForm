@@ -45,6 +45,7 @@ export interface QuestionResponse {
   culturalCommonsense: boolean;
   timeSpent: number;
   timestamp: string;
+  qualityScore?: number; // Add this field
 }
 
 export interface Progress {
@@ -84,6 +85,7 @@ export interface AttentionCheck {
   correctAnswer: number;
   currentTopic: string;
   currentCategory: string;
+  type: string; // Add this line to include the 'type' property
 }
 
 export const REGIONS = {

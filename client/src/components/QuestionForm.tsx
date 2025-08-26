@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from '../context/FormContext.tsx';
-import { validateAnswer } from '../utils/helpers.ts';
+import { validateAnswer, shouldShowAttentionCheck, generateAttentionCheck, analyzeResponseQuality, analyzeUserPattern } from '../utils/helpers.ts';
 import AttentionCheck from './AttentionCheck.tsx';
 import ProgressBar from './ProgressBar.tsx';
 import NavigationMenu from './NavigationMenu.tsx';
+import QualityWarningModal from './QualityWarningModel.tsx';
 import * as api from '../services/api.ts';
 
 export default function QuestionForm() {
@@ -11,30 +12,49 @@ export default function QuestionForm() {
     state,
     saveResponse,
     navigateToNext,
-    navigateToPosition, 
-    dispatch,
     navigateToPrevious,
     getCurrentQuestionData,
     getTotalQuestionsInCurrentTopic,
     getCompletedQuestionsInCurrentTopic,
-    resetSession
+    resetSession,
+    navigateToPosition
   } = useForm();
 
+  // Basic form state
   const [answer, setAnswer] = useState('');
   const [culturalCommonsense, setCulturalCommonsense] = useState<boolean | null>(null);
   const [errors, setErrors] = useState<{ answer?: string; cultural?: string }>({});
   const [isSaving, setIsSaving] = useState(false);
-  const [showAttentionCheck, setShowAttentionCheck] = useState(false);
-  const [attentionCheck, setAttentionCheck] = useState<any>(null);
   const [startTime, setStartTime] = useState(Date.now());
   const [showSuccess, setShowSuccess] = useState(false);
   const [lastQuestionId, setLastQuestionId] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [navigationDirection, setNavigationDirection] = useState<'next' | 'previous' | null>(null);
-  const [showCelebration, setShowCelebration] = useState<{type: string, data: any} | null>(null);
-  const [completedTopicName, setCompletedTopicName] = useState<string>('');
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [showNavigationMenu, setShowNavigationMenu] = useState(false);
+
+  // Attention check state
+  const [showAttentionCheck, setShowAttentionCheck] = useState(false);
+  const [attentionCheck, setAttentionCheck] = useState<any>(null);
+  const [lastAttentionCheckAt, setLastAttentionCheckAt] = useState<number>(-1);
+  const [attentionChecksPassed, setAttentionChecksPassed] = useState(0);
+  const [attentionChecksFailed, setAttentionChecksFailed] = useState(0);
+
+  // Quality tracking state
+  const [showQualityModal, setShowQualityModal] = useState(false);
+  const [qualityWarnings, setQualityWarnings] = useState<string[]>([]);
+  const [lastQualityAlertAt, setLastQualityAlertAt] = useState<number>(-1);
+  const [hasShownQualityAlert, setHasShownQualityAlert] = useState(false);
+  const [currentQualityIssue, setCurrentQualityIssue] = useState<{
+    type: string | null;
+    noneRate: number;
+    gibberishRate: number;
+    speedRate: number;
+  }>({ type: null, noneRate: 0, gibberishRate: 0, speedRate: 0 });
+
+  // Celebration state
+  const [showCelebration, setShowCelebration] = useState<{type: string, data: any} | null>(null);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const currentQuestionData = getCurrentQuestionData();
 
   // Reset form when question changes
@@ -42,15 +62,14 @@ export default function QuestionForm() {
     if (currentQuestionData && currentQuestionData.questionId !== lastQuestionId) {
       console.log('Question changed, loading data for:', currentQuestionData.questionId);
       
-      // Reset form state
       setErrors({});
       setShowSuccess(false);
       setStartTime(Date.now());
       setLastQuestionId(currentQuestionData.questionId);
       setIsNavigating(false);
       setNavigationDirection(null);
+      setQualityWarnings([]);
       
-      // Load existing response or reset
       const existingResponse = state.responses.get(currentQuestionData.questionId);
       if (existingResponse) {
         console.log('Found existing response:', existingResponse);
@@ -64,6 +83,76 @@ export default function QuestionForm() {
     }
   }, [currentQuestionData?.questionId, lastQuestionId, state.responses]);
 
+  // Attention check logic
+  useEffect(() => {
+    const totalResponses = state.responses.size;
+    
+    if (showAttentionCheck || lastAttentionCheckAt === totalResponses) return;
+    
+    if (shouldShowAttentionCheck(totalResponses) && currentQuestionData) {
+      console.log('SHOWING ATTENTION CHECK at response count:', totalResponses);
+      
+      const check = generateAttentionCheck(
+        currentQuestionData.category,
+        currentQuestionData.topic,
+        state.userInfo || undefined
+      );
+      
+      setAttentionCheck(check);
+      setShowAttentionCheck(true);
+      setLastAttentionCheckAt(totalResponses);
+    }
+  }, [state.responses.size, showAttentionCheck, lastAttentionCheckAt, currentQuestionData]);
+
+  // FIXED: Comprehensive quality check logic
+  useEffect(() => {
+    const totalResponses = state.responses.size;
+    
+    // Need at least 5 responses to analyze
+    if (totalResponses < 5) return;
+    
+    // Don't check if modal is already open
+    if (showQualityModal) return;
+
+    const allResponses = Array.from(state.responses.values());
+    const analysisData = allResponses.map(r => ({ answer: r.answer, timeSpent: r.timeSpent }));
+    const patternAnalysis = analyzeUserPattern(analysisData);
+    
+    console.log('Quality pattern analysis:', patternAnalysis);
+
+    // Show alert immediately when ANY pattern becomes problematic
+    if (patternAnalysis.suspiciousPattern && !hasShownQualityAlert) {
+      console.log('SHOWING QUALITY ALERT: First detection at', totalResponses);
+      setShowQualityModal(true);
+      setLastQualityAlertAt(totalResponses);
+      setHasShownQualityAlert(true);
+      setQualityWarnings(patternAnalysis.warnings);
+      setCurrentQualityIssue({
+        type: patternAnalysis.issueType,
+        noneRate: patternAnalysis.noneResponseRate,
+        gibberishRate: patternAnalysis.gibberishResponseRate,
+        speedRate: patternAnalysis.fastResponseRate
+      });
+    }
+    // Show again after 5 responses if still problematic
+    else if (patternAnalysis.suspiciousPattern && 
+             hasShownQualityAlert && 
+             lastQualityAlertAt > 0 && 
+             (totalResponses - lastQualityAlertAt) >= 5) {
+      console.log('SHOWING QUALITY ALERT: Persistent issue after 5 responses');
+      setShowQualityModal(true);
+      setLastQualityAlertAt(totalResponses);
+      setQualityWarnings(patternAnalysis.warnings);
+      setCurrentQualityIssue({
+        type: patternAnalysis.issueType,
+        noneRate: patternAnalysis.noneResponseRate,
+        gibberishRate: patternAnalysis.gibberishResponseRate,
+        speedRate: patternAnalysis.fastResponseRate
+      });
+    }
+  }, [state.responses.size, showQualityModal, hasShownQualityAlert, lastQualityAlertAt]);
+
+  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -88,9 +177,23 @@ export default function QuestionForm() {
   };
 
   const handleAnswerChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setAnswer(e.target.value);
+    const newValue = e.target.value;
+    setAnswer(newValue);
+    
     if (errors.answer) {
       setErrors(prev => ({ ...prev, answer: undefined }));
+    }
+
+    // Real-time quality feedback for current response only
+    if (newValue.length > 5) {
+      const qualityAnalysis = analyzeResponseQuality(newValue);
+      if (qualityAnalysis.isLowQuality) {
+        setQualityWarnings(qualityAnalysis.issues);
+      } else {
+        setQualityWarnings([]);
+      }
+    } else {
+      setQualityWarnings([]);
     }
   };
 
@@ -106,6 +209,7 @@ export default function QuestionForm() {
     setCulturalCommonsense(null);
     setErrors({});
     setShowSuccess(false);
+    setQualityWarnings([]);
     if (textareaRef.current) {
       textareaRef.current.focus();
     }
@@ -119,14 +223,8 @@ export default function QuestionForm() {
     
     if (!currentTopic) return null;
 
-    // Store the current topic name for celebration
-    setCompletedTopicName(currentTopic.topic);
-
-    // Check if this is the last question in the topic
     if (questionIndex === currentTopic.questions.length - 1) {
-      // Check if this is also the last topic in subcategory
       if (topicIndex === currentSubcategory.topics.length - 1) {
-        // Check if this is also the last subcategory in category
         if (subcategoryIndex === currentCategory.subcategories.length - 1) {
           return {
             type: 'category',
@@ -152,9 +250,28 @@ export default function QuestionForm() {
     return null;
   };
 
-  const handleSave = async () => {
-    if (!validateForm() || !currentQuestionData || !state.sessionId) {
-      console.log('Validation failed:', errors);
+  const updateAttentionCheckStats = async () => {
+    if (state.sessionId) {
+      try {
+        await api.updateUserProgress(state.sessionId, {
+          attentionChecksPassed,
+          attentionChecksFailed,
+          completedQuestions: state.responses.size
+        });
+        console.log('Updated attention check stats:', { attentionChecksPassed, attentionChecksFailed });
+      } catch (error) {
+        console.error('Failed to update attention check stats:', error);
+      }
+    }
+  };
+
+  const performSave = async (qualityAnalysis?: any) => {
+    if (!qualityAnalysis) {
+      qualityAnalysis = analyzeResponseQuality(answer);
+    }
+
+    if (!currentQuestionData || !state.sessionId) {
+      console.error('Missing required data for save');
       return false;
     }
 
@@ -177,20 +294,38 @@ export default function QuestionForm() {
         answer: answer.trim(),
         culturalCommonsense: culturalCommonsense!,
         timeSpent,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        qualityScore: qualityAnalysis.score
       };
 
       await saveResponse(response);
+      await updateAttentionCheckStats();
+      
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
       return true;
       
     } catch (error) {
       console.error('SAVE ERROR:', error);
-      alert('Failed to save response: ' + (error as Error).message);
-      return false;
+      throw error; // Re-throw to handle in calling function
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!validateForm() || !currentQuestionData || !state.sessionId) {
+      console.log('Validation failed:', errors);
+      return false;
+    }
+
+    try {
+      const qualityAnalysis = analyzeResponseQuality(answer);
+      return await performSave(qualityAnalysis);
+    } catch (error) {
+      console.error('Save failed:', error);
+      alert('Failed to save response. Please try again.');
+      return false;
     }
   };
 
@@ -201,21 +336,25 @@ export default function QuestionForm() {
       return;
     }
 
-    const saveSuccessful = await handleSave();
-    
-    if (saveSuccessful && isValid) {
-      const milestone = checkForMilestones();
+    try {
+      const saveSuccessful = await handleSave();
       
-      setNavigationDirection('next');
-      setIsNavigating(true);
-      
-      setTimeout(() => {
-        navigateToNext();
+      if (saveSuccessful && isValid) {
+        const milestone = checkForMilestones();
         
-        if (milestone) {
-          setShowCelebration({type: milestone.type, data: milestone});
-        }
-      }, 300);
+        setNavigationDirection('next');
+        setIsNavigating(true);
+        
+        setTimeout(() => {
+          navigateToNext();
+          
+          if (milestone) {
+            setShowCelebration({type: milestone.type, data: milestone});
+          }
+        }, 300);
+      }
+    } catch (error) {
+      console.error('Next navigation failed:', error);
     }
   };
 
@@ -241,22 +380,69 @@ export default function QuestionForm() {
     }, 300);
   };
 
+  const handleAttentionCheckComplete = (correct: boolean) => {
+    console.log('=== ATTENTION CHECK COMPLETED ===');
+    console.log('Result:', correct ? 'CORRECT' : 'INCORRECT');
+    
+    if (correct) {
+      setAttentionChecksPassed(prev => {
+        console.log('Attention checks passed:', prev + 1);
+        return prev + 1;
+      });
+    } else {
+      setAttentionChecksFailed(prev => {
+        console.log('Attention checks failed:', prev + 1);
+        return prev + 1;
+      });
+    }
+    
+    setShowAttentionCheck(false);
+    setAttentionCheck(null);
+    
+    console.log('Attention check state cleared');
+  };
+
+  const handleNavigateToQuestion = async (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => {
+    const isValid = validateForm();
+    if (isValid && answer.trim() && culturalCommonsense !== null) {
+      console.log('QuestionForm: Saving current response before navigation');
+      try {
+        await handleSave();
+      } catch (error) {
+        console.error('Failed to save before navigation:', error);
+      }
+    }
+    
+    console.log('QuestionForm: Navigating to:', categoryIndex, subcategoryIndex, topicIndex, questionIndex);
+    await navigateToPosition(categoryIndex, subcategoryIndex, topicIndex, questionIndex);
+  };
+
+  // FIXED: Quality modal close handler
+  const handleQualityModalClose = () => {
+    console.log('Quality modal closed - user will improve response');
+    setShowQualityModal(false);
+    
+    // Clear current response to force user to re-enter
+    setAnswer('');
+    setCulturalCommonsense(null);
+    setErrors({});
+    
+    // Focus on textarea for improvement
+    setTimeout(() => {
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    }, 100);
+  };
+
   const closeCelebration = () => {
     setShowCelebration(null);
   };
 
-  const handleNavigateToQuestion = async (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => {
-  // Save current response if valid
-  if (isFormValid) {
-    await handleSave();
-  }
-    
-    await navigateToPosition(categoryIndex, subcategoryIndex, topicIndex, questionIndex);
-};
-
-
+  // Show attention check if needed
   if (showAttentionCheck && attentionCheck) {
-    return <AttentionCheck attentionCheck={attentionCheck} onComplete={() => {}} />;
+    console.log('Rendering attention check component');
+    return <AttentionCheck attentionCheck={attentionCheck} onComplete={handleAttentionCheckComplete} />;
   }
 
   if (!currentQuestionData) {
@@ -282,33 +468,45 @@ export default function QuestionForm() {
 
   return (
     <div 
-      
       className="min-h-screen"
       style={{ 
         background: `linear-gradient(135deg, var(--bg-primary) 0%, var(--color-cream) 50%, var(--bg-secondary) 100%)` 
       }}
     >
       <ProgressBar />
+      
+      {/* Menu Button */}
       <div className="fixed top-20 right-6 z-40">
-      <button
-        onClick={() => setShowNavigationMenu(true)}
-        className="p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
-        style={{ 
-          background: 'var(--btn-primary-bg)',
-          color: 'var(--text-on-dark)'
-        }}
-        title="Navigation Menu"
-      >
-        <span className="text-xl">🗂️</span>
-      </button>
-    </div>
+        <button
+          onClick={() => setShowNavigationMenu(true)}
+          className="p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+          style={{ 
+            background: 'var(--btn-primary-bg)',
+            color: 'var(--text-on-dark)'
+          }}
+          title="Navigation Menu"
+        >
+          <span className="text-xl">🗂️</span>
+        </button>
+      </div>
 
-    {/* Navigation Menu */}
-    <NavigationMenu 
-      isOpen={showNavigationMenu}
-      onClose={() => setShowNavigationMenu(false)}
-      onNavigateTo={handleNavigateToQuestion}
-    />
+      {/* Navigation Menu */}
+      <NavigationMenu 
+        isOpen={showNavigationMenu}
+        onClose={() => setShowNavigationMenu(false)}
+        onNavigateTo={handleNavigateToQuestion}
+      />
+
+      {/* FIXED: Quality Warning Modal */}
+      <QualityWarningModal
+        isOpen={showQualityModal}
+        onClose={handleQualityModalClose}
+        qualityIssues={qualityWarnings}
+        issueType={currentQualityIssue.type}
+        noneResponseRate={currentQualityIssue.noneRate}
+        gibberishResponseRate={currentQualityIssue.gibberishRate}
+        fastResponseRate={currentQualityIssue.speedRate}
+      />
       
       {/* Celebration Modal */}
       {showCelebration && (
@@ -344,7 +542,7 @@ export default function QuestionForm() {
                     background: 'var(--btn-primary-bg)' 
                   }}
                 >
-                  
+                  <span className="mr-2">🍃</span>
                   Question {currentQuestionInTopic} of {topicProgress}
                 </div>
                 
@@ -435,7 +633,7 @@ export default function QuestionForm() {
                       className="block text-base font-medium"
                       style={{ color: 'var(--text-primary)' }}
                     >
-                      Your Answer (please specify 'none' if no answer exists)*
+                      Your Answer *
                     </label>
                     <button
                       onClick={handleClear}
@@ -460,16 +658,6 @@ export default function QuestionForm() {
                         color: 'var(--text-primary)',
                         borderColor: errors.answer ? 'var(--accent-error)' : 'var(--border-medium)',
                         backgroundColor: 'rgba(244, 228, 202, 0.3)'
-                      }}
-                      onFocus={(e) => {
-                        if (!errors.answer) {
-                          e.target.style.borderColor = 'var(--border-dark)';
-                        }
-                      }}
-                      onBlur={(e) => {
-                        if (!errors.answer) {
-                          e.target.style.borderColor = 'var(--border-medium)';
-                        }
                       }}
                       maxLength={5000}
                       disabled={isSaving}
@@ -507,19 +695,20 @@ export default function QuestionForm() {
                     className="font-medium mb-3 text-base"
                     style={{ color: 'var(--text-primary)' }}
                   >
-                    Cultural Commonsense Assessment
+                    🧠 Cultural Commonsense Assessment
                   </h3>
                   <p 
                     className="text-sm mb-3 leading-relaxed"
                     style={{ color: 'var(--text-secondary)' }}
                   >
-                    Cultural commonsense, as conceptualized in anthropological and cognitive literature, refers to the set of everyday beliefs, behaviors, values, and practices that are perceived as “natural,” self-evident, and widely shared within a cultural group.
+                    Cultural commonsense refers to everyday beliefs, behaviors, values, and practices 
+                    that are perceived as "natural" and widely shared within a cultural group.
                   </p>
                   <p 
                     className="font-medium mb-3 text-sm"
                     style={{ color: 'var(--text-primary)' }}
                   >
-                    Would most people in your region know the answer to this question? *
+                    Does this question pertain to cultural commonsense in your region? *
                   </p>
                   
                   <div className="space-y-2">
@@ -574,6 +763,32 @@ export default function QuestionForm() {
                     </p>
                   )}
                 </div>
+
+                {/* Real-time Quality Warnings (for current answer only) */}
+                {qualityWarnings.length > 0 && (
+                  <div 
+                    className="mb-4 p-3 border rounded-xl"
+                    style={{ 
+                      background: 'var(--btn-warning-bg)',
+                      borderColor: '#fbbf24'
+                    }}
+                  >
+                    <div className="flex items-start">
+                      <span style={{ color: 'var(--accent-warning)' }} className="mr-2">⚠️</span>
+                      <div className="text-sm" style={{ color: '#92400e' }}>
+                        <p className="font-medium mb-1">Response Quality Notice:</p>
+                        <ul className="text-xs space-y-1">
+                          {qualityWarnings.map((warning, index) => (
+                            <li key={index}>• {warning}</li>
+                          ))}
+                        </ul>
+                        <p className="mt-2 font-medium">
+                          Please provide detailed, thoughtful responses about cultural practices in your region.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Success Message */}
                 {showSuccess && (
@@ -684,7 +899,7 @@ export default function QuestionForm() {
   );
 }
 
-// Enhanced Celebration Modal Component
+// Celebration Modal Component
 function CelebrationModal({ celebration, onClose }: { 
   celebration: {type: string, data: any}, 
   onClose: () => void 
@@ -693,17 +908,17 @@ function CelebrationModal({ celebration, onClose }: {
     topic: {
       icon: '🎯',
       title: 'Topic Completed!',
-      emoji: '',
+      emoji: '🌱🌿✨',
     },
     subcategory: {
       icon: '🏆',
       title: 'Subcategory Mastered!',
-      emoji: '',
+      emoji: '🌿🎋🌟💫',
     },
     category: {
       icon: '👑',
       title: 'Category Champion!',
-      emoji: '',
+      emoji: '🌿🎋🌟💫✨🎯',
     }
   };
 
