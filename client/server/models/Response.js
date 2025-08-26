@@ -48,10 +48,6 @@ const responseSchema = new mongoose.Schema({
     minlength: 4,
     maxlength: 5000
   },
-  culturalCommonsense: {
-    type: Boolean,
-    required: true
-  },
   timeSpent: {
     type: Number, // in seconds
     default: 0
@@ -60,9 +56,14 @@ const responseSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  attentionCheckCorrect: {
-    type: Boolean,
-    default: null
+  attentionCheckType: {
+    type: String,
+    enum: ['context', 'comprehension', 'basic', 'instruction', 'personal'],
+    required: false
+  },
+  expectedAnswer: {
+    type: String,
+    required: false
   }
 }, {
   timestamps: true
@@ -82,5 +83,7 @@ responseSchema.index({
   sessionId: 1, 
   questionId: 1 
 }, { unique: true });
+
+responseSchema.index({ isAttentionCheck: 1 }); // For filtering attention checks
 
 module.exports = mongoose.model('Response', responseSchema);

@@ -22,59 +22,59 @@ export default function QualityWarningModal({
   if (!isOpen) return null;
 
   const getIssueDetails = () => {
-    switch (issueType) {
-      case 'none':
-        return {
-          icon: '🚨',
-          title: 'High Rate of "None" Responses',
-          color: '#dc2626',
-          bgColor: '#fef2f2',
-          borderColor: '#fca5a5',
-          description: `You've answered "none" or "don't know" to ${noneResponseRate.toFixed(0)}% of questions.`,
-          guidance: 'Even if practices vary, you likely have some knowledge about cultural norms in your region.'
-        };
-      case 'gibberish':
-        return {
-          icon: '⚠️',
-          title: 'Low Quality Response Pattern',
-          color: '#dc2626',
-          bgColor: '#fef2f2',
-          borderColor: '#fca5a5',
-          description: `${gibberishResponseRate.toFixed(0)}% of your responses appear to be gibberish or random characters.`,
-          guidance: 'Please provide meaningful responses about cultural practices in your region.'
-        };
-      case 'speed':
-        return {
-          icon: '🏃',
-          title: 'Very Fast Response Pattern',
-          color: '#d97706',
-          bgColor: '#fffbeb',
-          borderColor: '#fcd34d',
-          description: `${fastResponseRate.toFixed(0)}% of your responses were completed very quickly.`,
-          guidance: 'Please take time to read questions carefully and provide thoughtful answers.'
-        };
-      case 'multiple':
-        return {
-          icon: '🔍',
-          title: 'Multiple Quality Issues Detected',
-          color: '#dc2626',
-          bgColor: '#fef2f2',
-          borderColor: '#fca5a5',
-          description: 'We\'ve detected several response quality issues.',
-          guidance: 'Please focus on providing detailed, thoughtful responses about cultural practices.'
-        };
-      default:
-        return {
-          icon: '🤔',
-          title: 'Response Quality Check',
-          color: '#d97706',
-          bgColor: '#fffbeb',
-          borderColor: '#fcd34d',
-          description: 'Your response quality could be improved.',
-          guidance: 'Please provide specific details about cultural practices in your region.'
-        };
-    }
-  };
+  switch (issueType) {
+    case 'none':
+      return {
+        icon: '🚨',
+        title: 'High Rate of "None" Responses',
+        color: '#dc2626',
+        bgColor: '#fef2f2',
+        borderColor: '#fca5a5',
+        description: `You've answered "none" or "don't know" to ${noneResponseRate.toFixed(0)}% of questions.`,
+        guidance: 'Even if practices vary, you likely have some knowledge about cultural norms in your region.'
+      };
+    case 'gibberish':
+      return {
+        icon: '⚠️',
+        title: 'Low Quality Response Pattern',
+        color: '#dc2626',
+        bgColor: '#fef2f2',
+        borderColor: '#fca5a5',
+        description: `${gibberishResponseRate.toFixed(0)}% of your responses appear to be gibberish or random characters.`,
+        guidance: 'Please provide meaningful responses about cultural practices in your region.'
+      };
+    case 'speed':
+      return {
+        icon: '🏃',
+        title: 'Very Fast Response Pattern',
+        color: '#d97706',
+        bgColor: '#fffbeb',
+        borderColor: '#fcd34d',
+        description: `${fastResponseRate.toFixed(0)}% of your responses were completed very quickly (under 8 seconds).`,
+        guidance: 'Please take time to read questions carefully and provide thoughtful answers. Quality responses typically take at least 15-30 seconds to write.'
+      };
+    case 'multiple':
+      return {
+        icon: '🔍',
+        title: 'Multiple Quality Issues Detected',
+        color: '#dc2626',
+        bgColor: '#fef2f2',
+        borderColor: '#fca5a5',
+        description: 'We\'ve detected several response quality issues.',
+        guidance: 'Please focus on providing detailed, thoughtful responses about cultural practices.'
+      };
+    default:
+      return {
+        icon: '🤔',
+        title: 'Response Quality Check',
+        color: '#d97706',
+        bgColor: '#fffbeb',
+        borderColor: '#fcd34d',
+        description: 'Your response quality could be improved.',
+        guidance: 'Please provide specific details about cultural practices in your region.'
+      };
+  }
+};
 
   const issueDetails = getIssueDetails();
 
@@ -175,9 +175,10 @@ export default function QualityWarningModal({
             )}
             {issueType === 'speed' && (
               <>
-                <li>• Read each question carefully before answering</li>
-                <li>• Think about your personal experiences with the cultural practice</li>
-                <li>• Provide specific details and examples when possible</li>
+                <li>• Read each question carefully and think about your personal experiences</li>
+                <li>• Take at least 15-30 seconds to write a thoughtful response</li>
+                <li>• Describe specific examples and details when you can</li>
+                <li>• It's okay to take time to recall cultural practices from your region</li>
               </>
             )}
             {(issueType === 'multiple' || !issueType) && (

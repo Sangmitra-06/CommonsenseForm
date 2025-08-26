@@ -42,10 +42,9 @@ export interface QuestionResponse {
   topic: string;
   question: string;
   answer: string;
-  culturalCommonsense: boolean;
   timeSpent: number;
   timestamp: string;
-  qualityScore?: number; // Add this field
+  qualityScore?: number;
 }
 
 export interface Progress {
@@ -83,9 +82,10 @@ export interface AttentionCheck {
   question: string;
   options: string[];
   correctAnswer: number;
+  expectedAnswer?: string; // Add this new field
   currentTopic: string;
   currentCategory: string;
-  type: string; // Add this line to include the 'type' property
+  type?: string;
 }
 
 export const REGIONS = {

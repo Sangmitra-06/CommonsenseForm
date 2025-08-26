@@ -247,61 +247,6 @@ export default function CompletionPage() {
               The insights you've shared about cultural practices in your region are invaluable for research 
               and preservation of cultural knowledge.
             </p>
-            <p>
-              Your participation helps us document and understand the nuances of cultural commonsense across 
-              different regions of India, contributing to anthropological and sociological research.
-            </p>
-          </div>
-        </div>
-
-        {/* Impact Statement */}
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
-          <div 
-            className="p-6 rounded-2xl"
-            style={{ 
-              background: 'var(--tag-category-bg)',
-              border: '1px solid var(--border-light)'
-            }}
-          >
-            <h3 
-              className="text-lg font-bold mb-3"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              Your Impact
-            </h3>
-            <ul 
-              className="space-y-2 text-sm"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              <li>• Contributed to cultural documentation efforts</li>
-              <li>• Helped preserve regional knowledge</li>
-              <li>• Supported academic research initiatives</li>
-              <li>• Enhanced cross-cultural understanding</li>
-            </ul>
-          </div>
-          
-          <div 
-            className="p-6 rounded-2xl"
-            style={{ 
-              background: 'var(--tag-subcategory-bg)',
-              border: '1px solid var(--border-light)'
-            }}
-          >
-            <h3 
-              className="text-lg font-bold mb-3"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              What Happens Next
-            </h3>
-            <ul 
-              className="space-y-2 text-sm"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              <li>• Your responses are securely stored</li>
-              <li>• Data will be analyzed for research purposes</li>
-              <li>• Findings may be published in academic journals</li>
-              <li>• Results contribute to cultural studies</li>
-            </ul>
           </div>
         </div>
 
@@ -335,11 +280,12 @@ export default function CompletionPage() {
             <div>
               <strong>Topics Covered:</strong> {stats.topicsCompleted}
             </div>
-            <div>
-              <strong>Response Quality:</strong> {stats.averageTimePerQuestion > 30 ? 'Detailed' : 'Concise'}
-            </div>
           </div>
         </div>
+
+  
+
+        
 
 
         {/* Final Thank You */}

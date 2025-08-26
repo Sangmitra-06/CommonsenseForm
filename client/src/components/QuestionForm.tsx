@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from '../context/FormContext.tsx';
 import { validateAnswer, shouldShowAttentionCheck, generateAttentionCheck, analyzeResponseQuality, analyzeUserPattern } from '../utils/helpers.ts';
-import AttentionCheck from './AttentionCheck.tsx';
 import ProgressBar from './ProgressBar.tsx';
 import NavigationMenu from './NavigationMenu.tsx';
 import QualityWarningModal from './QualityWarningModel.tsx';
@@ -22,8 +21,7 @@ export default function QuestionForm() {
 
   // Basic form state
   const [answer, setAnswer] = useState('');
-  const [culturalCommonsense, setCulturalCommonsense] = useState<boolean | null>(null);
-  const [errors, setErrors] = useState<{ answer?: string; cultural?: string }>({});
+  const [errors, setErrors] = useState<{ answer?: string }>({});
   const [isSaving, setIsSaving] = useState(false);
   const [startTime, setStartTime] = useState(Date.now());
   const [showSuccess, setShowSuccess] = useState(false);
@@ -33,7 +31,7 @@ export default function QuestionForm() {
   const [showNavigationMenu, setShowNavigationMenu] = useState(false);
 
   // Attention check state
-  const [showAttentionCheck, setShowAttentionCheck] = useState(false);
+  const [isAttentionCheck, setIsAttentionCheck] = useState(false);
   const [attentionCheck, setAttentionCheck] = useState<any>(null);
   const [lastAttentionCheckAt, setLastAttentionCheckAt] = useState<number>(-1);
   const [attentionChecksPassed, setAttentionChecksPassed] = useState(0);
@@ -57,6 +55,31 @@ export default function QuestionForm() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const currentQuestionData = getCurrentQuestionData();
 
+  // Check if this should be an attention check (every 7 questions)
+  useEffect(() => {
+    const totalResponses = state.responses.size;
+    
+    if (lastAttentionCheckAt === totalResponses) return;
+    
+    if (shouldShowAttentionCheck(totalResponses) && currentQuestionData) {
+      console.log('SHOWING ATTENTION CHECK at response count:', totalResponses);
+      
+      const check = generateAttentionCheck(
+        currentQuestionData.category,
+        currentQuestionData.topic,
+        state.userInfo || undefined
+      );
+      
+      setAttentionCheck(check);
+      setIsAttentionCheck(true);
+      setLastAttentionCheckAt(totalResponses);
+      setAnswer(''); // Clear any existing answer
+    } else if (!shouldShowAttentionCheck(totalResponses)) {
+      setIsAttentionCheck(false);
+      setAttentionCheck(null);
+    }
+  }, [state.responses.size, lastAttentionCheckAt, currentQuestionData]);
+
   // Reset form when question changes
   useEffect(() => {
     if (currentQuestionData && currentQuestionData.questionId !== lastQuestionId) {
@@ -70,57 +93,33 @@ export default function QuestionForm() {
       setNavigationDirection(null);
       setQualityWarnings([]);
       
-      const existingResponse = state.responses.get(currentQuestionData.questionId);
-      if (existingResponse) {
-        console.log('Found existing response:', existingResponse);
-        setAnswer(existingResponse.answer);
-        setCulturalCommonsense(existingResponse.culturalCommonsense);
+      // Don't load existing response for attention checks
+      if (!isAttentionCheck) {
+        const existingResponse = state.responses.get(currentQuestionData.questionId);
+        if (existingResponse) {
+          console.log('Found existing response:', existingResponse);
+          setAnswer(existingResponse.answer);
+        } else {
+          console.log('No existing response, clearing form');
+          setAnswer('');
+        }
       } else {
-        console.log('No existing response, clearing form');
+        // For attention checks, always start with empty answer
         setAnswer('');
-        setCulturalCommonsense(null);
       }
     }
-  }, [currentQuestionData?.questionId, lastQuestionId, state.responses]);
+  }, [currentQuestionData?.questionId, lastQuestionId, state.responses, isAttentionCheck]);
 
-  // Attention check logic
+  // Quality check logic (skip for attention checks)
   useEffect(() => {
     const totalResponses = state.responses.size;
     
-    if (showAttentionCheck || lastAttentionCheckAt === totalResponses) return;
-    
-    if (shouldShowAttentionCheck(totalResponses) && currentQuestionData) {
-      console.log('SHOWING ATTENTION CHECK at response count:', totalResponses);
-      
-      const check = generateAttentionCheck(
-        currentQuestionData.category,
-        currentQuestionData.topic,
-        state.userInfo || undefined
-      );
-      
-      setAttentionCheck(check);
-      setShowAttentionCheck(true);
-      setLastAttentionCheckAt(totalResponses);
-    }
-  }, [state.responses.size, showAttentionCheck, lastAttentionCheckAt, currentQuestionData]);
-
-  // FIXED: Comprehensive quality check logic
-  useEffect(() => {
-    const totalResponses = state.responses.size;
-    
-    // Need at least 5 responses to analyze
-    if (totalResponses < 5) return;
-    
-    // Don't check if modal is already open
-    if (showQualityModal) return;
+    if (totalResponses < 5 || showQualityModal || isAttentionCheck) return;
 
     const allResponses = Array.from(state.responses.values());
     const analysisData = allResponses.map(r => ({ answer: r.answer, timeSpent: r.timeSpent }));
     const patternAnalysis = analyzeUserPattern(analysisData);
     
-    console.log('Quality pattern analysis:', patternAnalysis);
-
-    // Show alert immediately when ANY pattern becomes problematic
     if (patternAnalysis.suspiciousPattern && !hasShownQualityAlert) {
       console.log('SHOWING QUALITY ALERT: First detection at', totalResponses);
       setShowQualityModal(true);
@@ -134,7 +133,6 @@ export default function QuestionForm() {
         speedRate: patternAnalysis.fastResponseRate
       });
     }
-    // Show again after 5 responses if still problematic
     else if (patternAnalysis.suspiciousPattern && 
              hasShownQualityAlert && 
              lastQualityAlertAt > 0 && 
@@ -150,7 +148,7 @@ export default function QuestionForm() {
         speedRate: patternAnalysis.fastResponseRate
       });
     }
-  }, [state.responses.size, showQualityModal, hasShownQualityAlert, lastQualityAlertAt]);
+  }, [state.responses.size, showQualityModal, hasShownQualityAlert, lastQualityAlertAt, isAttentionCheck]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -161,15 +159,11 @@ export default function QuestionForm() {
   }, [answer]);
 
   const validateForm = () => {
-    const newErrors: { answer?: string; cultural?: string } = {};
+    const newErrors: { answer?: string } = {};
     
     const answerValidation = validateAnswer(answer);
     if (!answerValidation.isValid) {
       newErrors.answer = answerValidation.message;
-    }
-
-    if (culturalCommonsense === null) {
-      newErrors.cultural = 'Please select whether this pertains to cultural commonsense';
     }
 
     setErrors(newErrors);
@@ -184,8 +178,8 @@ export default function QuestionForm() {
       setErrors(prev => ({ ...prev, answer: undefined }));
     }
 
-    // Real-time quality feedback for current response only
-    if (newValue.length > 5) {
+    // Real-time quality feedback for current response only (skip for attention checks)
+    if (newValue.length > 5 && !isAttentionCheck) {
       const qualityAnalysis = analyzeResponseQuality(newValue);
       if (qualityAnalysis.isLowQuality) {
         setQualityWarnings(qualityAnalysis.issues);
@@ -197,16 +191,8 @@ export default function QuestionForm() {
     }
   };
 
-  const handleCulturalChange = (value: boolean) => {
-    setCulturalCommonsense(value);
-    if (errors.cultural) {
-      setErrors(prev => ({ ...prev, cultural: undefined }));
-    }
-  };
-
   const handleClear = () => {
     setAnswer('');
-    setCulturalCommonsense(null);
     setErrors({});
     setShowSuccess(false);
     setQualityWarnings([]);
@@ -265,24 +251,41 @@ export default function QuestionForm() {
     }
   };
 
+  // SIMPLIFIED: Just save the response, no automatic validation
   const performSave = async (qualityAnalysis?: any) => {
-    if (!qualityAnalysis) {
-      qualityAnalysis = analyzeResponseQuality(answer);
-    }
-
     if (!currentQuestionData || !state.sessionId) {
       console.error('Missing required data for save');
       return false;
+    }
+
+    // For attention checks, we'll create a special question ID to identify them
+    const questionId = isAttentionCheck 
+      ? `ATTENTION_CHECK_${state.responses.size}_${currentQuestionData.questionId}`
+      : currentQuestionData.questionId;
+
+    const questionText = isAttentionCheck 
+      ? attentionCheck.question 
+      : currentQuestionData.question;
+
+    if (!qualityAnalysis) {
+      qualityAnalysis = analyzeResponseQuality(answer);
     }
 
     setIsSaving(true);
     
     try {
       const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+
+      console.log('Time calculation:', {
+      startTime: new Date(startTime).toISOString(),
+      endTime: new Date().toISOString(),
+      timeSpentSeconds: timeSpent,
+      answerLength: answer.length
+    });
       
       const response = {
         sessionId: state.sessionId,
-        questionId: currentQuestionData.questionId,
+        questionId: questionId,
         categoryIndex: state.currentPosition.categoryIndex,
         subcategoryIndex: state.currentPosition.subcategoryIndex,
         topicIndex: state.currentPosition.topicIndex,
@@ -290,12 +293,15 @@ export default function QuestionForm() {
         category: currentQuestionData.category,
         subcategory: currentQuestionData.subcategory,
         topic: currentQuestionData.topic,
-        question: currentQuestionData.question,
+        question: questionText,
         answer: answer.trim(),
-        culturalCommonsense: culturalCommonsense!,
         timeSpent,
         timestamp: new Date().toISOString(),
-        qualityScore: qualityAnalysis.score
+        qualityScore: qualityAnalysis.score,
+        // Add metadata for attention checks
+        isAttentionCheck: isAttentionCheck,
+        attentionCheckType: isAttentionCheck ? attentionCheck.type : undefined,
+        expectedAnswer: isAttentionCheck ? attentionCheck.expectedAnswer : undefined
       };
 
       await saveResponse(response);
@@ -307,7 +313,7 @@ export default function QuestionForm() {
       
     } catch (error) {
       console.error('SAVE ERROR:', error);
-      throw error; // Re-throw to handle in calling function
+      throw error;
     } finally {
       setIsSaving(false);
     }
@@ -348,7 +354,7 @@ export default function QuestionForm() {
         setTimeout(() => {
           navigateToNext();
           
-          if (milestone) {
+          if (milestone && !isAttentionCheck) {
             setShowCelebration({type: milestone.type, data: milestone});
           }
         }, 300);
@@ -368,8 +374,9 @@ export default function QuestionForm() {
   };
 
   const handleSkip = () => {
+    if (isAttentionCheck) return; // Don't allow skipping attention checks
+    
     setAnswer('');
-    setCulturalCommonsense(null);
     setErrors({});
     
     setNavigationDirection('next');
@@ -380,31 +387,9 @@ export default function QuestionForm() {
     }, 300);
   };
 
-  const handleAttentionCheckComplete = (correct: boolean) => {
-    console.log('=== ATTENTION CHECK COMPLETED ===');
-    console.log('Result:', correct ? 'CORRECT' : 'INCORRECT');
-    
-    if (correct) {
-      setAttentionChecksPassed(prev => {
-        console.log('Attention checks passed:', prev + 1);
-        return prev + 1;
-      });
-    } else {
-      setAttentionChecksFailed(prev => {
-        console.log('Attention checks failed:', prev + 1);
-        return prev + 1;
-      });
-    }
-    
-    setShowAttentionCheck(false);
-    setAttentionCheck(null);
-    
-    console.log('Attention check state cleared');
-  };
-
   const handleNavigateToQuestion = async (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => {
     const isValid = validateForm();
-    if (isValid && answer.trim() && culturalCommonsense !== null) {
+    if (isValid && answer.trim()) {
       console.log('QuestionForm: Saving current response before navigation');
       try {
         await handleSave();
@@ -417,17 +402,13 @@ export default function QuestionForm() {
     await navigateToPosition(categoryIndex, subcategoryIndex, topicIndex, questionIndex);
   };
 
-  // FIXED: Quality modal close handler
   const handleQualityModalClose = () => {
     console.log('Quality modal closed - user will improve response');
     setShowQualityModal(false);
     
-    // Clear current response to force user to re-enter
     setAnswer('');
-    setCulturalCommonsense(null);
     setErrors({});
     
-    // Focus on textarea for improvement
     setTimeout(() => {
       if (textareaRef.current) {
         textareaRef.current.focus();
@@ -438,12 +419,6 @@ export default function QuestionForm() {
   const closeCelebration = () => {
     setShowCelebration(null);
   };
-
-  // Show attention check if needed
-  if (showAttentionCheck && attentionCheck) {
-    console.log('Rendering attention check component');
-    return <AttentionCheck attentionCheck={attentionCheck} onComplete={handleAttentionCheckComplete} />;
-  }
 
   if (!currentQuestionData) {
     return (
@@ -464,7 +439,17 @@ export default function QuestionForm() {
                          state.currentPosition.topicIndex === 0 && 
                          state.currentPosition.questionIndex === 0;
 
-  const isFormValid = answer.trim().length >= 4 && culturalCommonsense !== null;
+  const isFormValid = answer.trim().length >= 4;
+
+  // For attention checks, use the attention check question, but make it look like a regular question
+  const displayQuestionData = isAttentionCheck 
+    ? {
+        topic: currentQuestionData.topic, // Keep the current topic
+        category: currentQuestionData.category, // Keep the current category
+        subcategory: currentQuestionData.subcategory, // Keep the current subcategory
+        question: attentionCheck.question // Use the attention check question
+      }
+    : currentQuestionData;
 
   return (
     <div 
@@ -486,7 +471,7 @@ export default function QuestionForm() {
           }}
           title="Navigation Menu"
         >
-          <span className="text-xl">🗂️</span>
+          <span className="text-xl">📋</span>
         </button>
       </div>
 
@@ -497,16 +482,18 @@ export default function QuestionForm() {
         onNavigateTo={handleNavigateToQuestion}
       />
 
-      {/* FIXED: Quality Warning Modal */}
-      <QualityWarningModal
-        isOpen={showQualityModal}
-        onClose={handleQualityModalClose}
-        qualityIssues={qualityWarnings}
-        issueType={currentQualityIssue.type}
-        noneResponseRate={currentQualityIssue.noneRate}
-        gibberishResponseRate={currentQualityIssue.gibberishRate}
-        fastResponseRate={currentQualityIssue.speedRate}
-      />
+      {/* Quality Warning Modal (not shown for attention checks) */}
+      {!isAttentionCheck && (
+        <QualityWarningModal
+          isOpen={showQualityModal}
+          onClose={handleQualityModalClose}
+          qualityIssues={qualityWarnings}
+          issueType={currentQualityIssue.type}
+          noneResponseRate={currentQualityIssue.noneRate}
+          gibberishResponseRate={currentQualityIssue.gibberishRate}
+          fastResponseRate={currentQualityIssue.speedRate}
+        />
+      )}
       
       {/* Celebration Modal */}
       {showCelebration && (
@@ -542,7 +529,6 @@ export default function QuestionForm() {
                     background: 'var(--btn-primary-bg)' 
                   }}
                 >
-                  <span className="mr-2">🍃</span>
                   Question {currentQuestionInTopic} of {topicProgress}
                 </div>
                 
@@ -550,7 +536,7 @@ export default function QuestionForm() {
                   className="text-2xl md:text-3xl font-semibold mb-3"
                   style={{ color: 'var(--text-primary)' }}
                 >
-                  {currentQuestionData.topic}
+                  {displayQuestionData.topic}
                 </h1>
                 
                 <div className="flex items-center justify-center space-x-2 text-sm">
@@ -562,7 +548,7 @@ export default function QuestionForm() {
                       border: '1px solid var(--border-light)'
                     }}
                   >
-                    {currentQuestionData.category}
+                    {displayQuestionData.category}
                   </span>
                   <span style={{ color: 'var(--text-muted)' }}>•</span>
                   <span 
@@ -573,7 +559,7 @@ export default function QuestionForm() {
                       border: '1px solid var(--border-light)'
                     }}
                   >
-                    {currentQuestionData.subcategory}
+                    {displayQuestionData.subcategory}
                   </span>
                 </div>
               </div>
@@ -611,7 +597,7 @@ export default function QuestionForm() {
               }}
             >
               
-              {/* Question Header */}
+              {/* Question Header - looks identical for both regular and attention check questions */}
               <div 
                 className="p-6"
                 style={{ 
@@ -620,7 +606,7 @@ export default function QuestionForm() {
                 }}
               >
                 <h2 className="text-lg md:text-xl font-medium leading-relaxed">
-                  {currentQuestionData.question}
+                  {displayQuestionData.question}
                 </h2>
               </div>
 
@@ -629,11 +615,16 @@ export default function QuestionForm() {
                 <div className="mb-6">
                   <div className="flex justify-between items-center mb-3">
                     <label 
-                      htmlFor="main-answer" 
                       className="block text-base font-medium"
                       style={{ color: 'var(--text-primary)' }}
                     >
-                      Your Answer *
+                      <span>Your Answer *</span>
+                      <span 
+                        className="block text-xs font-normal mt-1"
+                        style={{ color: 'var(--text-secondary)' }}
+                      >
+                        You can specify "none" if no answer exists
+                      </span>
                     </label>
                     <button
                       onClick={handleClear}
@@ -644,13 +635,13 @@ export default function QuestionForm() {
                     </button>
                   </div>
                   
+                  {/* Regular Question Textarea - same for both regular and attention checks */}
                   <div className="relative">
                     <textarea
                       ref={textareaRef}
-                      id="main-answer"
                       value={answer}
                       onChange={handleAnswerChange}
-                      placeholder="Share your knowledge about cultural practices in your region..."
+                      placeholder="Share your knowledge about cultural practices in your region, or specify 'none' if no answer exists..."
                       className={`w-full px-4 py-3 border-2 rounded-xl resize-none min-h-[120px] transition-all duration-200 ${
                         errors.answer ? 'focus:border-red-400' : ''
                       }`}
@@ -663,7 +654,6 @@ export default function QuestionForm() {
                       disabled={isSaving}
                     />
                     
-                    {/* Character count badge */}
                     <div 
                       className={`absolute bottom-3 right-3 px-2 py-1 rounded-lg text-xs border`}
                       style={{
@@ -683,89 +673,8 @@ export default function QuestionForm() {
                   )}
                 </div>
 
-                {/* Cultural Commonsense Section */}
-                <div 
-                  className="mb-6 p-4 rounded-xl"
-                  style={{ 
-                    background: 'linear-gradient(to right, var(--tag-subcategory-bg), var(--tag-category-bg))',
-                    border: '1px solid var(--border-light)'
-                  }}
-                >
-                  <h3 
-                    className="font-medium mb-3 text-base"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    🧠 Cultural Commonsense Assessment
-                  </h3>
-                  <p 
-                    className="text-sm mb-3 leading-relaxed"
-                    style={{ color: 'var(--text-secondary)' }}
-                  >
-                    Cultural commonsense refers to everyday beliefs, behaviors, values, and practices 
-                    that are perceived as "natural" and widely shared within a cultural group.
-                  </p>
-                  <p 
-                    className="font-medium mb-3 text-sm"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    Does this question pertain to cultural commonsense in your region? *
-                  </p>
-                  
-                  <div className="space-y-2">
-                    <div 
-                      className="flex items-center cursor-pointer p-3 rounded-lg hover:bg-white/60 transition-colors"
-                      onClick={() => handleCulturalChange(true)}
-                    >
-                      <input
-                        type="radio"
-                        id="cultural-yes"
-                        checked={culturalCommonsense === true}
-                        onChange={() => handleCulturalChange(true)}
-                        disabled={isSaving}
-                        className="h-4 w-4"
-                        style={{ accentColor: 'var(--accent-secondary)' }}
-                      />
-                      <label 
-                        htmlFor="cultural-yes" 
-                        className="ml-3 cursor-pointer text-sm"
-                        style={{ color: 'var(--text-primary)' }}
-                      >
-                        ✅ Yes, this relates to cultural commonsense
-                      </label>
-                    </div>
-                    
-                    <div 
-                      className="flex items-center cursor-pointer p-3 rounded-lg hover:bg-white/60 transition-colors"
-                      onClick={() => handleCulturalChange(false)}
-                    >
-                      <input
-                        type="radio"
-                        id="cultural-no"
-                        checked={culturalCommonsense === false}
-                        onChange={() => handleCulturalChange(false)}
-                        disabled={isSaving}
-                        className="h-4 w-4"
-                        style={{ accentColor: 'var(--accent-secondary)' }}
-                      />
-                      <label 
-                        htmlFor="cultural-no" 
-                        className="ml-3 cursor-pointer text-sm"
-                        style={{ color: 'var(--text-primary)' }}
-                      >
-                        ❌ No, this does not relate to cultural commonsense
-                      </label>
-                    </div>
-                  </div>
-                  
-                  {errors.cultural && (
-                    <p className="text-sm mt-2 font-medium" style={{ color: 'var(--accent-error)' }}>
-                      {errors.cultural}
-                    </p>
-                  )}
-                </div>
-
-                {/* Real-time Quality Warnings (for current answer only) */}
-                {qualityWarnings.length > 0 && (
+                {/* Real-time Quality Warnings (for regular questions only) */}
+                {!isAttentionCheck && qualityWarnings.length > 0 && (
                   <div 
                     className="mb-4 p-3 border rounded-xl"
                     style={{ 
@@ -783,7 +692,7 @@ export default function QuestionForm() {
                           ))}
                         </ul>
                         <p className="mt-2 font-medium">
-                          Please provide detailed, thoughtful responses about cultural practices in your region.
+                          Please provide detailed responses or specify "none" if not applicable.
                         </p>
                       </div>
                     </div>
@@ -821,8 +730,7 @@ export default function QuestionForm() {
                       <div className="text-sm" style={{ color: '#92400e' }}>
                         <p className="font-medium mb-1">Please complete the following:</p>
                         <ul className="text-xs space-y-1">
-                          {answer.trim().length < 4 && <li>• Add at least 4 characters to your answer</li>}
-                          {culturalCommonsense === null && <li>• Select whether this relates to cultural commonsense</li>}
+                          <li>• Add at least 4 characters to your answer or specify "none"</li>
                         </ul>
                       </div>
                     </div>
@@ -848,17 +756,20 @@ export default function QuestionForm() {
                   </button>
 
                   <div className="flex space-x-3">
-                    <button
-                      onClick={handleSkip}
-                      disabled={isNavigating}
-                      className="px-4 py-2 font-medium rounded-xl transition-all duration-200 text-sm"
-                      style={{ 
-                        background: 'var(--btn-warning-bg)',
-                        color: '#92400e'
-                      }}
-                    >
-                      Skip
-                    </button>
+                    {/* Hide skip for attention checks */}
+                    {!isAttentionCheck && (
+                      <button
+                        onClick={handleSkip}
+                        disabled={isNavigating}
+                        className="px-4 py-2 font-medium rounded-xl transition-all duration-200 text-sm"
+                        style={{ 
+                          background: 'var(--btn-warning-bg)',
+                          color: '#92400e'
+                        }}
+                      >
+                        Skip
+                      </button>
+                    )}
 
                     <button
                       onClick={handleSave}
@@ -899,7 +810,7 @@ export default function QuestionForm() {
   );
 }
 
-// Celebration Modal Component
+// Celebration Modal Component (keep icons only, no emojis)
 function CelebrationModal({ celebration, onClose }: { 
   celebration: {type: string, data: any}, 
   onClose: () => void 
@@ -908,17 +819,14 @@ function CelebrationModal({ celebration, onClose }: {
     topic: {
       icon: '🎯',
       title: 'Topic Completed!',
-      emoji: '🌱🌿✨',
     },
     subcategory: {
       icon: '🏆',
       title: 'Subcategory Mastered!',
-      emoji: '🌿🎋🌟💫',
     },
     category: {
       icon: '👑',
       title: 'Category Champion!',
-      emoji: '🌿🎋🌟💫✨🎯',
     }
   };
 
@@ -961,9 +869,6 @@ function CelebrationModal({ celebration, onClose }: {
             {celebration.type === 'subcategory' && `from ${celebration.data.categoryName}`}
             {celebration.type === 'category' && 'Entire category completed!'}
           </p>
-        </div>
-        <div className="text-3xl mb-4 animate-pulse">
-          {config.emoji}
         </div>
         <button
           onClick={onClose}

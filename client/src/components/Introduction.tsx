@@ -67,6 +67,8 @@ export default function Introduction({ onStartNew, onResume, hasExistingSession 
               <li>Answer based on your personal knowledge and experience</li>
               <li>There are no right or wrong answers - we value your authentic perspective</li>
               <li>You can pause and resume the survey at any time</li>
+              <li>If you're unfamiliar with a practice, you can specify "none" or explain what you do know</li>
+              <li>Please provide thoughtful, detailed responses when possible</li>
             </ul>
           </div>
 

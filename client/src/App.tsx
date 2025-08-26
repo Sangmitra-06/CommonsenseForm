@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { FormProvider, useForm } from './context/FormContext.tsx';
-import Introduction from './components/Introduction.tsx';
+import IntroductionWelcome from './components/IntroductionWelcome.tsx';
+import IntroductionStructure from './components/IntroductionStructure.tsx';
 import UserInfo from './components/UserInfo.tsx';
 import QuestionForm from './components/QuestionForm.tsx';
 import CompletionPage from './components/CompletionPage.tsx';
 import './App.css';
 
-type AppStage = 'introduction' | 'userInfo' | 'questions' | 'completed';
+type AppStage = 'welcome' | 'structure' | 'userInfo' | 'questions' | 'completed';
 
 function AppContent() {
   const { state, createUserSession, loadUserSession } = useForm();
-  const [currentStage, setCurrentStage] = useState<AppStage>('introduction');
+  const [currentStage, setCurrentStage] = useState<AppStage>('welcome');
   const [isInitializing, setIsInitializing] = useState(true);
   const [hasCheckedSession, setHasCheckedSession] = useState(false);
   const [hasExistingSession, setHasExistingSession] = useState(false);
@@ -56,7 +57,6 @@ function AppContent() {
     }
   }, [state.questionsData.length, state.isLoading, hasCheckedSession]);
 
-
   // Update stage based on form state
   useEffect(() => {
     if (!hasCheckedSession) return;
@@ -67,6 +67,10 @@ function AppContent() {
       setCurrentStage('questions');
     }
   }, [state.isCompleted, state.sessionId, state.userInfo, hasCheckedSession]);
+
+  const handleWelcomeContinue = () => {
+    setCurrentStage('structure');
+  };
 
   const handleStartNewSurvey = () => {
     // Clear any existing session
@@ -140,9 +144,11 @@ function AppContent() {
   }
 
   switch (currentStage) {
-    case 'introduction':
+    case 'welcome':
+      return <IntroductionWelcome onContinue={handleWelcomeContinue} />;
+    case 'structure':
       return (
-        <Introduction 
+        <IntroductionStructure 
           onStartNew={handleStartNewSurvey}
           onResume={handleResumeSurvey}
           hasExistingSession={hasExistingSession}
@@ -155,13 +161,7 @@ function AppContent() {
     case 'completed':
       return <CompletionPage />;
     default:
-      return (
-        <Introduction 
-          onStartNew={handleStartNewSurvey}
-          onResume={handleResumeSurvey}
-          hasExistingSession={hasExistingSession}
-        />
-      );
+      return <IntroductionWelcome onContinue={handleWelcomeContinue} />;
   }
 }
 

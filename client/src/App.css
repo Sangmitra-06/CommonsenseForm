@@ -5,8 +5,10 @@
 /* Color Palette - Easy to experiment with different colors */
 :root {
   --color-cream: #fef7f0;      /* Cream */
+  --color-cream-changed: #FAFAE2;    
 --color-brown: #c2410c;      /* Terracotta */
 --color-blue-gray: #faefe2;  /* Light orange */
+--color-blue-gray-changed: #FAE9E2; 
 --color-olive: #9a3412;      /* Burnt sienna */
 --color-dark-olive: #7c2d12; /* Dark red */
 --color-dark-brown: #431407; /* Deep brown */
@@ -260,8 +262,10 @@ textarea:focus {
 
 /* Utility classes for custom colors */
 .bg-custom-cream { background-color: var(--color-cream); }
+.bg-custom-cream-changed { background-color: var(--color-cream-changed); }
 .bg-custom-brown { background-color: var(--color-brown); }
 .bg-custom-blue-gray { background-color: var(--color-blue-gray); }
+.bg-custom-blue-gray-changed { background-color: var(--color-blue-gray-changed); }
 .bg-custom-olive { background-color: var(--color-olive); }
 .bg-custom-dark-olive { background-color: var(--color-dark-olive); }
 .bg-custom-dark-brown { background-color: var(--color-dark-brown); }

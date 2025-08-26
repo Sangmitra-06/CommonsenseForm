@@ -40,11 +40,11 @@ export const loadQuestionsData = async (): Promise<Category[]> => {
 
 export const validateAnswer = (answer: string): { isValid: boolean; message?: string } => {
   if (!answer || answer.trim().length === 0) {
-    return { isValid: false, message: 'Please provide an answer' };
+    return { isValid: false, message: 'Please provide an answer or specify "none" if no answer exists' };
   }
   
   if (answer.trim().length < 4) {
-    return { isValid: false, message: 'Please provide a more detailed answer (at least 4 characters)' };
+    return { isValid: false, message: 'Please provide a more detailed answer (at least 4 characters) or specify "none"' };
   }
   
   if (answer.length > 5000) {
@@ -54,8 +54,9 @@ export const validateAnswer = (answer: string): { isValid: boolean; message?: st
   return { isValid: true };
 };
 
+// UPDATED: Changed from 15 to 7 questions
 export const shouldShowAttentionCheck = (questionCount: number): boolean => {
-  return questionCount > 0 && questionCount % 15 === 0;
+  return questionCount > 0 && questionCount % 7 === 0;
 };
 
 // Comprehensive quality analysis
@@ -172,6 +173,7 @@ export const analyzeResponseQuality = (answer: string): {
   };
 };
 
+// FIXED: Comprehensive pattern analysis
 // Comprehensive pattern analysis
 export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: number}>): {
   suspiciousPattern: boolean;
@@ -179,7 +181,7 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
   noneResponseRate: number;
   gibberishResponseRate: number;
   fastResponseRate: number;
-  issueType: 'none' | 'gibberish' | 'speed' | 'repetition' | 'quality' | 'multiple' | null;
+  issueType: string | null;
 } => {
   const warnings: string[] = [];
   let suspiciousPattern = false;
@@ -205,6 +207,16 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
     
     if (analysis.isNoneResponse) noneCount++;
     if (analysis.isGibberish) gibberishCount++;
+    
+    // FIXED: Check for responses that are TOO FAST (less than 8 seconds)
+    // Previously this was checking if timeSpent < 8, which is correct
+    // But make sure we're getting actual time values
+    console.log('Response time check:', {
+      answer: response.answer.substring(0, 20) + '...',
+      timeSpent: response.timeSpent,
+      isFast: response.timeSpent < 8
+    });
+    
     if (response.timeSpent < 8) fastResponseCount++;
   });
 
@@ -212,25 +224,47 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
   const gibberishResponseRate = (gibberishCount / responses.length) * 100;
   const fastResponseRate = (fastResponseCount / responses.length) * 100;
 
-  let issueType: 'none' | 'gibberish' | 'speed' | 'repetition' | 'quality' | 'multiple' | null = null;
+  console.log('Pattern analysis results:', {
+    totalResponses: responses.length,
+    noneCount,
+    gibberishCount,
+    fastResponseCount,
+    noneResponseRate: noneResponseRate.toFixed(1),
+    gibberishResponseRate: gibberishResponseRate.toFixed(1),
+    fastResponseRate: fastResponseRate.toFixed(1)
+  });
+
+  let issueCount = 0;
+  let primaryIssue: string | null = null;
 
   // Check for problematic patterns (30% threshold for all)
   if (noneResponseRate >= 30) {
     warnings.push(`High rate of "none" responses (${noneResponseRate.toFixed(1)}%)`);
     suspiciousPattern = true;
-    issueType = 'none';
+    issueCount++;
+    if (!primaryIssue) primaryIssue = 'none';
   }
 
   if (gibberishResponseRate >= 30) {
     warnings.push(`High rate of gibberish responses (${gibberishResponseRate.toFixed(1)}%)`);
     suspiciousPattern = true;
-    issueType = issueType ? 'multiple' : 'gibberish';
+    issueCount++;
+    if (!primaryIssue) primaryIssue = 'gibberish';
   }
 
+  // FIXED: Make sure this is checking for responses that are TOO FAST
   if (fastResponseRate >= 30) {
-    warnings.push(`High rate of very fast responses (${fastResponseRate.toFixed(1)}%)`);
+    warnings.push(`High rate of very quick responses (${fastResponseRate.toFixed(1)}% completed in under 8 seconds)`);
     suspiciousPattern = true;
-    issueType = issueType ? 'multiple' : 'speed';
+    issueCount++;
+    if (!primaryIssue) primaryIssue = 'speed';
+    
+    console.log('Fast response pattern detected:', {
+      fastResponseRate: fastResponseRate.toFixed(1),
+      threshold: '30%',
+      fastResponseCount,
+      totalResponses: responses.length
+    });
   }
 
   // Check for similar responses
@@ -239,7 +273,8 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
   if (uniqueAnswers.size < answers.length * 0.6) {
     warnings.push('Many similar or identical responses');
     suspiciousPattern = true;
-    issueType = issueType ? 'multiple' : 'repetition';
+    issueCount++;
+    if (!primaryIssue) primaryIssue = 'repetition';
   }
 
   // Check for overall quality decline
@@ -250,8 +285,19 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
   if (avgRecentQuality < 25) {
     warnings.push('Overall response quality is very low');
     suspiciousPattern = true;
-    issueType = issueType ? 'multiple' : 'quality';
+    issueCount++;
+    if (!primaryIssue) primaryIssue = 'quality';
   }
+
+  // Set issue type based on count
+  const issueType = issueCount > 1 ? 'multiple' : primaryIssue;
+
+  console.log('Final pattern analysis:', {
+    suspiciousPattern,
+    warnings,
+    issueType,
+    primaryIssue
+  });
 
   return { 
     suspiciousPattern, 
@@ -271,98 +317,33 @@ export const generateAttentionCheck = (
 ): AttentionCheck => {
   const checks = [
     {
-      question: `You are currently answering questions about "${currentCategory}". Which category are you working on?`,
-      options: [currentCategory, 'Food and Cuisine', 'Religious Practices', 'Economic Activities'],
-      correctAnswer: 0,
+      question: `What category of cultural practices are you currently answering questions about? Please write the name of the main category.`,
+      correctAnswer: currentCategory.toLowerCase(),
       type: 'context'
     },
     {
-      question: `Within ${currentCategory}, you're focusing on "${currentTopic}". What is your current topic?`,
-      options: [currentTopic, 'Traditional Ceremonies', 'Seasonal Celebrations', 'Community Gatherings'],
-      correctAnswer: 0,
+      question: `What specific cultural topic are you currently focused on within ${currentCategory}? Please write the name of the current topic.`,
+      correctAnswer: currentTopic.toLowerCase(),
       type: 'context'
     },
     {
-      question: 'What is the main focus of this cultural survey?',
-      options: [
-        'Understanding cultural practices and traditions in different regions of India',
-        'Collecting political opinions about government policies',
-        'Reviewing consumer products and services',
-        'Gathering medical and health information'
-      ],
-      correctAnswer: 0,
-      type: 'comprehension'
-    },
-    {
-      question: 'When answering questions, you should base your responses on:',
-      options: [
-        'Your personal knowledge and experience of cultural practices in your region',
-        'What you think researchers want to hear',
-        'Random guesses or made-up information',
-        'Practices from other countries or regions you\'ve seen in movies'
-      ],
-      correctAnswer: 0,
-      type: 'instruction'
-    },
-    {
-      question: 'What should you do if you encounter a question about a practice you\'re not familiar with?',
-      options: [
-        'Explain what you do know or indicate that the practice is uncommon in your area',
-        'Just write "none" or "don\'t know"',
-        'Copy your answer from a previous question',
-        'Make up a detailed but false answer'
-      ],
-      correctAnswer: 0,
-      type: 'instruction'
-    },
-    {
-      question: 'If a cultural practice is described as "cultural commonsense," it means:',
-      options: [
-        'It is widely shared and considered natural within a cultural group',
-        'It is a rare or unusual practice',
-        'It comes from foreign cultural influence',
-        'It is a personal individual preference'
-      ],
-      correctAnswer: 0,
-      type: 'definition'
-    },
-    {
-      question: 'Which of these would be the BEST type of answer for cultural questions?',
-      options: [
-        'Detailed explanations with specific examples from your region',
-        'One-word answers like "yes" or "no"',
-        'Identical responses copied for every question',
-        'Random letters and symbols'
-      ],
-      correctAnswer: 0,
-      type: 'instruction'
-    },
-    {
-      question: 'This survey is about cultural practices in which country?',
-      options: ['India', 'China', 'United States', 'United Kingdom'],
-      correctAnswer: 0,
+      question: 'This survey is about cultural practices in which country? Please write the name of the country.',
+      correctAnswer: 'india',
       type: 'basic'
     },
     {
-      question: 'How many regions of India are you asked to choose from in this survey?',
-      options: [
-        'Five regions (North, South, East, West, Central)',
-        'Three regions',
-        'Ten regions',
-        'Two regions'
-      ],
-      correctAnswer: 0,
+      question: 'How many regions of India were you asked to choose from when you started this survey? Please write the number.',
+      correctAnswer: 'five',
       type: 'basic'
     },
     {
-      question: 'According to the survey instructions, what should you NOT do when answering questions?',
-      options: [
-        'Provide random, meaningless responses or keyboard mashing',
-        'Share your genuine knowledge about cultural practices',
-        'Give specific examples when possible',
-        'Explain regional variations you\'re aware of'
-      ],
-      correctAnswer: 0,
+      question: 'What should you write if you are not familiar with a cultural practice mentioned in a question? Please write the word you should use.',
+      correctAnswer: 'none',
+      type: 'instruction'
+    },
+    {
+      question: 'This survey focuses on cultural practices and traditions. What type of knowledge should you base your answers on? Please write "personal" if you should use your personal knowledge, or "internet" if you should look things up online.',
+      correctAnswer: 'personal',
       type: 'instruction'
     }
   ];
@@ -370,32 +351,19 @@ export const generateAttentionCheck = (
   // Add personal verification if userInfo available
   if (userInfo) {
     checks.push({
-      question: `You indicated that you are from ${userInfo.region} India. Which region did you select?`,
-      options: [
-        `${userInfo.region} India`,
-        userInfo.region === 'North' ? 'South India' : 'North India',
-        userInfo.region === 'East' ? 'West India' : 'East India',
-        'I did not specify a region'
-      ],
-      correctAnswer: 0,
+      question: `What region of India did you specify at the beginning of this survey? Please write the name of the region (North, South, East, West, or Central).`,
+      correctAnswer: userInfo.region.toLowerCase(),
       type: 'personal'
     });
   }
   
-  // Select random check and shuffle options
   const randomCheck = checks[Math.floor(Math.random() * checks.length)];
-  const correctOption = randomCheck.options[randomCheck.correctAnswer];
-  const shuffledOptions = [...randomCheck.options];
-  
-  for (let i = shuffledOptions.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledOptions[i], shuffledOptions[j]] = [shuffledOptions[j], shuffledOptions[i]];
-  }
   
   return {
     question: randomCheck.question,
-    options: shuffledOptions,
-    correctAnswer: shuffledOptions.indexOf(correctOption),
+    options: [randomCheck.correctAnswer], // Keep for compatibility but not used
+    correctAnswer: 0, // Keep for compatibility but not used
+    expectedAnswer: randomCheck.correctAnswer, // New field for text matching
     currentTopic,
     currentCategory,
     type: randomCheck.type
