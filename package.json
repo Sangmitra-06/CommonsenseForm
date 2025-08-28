@@ -1,0 +1,23 @@
+{
+  "name": "cultural-survey-app",
+  "version": "1.0.0",
+  "description": "Cultural survey application with React frontend and Express backend",
+  "scripts": {
+    "install-client": "cd client && npm install",
+    "install-server": "cd client/server && npm install",
+    "build-client": "cd client && npm run build",
+    "start-server": "cd client/server && npm start",
+    "dev": "cd client/server && npm run dev"
+  },
+  "keywords": [
+    "survey",
+    "cultural",
+    "react",
+    "express"
+  ],
+  "author": "Sangmitra Madhusudan",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^24.3.0"
+  }
+}
