@@ -92,6 +92,17 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Add this route in your server.js after the other routes:
+app.get('/api/questions', (req, res) => {
+  try {
+    const questionsData = questionsService.getQuestionsData();
+    res.json(questionsData);
+  } catch (error) {
+    console.error('Error fetching questions:', error);
+    res.status(500).json({ error: 'Failed to fetch questions' });
+  }
+});
+
 // 404 handler
 app.use('*', (req, res) => {
   console.log(`404 - Route not found: ${req.method} ${req.originalUrl}`);

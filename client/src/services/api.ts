@@ -1,9 +1,7 @@
-
 import axios from 'axios';
 import { UserInfo, QuestionResponse } from '../types/index.ts';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -58,10 +56,11 @@ api.interceptors.response.use(
   }
 );
 
+// Fixed API calls to match backend routes:
 export const createUser = async (userInfo: UserInfo) => {
   try {
     console.log('Creating user with info:', userInfo);
-    const response = await api.post('/users/create', userInfo);
+    const response = await api.post('/api/users/create', userInfo);  // Correct endpoint
     return response.data;
   } catch (error) {
     console.error('Failed to create user:', error);
@@ -70,36 +69,36 @@ export const createUser = async (userInfo: UserInfo) => {
 };
 
 export const getUser = async (sessionId: string) => {
-  const response = await api.get(`/users/${sessionId}`);
+  const response = await api.get(`/api/users/${sessionId}`);
   return response.data;
 };
 
 export const updateUserProgress = async (sessionId: string, progress: any) => {
-  const response = await api.put(`/users/${sessionId}/progress`, progress);
+  const response = await api.put(`/api/users/${sessionId}/progress`, progress);
   return response.data;
 };
 
 export const completeUser = async (sessionId: string) => {
-  const response = await api.put(`/users/${sessionId}/complete`);
+  const response = await api.put(`/api/users/${sessionId}/complete`);
   return response.data;
 };
 
 export const saveResponse = async (response: QuestionResponse) => {
-  const apiResponse = await api.post('/responses', response);
+  const apiResponse = await api.post('/api/responses', response);
   return apiResponse.data;
 };
 
 export const saveResponsesBatch = async (sessionId: string, responses: QuestionResponse[]) => {
-  const apiResponse = await api.post('/responses/batch', { sessionId, responses });
+  const apiResponse = await api.post('/api/responses/batch', { sessionId, responses });
   return apiResponse.data;
 };
 
 export const getUserResponses = async (sessionId: string) => {
-  const response = await api.get(`/responses/${sessionId}`);
+  const response = await api.get(`/api/responses/${sessionId}`);
   return response.data;
 };
 
 export const checkHealth = async () => {
-  const response = await api.get('/health');
+  const response = await api.get('/api/health');
   return response.data;
 };
