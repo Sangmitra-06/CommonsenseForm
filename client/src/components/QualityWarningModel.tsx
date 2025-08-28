@@ -210,7 +210,7 @@ export default function QualityWarningModal({
         <div className="mt-4 text-center">
           <p 
             className="text-xs"
-            style={{ color: 'var(--text-muted)' }}
+            style={{ color: 'var(--text-secondary)' }}
           >
             Your cultural knowledge is valuable! Even small details about your region 
             help preserve and understand India's diverse traditions.

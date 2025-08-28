@@ -76,6 +76,13 @@ export interface FormState {
   startTime: number;
   lastSaveTime: number;
   isCompleted: boolean;
+  // Timer fields
+  surveyStartTime: number;
+  surveyTimeLimit: number;
+  surveyTimeRemaining: number;
+  showTimeWarning: boolean;
+  showTimeCritical: boolean;
+  surveyExpired: boolean;
 }
 
 export interface AttentionCheck {

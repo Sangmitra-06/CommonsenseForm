@@ -1,7 +1,12 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, ReactNode, useCallback, useRef, useState } from 'react';
 import { FormState, UserInfo, QuestionResponse, Category, Progress } from '../types/index.ts';
 import { loadQuestionsData } from '../utils/helpers.ts';
 import * as api from '../services/api.ts';
+
+// Timer constants
+const SURVEY_TIME_LIMIT = 1 * 60 * 1000; // 15 minutes in milliseconds
+const WARNING_TIME_REMAINING = 2 * 60 * 1000; // Show warning at 2 minutes remaining
+const CRITICAL_TIME_REMAINING = 30 * 1000; // Show critical warning at 30 seconds
 
 type FormAction =
   | { type: 'SET_LOADING'; payload: boolean }
@@ -16,7 +21,11 @@ type FormAction =
   | { type: 'SET_START_TIME'; payload: number }
   | { type: 'SET_LAST_SAVE_TIME'; payload: number }
   | { type: 'SET_COMPLETED'; payload: boolean }
-  | { type: 'RESET_FORM' };
+  | { type: 'RESET_FORM' }
+  // Timer actions
+  | { type: 'START_SURVEY_TIMER' }
+  | { type: 'UPDATE_TIMER'; payload: { timeRemaining: number; showWarning: boolean; showCritical: boolean } }
+  | { type: 'EXPIRE_SURVEY' };
 
 const initialState: FormState = {
   sessionId: null,
@@ -34,7 +43,7 @@ const initialState: FormState = {
     currentTopic: 0,
     currentQuestion: 0,
     completedQuestions: 0,
-    totalQuestions: 0, // Updated to match your data
+    totalQuestions: 0,
     completedTopics: [],
     attentionChecksPassed: 0,
     attentionChecksFailed: 0
@@ -44,7 +53,14 @@ const initialState: FormState = {
   questionsData: [],
   startTime: 0,
   lastSaveTime: 0,
-  isCompleted: false
+  isCompleted: false,
+  // Timer state
+  surveyStartTime: 0,
+  surveyTimeLimit: SURVEY_TIME_LIMIT,
+  surveyTimeRemaining: SURVEY_TIME_LIMIT,
+  showTimeWarning: false,
+  showTimeCritical: false,
+  surveyExpired: false
 };
 
 function formReducer(state: FormState, action: FormAction): FormState {
@@ -83,13 +99,37 @@ function formReducer(state: FormState, action: FormAction): FormState {
     case 'SET_COMPLETED':
       return { ...state, isCompleted: action.payload };
     case 'RESET_FORM':
-      return initialState;
+      return { ...initialState, questionsData: state.questionsData };
+    // Timer cases
+    case 'START_SURVEY_TIMER':
+      return {
+        ...state,
+        surveyStartTime: Date.now(),
+        surveyTimeRemaining: state.surveyTimeLimit,
+        showTimeWarning: false,
+        showTimeCritical: false,
+        surveyExpired: false
+      };
+    case 'UPDATE_TIMER':
+      return {
+        ...state,
+        surveyTimeRemaining: action.payload.timeRemaining,
+        showTimeWarning: action.payload.showWarning,
+        showTimeCritical: action.payload.showCritical
+      };
+    case 'EXPIRE_SURVEY':
+      return {
+        ...state,
+        surveyExpired: true,
+        surveyTimeRemaining: 0,
+        isCompleted: true
+      };
     default:
       return state;
   }
 }
 
-// Add this to the FormContextType interface (around line 80)
+// Updated interface
 interface FormContextType {
   state: FormState;
   dispatch: React.Dispatch<FormAction>;
@@ -111,18 +151,24 @@ interface FormContextType {
   loadUserSession: (sessionId: string) => Promise<void>;
   navigateToPosition: (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => Promise<void>;
   resetSession: () => void;
+  // Timer functions
+  startSurveyTimer: () => void;
+  formatTimeRemaining: (milliseconds: number) => string;
 }
 
 const FormContext = createContext<FormContextType | undefined>(undefined);
 
 export function FormProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(formReducer, initialState);
-  const hasLoadedQuestions = useRef(false); // Prevent double loading
-  const isLoadingSession = useRef(false); // Prevent double session loading
+  const hasLoadedQuestions = useRef(false);
+  const isLoadingSession = useRef(false);
+  const [timerInterval, setTimerInterval] = useState<ReturnType<typeof setInterval> | null>(null);
+  const surveyStartTimeRef = useRef<number>(0); // Add this ref to track start time
+
 
   // Load questions data only once
   useEffect(() => {
-    if (hasLoadedQuestions.current) return; // Prevent double loading
+    if (hasLoadedQuestions.current) return;
     
     const loadData = async () => {
       try {
@@ -136,7 +182,6 @@ export function FormProvider({ children }: { children: ReactNode }) {
         
         dispatch({ type: 'SET_QUESTIONS_DATA', payload: data });
         
-        // Calculate total questions from the actual loaded data
         const totalQuestions = getTotalQuestions(data);
         console.log('FormContext: Total questions calculated:', totalQuestions);
         
@@ -145,46 +190,200 @@ export function FormProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error('FormContext: Error loading questions:', error);
         dispatch({ type: 'SET_ERROR', payload: 'Failed to load questions data. Please refresh the page.' });
-        hasLoadedQuestions.current = false; // Allow retry
+        hasLoadedQuestions.current = false;
       } finally {
         dispatch({ type: 'SET_LOADING', payload: false });
       }
     };
 
     loadData();
-  }, []); // Keep empty dependency array
+  }, []);
 
   // Calculate total questions
-      const getTotalQuestions = (questionsData: Category[]): number => {
-        return questionsData.reduce((total, category) => {
-          return total + category.subcategories.reduce((subTotal, subcategory) => {
-            return subTotal + subcategory.topics.reduce((topicTotal, topic) => {
-              return topicTotal + topic.questions.length;
-            }, 0);
-          }, 0);
+  const getTotalQuestions = (questionsData: Category[]): number => {
+    return questionsData.reduce((total, category) => {
+      return total + category.subcategories.reduce((subTotal, subcategory) => {
+        return subTotal + subcategory.topics.reduce((topicTotal, topic) => {
+          return topicTotal + topic.questions.length;
         }, 0);
-      };
+      }, 0);
+    }, 0);
+  };
+
+  // Auto-complete survey when time expires
+  const completeExpiredSurvey = useCallback(async () => {
+    if (state.sessionId) {
+      try {
+        console.log('Survey time expired, auto-completing...');
+        await api.completeUser(state.sessionId);
+        dispatch({ type: 'SET_COMPLETED', payload: true });
+      } catch (error) {
+        console.error('Error auto-completing expired survey:', error);
+      }
+    }
+  }, [state.sessionId]);
+  // FIXED: Start timer function
+  const startSurveyTimer = useCallback(() => {
+    const startTime = Date.now();
+    console.log('Starting survey timer at:', new Date(startTime).toISOString());
+    
+    // Update both state and ref
+    dispatch({ type: 'START_SURVEY_TIMER' });
+    surveyStartTimeRef.current = startTime;
+    
+    // Clear any existing timer
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+
+    // Start new timer using the ref value
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const elapsed = now - surveyStartTimeRef.current; // Use ref instead of state
+      const remaining = Math.max(0, SURVEY_TIME_LIMIT - elapsed);
+      
+      console.log('Timer update:', {
+        elapsed: Math.floor(elapsed / 1000) + 's',
+        remaining: Math.floor(remaining / 1000) + 's'
+      });
+      
+      const showWarning = remaining <= WARNING_TIME_REMAINING && remaining > CRITICAL_TIME_REMAINING;
+      const showCritical = remaining <= CRITICAL_TIME_REMAINING && remaining > 0;
+      
+      if (remaining <= 0) {
+        console.log('Timer expired!');
+        dispatch({ type: 'EXPIRE_SURVEY' });
+        clearInterval(interval);
+        setTimerInterval(null);
+        completeExpiredSurvey();
+      } else {
+        dispatch({ 
+          type: 'UPDATE_TIMER', 
+          payload: { 
+            timeRemaining: remaining, 
+            showWarning, 
+            showCritical 
+          } 
+        });
+      }
+    }, 1000); // Update every second
+
+    setTimerInterval(interval);
+  }, [timerInterval, completeExpiredSurvey]);
+
+  // FIXED: Resume timer function
+  const resumeSurveyTimer = useCallback((startTime: number) => {
+    console.log('Resuming survey timer from:', new Date(startTime).toISOString());
+    const now = Date.now();
+    const elapsed = now - startTime;
+    const remaining = Math.max(0, SURVEY_TIME_LIMIT - elapsed);
+    
+    console.log('Resume timer:', {
+      startTime: new Date(startTime).toISOString(),
+      elapsed: Math.floor(elapsed / 1000) + 's',
+      remaining: Math.floor(remaining / 1000) + 's'
+    });
+    
+    if (remaining <= 0) {
+      console.log('Survey already expired on resume');
+      dispatch({ type: 'EXPIRE_SURVEY' });
+      completeExpiredSurvey();
+      return;
+    }
+
+    // Set the ref to the original start time
+    surveyStartTimeRef.current = startTime;
+
+    // Update state
+    dispatch({
+      type: 'UPDATE_TIMER',
+      payload: {
+        timeRemaining: remaining,
+        showWarning: remaining <= WARNING_TIME_REMAINING,
+        showCritical: remaining <= CRITICAL_TIME_REMAINING
+      }
+    });
+
+    // Clear any existing timer
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+
+    // Start timer with correct start time
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const elapsed = now - surveyStartTimeRef.current; // Use the original start time
+      const remaining = Math.max(0, SURVEY_TIME_LIMIT - elapsed);
+      
+      const showWarning = remaining <= WARNING_TIME_REMAINING && remaining > CRITICAL_TIME_REMAINING;
+      const showCritical = remaining <= CRITICAL_TIME_REMAINING && remaining > 0;
+      
+      if (remaining <= 0) {
+        dispatch({ type: 'EXPIRE_SURVEY' });
+        clearInterval(interval);
+        setTimerInterval(null);
+        completeExpiredSurvey();
+      } else {
+        dispatch({ 
+          type: 'UPDATE_TIMER', 
+          payload: { 
+            timeRemaining: remaining, 
+            showWarning, 
+            showCritical 
+          } 
+        });
+      }
+    }, 1000);
+
+    setTimerInterval(interval);
+  }, [timerInterval, completeExpiredSurvey]);
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+    };
+  }, [timerInterval]);
+
+  // FIXED: Format time function
+  const formatTimeRemaining = useCallback((milliseconds: number): string => {
+    const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  }, []);
+
+  // FIXED: Create user session
   const createUserSession = useCallback(async (userInfo: UserInfo) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const response = await api.createUser(userInfo);
       dispatch({ type: 'SET_SESSION_ID', payload: response.sessionId });
       dispatch({ type: 'SET_USER_INFO', payload: userInfo });
-      dispatch({ type: 'SET_START_TIME', payload: Date.now() });
       
-      // Store session ID in localStorage for recovery
+      const startTime = Date.now();
+      dispatch({ type: 'SET_START_TIME', payload: startTime });
+      
+      // Store session ID and start time in localStorage
       localStorage.setItem('culturalSurveySessionId', response.sessionId);
+      localStorage.setItem('culturalSurveyStartTime', startTime.toString());
+      
+      // Start the survey timer
+      console.log('Creating user session and starting timer');
+      startSurveyTimer();
+      
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: 'Failed to create user session' });
       throw error;
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }, []);
+  }, [startSurveyTimer]);
 
-  // Update the loadUserSession function to recalculate total questions
-const loadUserSession = useCallback(async (sessionId: string) => {
-    if (isLoadingSession.current) return; // Prevent double loading
+  const loadUserSession = useCallback(async (sessionId: string) => {
+    if (isLoadingSession.current) return;
     
     try {
       isLoadingSession.current = true;
@@ -204,14 +403,13 @@ const loadUserSession = useCallback(async (sessionId: string) => {
       
       dispatch({ type: 'SET_RESPONSES', payload: responses });
       
-      // IMPORTANT: Recalculate total questions from current data
+      // Recalculate total questions from current data
       const totalQuestions = getTotalQuestions(state.questionsData);
       
-      // Update progress with recalculated total
       const updatedProgress = {
         ...user.progress,
-        totalQuestions, // Use the recalculated total
-        completedQuestions: responses.length // Update with actual response count
+        totalQuestions,
+        completedQuestions: responses.length
       };
       
       dispatch({ type: 'UPDATE_PROGRESS', payload: updatedProgress });
@@ -222,6 +420,18 @@ const loadUserSession = useCallback(async (sessionId: string) => {
       
       dispatch({ type: 'SET_CURRENT_POSITION', payload: nextPosition });
       
+      // Resume timer if not completed
+      if (!user.isCompleted) {
+        const savedStartTime = localStorage.getItem('culturalSurveyStartTime');
+        if (savedStartTime) {
+          resumeSurveyTimer(parseInt(savedStartTime));
+        } else {
+          // If no start time found, start fresh timer
+          localStorage.setItem('culturalSurveyStartTime', Date.now().toString());
+          startSurveyTimer();
+        }
+      }
+      
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: 'Failed to load user session' });
       throw error;
@@ -229,12 +439,11 @@ const loadUserSession = useCallback(async (sessionId: string) => {
       dispatch({ type: 'SET_LOADING', payload: false });
       isLoadingSession.current = false;
     }
-  }, [state.questionsData]);
+  }, [state.questionsData, resumeSurveyTimer, startSurveyTimer]);
 
   const findNextUnansweredQuestion = useCallback((responses: QuestionResponse[], questionsData: Category[]) => {
     const answeredQuestions = new Set(responses.map(r => r.questionId));
     
-    // Iterate through all questions to find the first unanswered one
     for (let categoryIndex = 0; categoryIndex < questionsData.length; categoryIndex++) {
       const category = questionsData[categoryIndex];
       
@@ -260,7 +469,6 @@ const loadUserSession = useCallback(async (sessionId: string) => {
       }
     }
     
-    // If all questions are answered, return the last position
     if (questionsData.length > 0) {
       const lastCategory = questionsData[questionsData.length - 1];
       const lastSubcategory = lastCategory.subcategories[lastCategory.subcategories.length - 1];
@@ -277,36 +485,30 @@ const loadUserSession = useCallback(async (sessionId: string) => {
     return { categoryIndex: 0, subcategoryIndex: 0, topicIndex: 0, questionIndex: 0 };
   }, []);
 
-  
-
-
   const saveResponse = useCallback(async (response: QuestionResponse) => {
-  try {
-    console.log('FormContext: Saving response:', response);
-    await api.saveResponse(response);
-    dispatch({ type: 'ADD_RESPONSE', payload: response });
-    dispatch({ type: 'SET_LAST_SAVE_TIME', payload: Date.now() });
-    
-    // Update progress - but don't increment if we're updating an existing response
-    const isNewResponse = !state.responses.has(response.questionId);
-    if (isNewResponse) {
-      const completedQuestions = state.progress.completedQuestions + 1;
-      dispatch({ type: 'UPDATE_PROGRESS', payload: { completedQuestions } });
+    try {
+      console.log('FormContext: Saving response:', response);
+      await api.saveResponse(response);
+      dispatch({ type: 'ADD_RESPONSE', payload: response });
+      dispatch({ type: 'SET_LAST_SAVE_TIME', payload: Date.now() });
+      
+      const isNewResponse = !state.responses.has(response.questionId);
+      if (isNewResponse) {
+        const completedQuestions = state.progress.completedQuestions + 1;
+        dispatch({ type: 'UPDATE_PROGRESS', payload: { completedQuestions } });
+      }
+      
+    } catch (error) {
+      console.error('FormContext: Error saving response:', error);
+      dispatch({ type: 'SET_ERROR', payload: 'Failed to save response' });
+      throw error;
     }
-    
-  } catch (error) {
-    console.error('FormContext: Error saving response:', error);
-    dispatch({ type: 'SET_ERROR', payload: 'Failed to save response' });
-    throw error;
-  }
-}, [state.responses, state.progress.completedQuestions]);
+  }, [state.responses, state.progress.completedQuestions]);
 
-// Add navigation function
   const navigateToPosition = useCallback(async (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => {
     const newPosition = { categoryIndex, subcategoryIndex, topicIndex, questionIndex };
     dispatch({ type: 'SET_CURRENT_POSITION', payload: newPosition });
 
-    // Save position to database
     if (state.sessionId) {
       try {
         await api.updateUserProgress(state.sessionId, {
@@ -348,115 +550,95 @@ const loadUserSession = useCallback(async (sessionId: string) => {
   }, [getCurrentQuestionData]);
 
   const navigateToNext = useCallback(async () => {
-  const { categoryIndex, subcategoryIndex, topicIndex, questionIndex } = state.currentPosition;
-  const category = state.questionsData[categoryIndex];
-  
-  if (!category) return;
-  
-  const subcategory = category.subcategories[subcategoryIndex];
-  const topic = subcategory?.topics[topicIndex];
-  
-  if (!topic) return;
+    const { categoryIndex, subcategoryIndex, topicIndex, questionIndex } = state.currentPosition;
+    const category = state.questionsData[categoryIndex];
+    
+    if (!category) return;
+    
+    const subcategory = category.subcategories[subcategoryIndex];
+    const topic = subcategory?.topics[topicIndex];
+    
+    if (!topic) return;
 
-  let newPosition = { ...state.currentPosition };
+    let newPosition = { ...state.currentPosition };
 
-  // Move to next question
-  if (questionIndex < topic.questions.length - 1) {
-    newPosition.questionIndex = questionIndex + 1;
-  }
-  // Move to next topic
-  else if (topicIndex < subcategory.topics.length - 1) {
-    newPosition.topicIndex = topicIndex + 1;
-    newPosition.questionIndex = 0;
-  }
-  // Move to next subcategory
-  else if (subcategoryIndex < category.subcategories.length - 1) {
-    newPosition.subcategoryIndex = subcategoryIndex + 1;
-    newPosition.topicIndex = 0;
-    newPosition.questionIndex = 0;
-  }
-  // Move to next category
-  else if (categoryIndex < state.questionsData.length - 1) {
-    newPosition.categoryIndex = categoryIndex + 1;
-    newPosition.subcategoryIndex = 0;
-    newPosition.topicIndex = 0;
-    newPosition.questionIndex = 0;
-  }
-  // Survey completed
-  else {
-    dispatch({ type: 'SET_COMPLETED', payload: true });
-    return;
-  }
-
-  dispatch({ type: 'SET_CURRENT_POSITION', payload: newPosition });
-
-  // Save position to database
-  if (state.sessionId) {
-    try {
-      await api.updateUserProgress(state.sessionId, {
-        currentCategory: newPosition.categoryIndex,
-        currentSubcategory: newPosition.subcategoryIndex,
-        currentTopic: newPosition.topicIndex,
-        currentQuestion: newPosition.questionIndex
-      });
-    } catch (error) {
-      console.error('Failed to save progress:', error);
+    if (questionIndex < topic.questions.length - 1) {
+      newPosition.questionIndex = questionIndex + 1;
+    } else if (topicIndex < subcategory.topics.length - 1) {
+      newPosition.topicIndex = topicIndex + 1;
+      newPosition.questionIndex = 0;
+    } else if (subcategoryIndex < category.subcategories.length - 1) {
+      newPosition.subcategoryIndex = subcategoryIndex + 1;
+      newPosition.topicIndex = 0;
+      newPosition.questionIndex = 0;
+    } else if (categoryIndex < state.questionsData.length - 1) {
+      newPosition.categoryIndex = categoryIndex + 1;
+      newPosition.subcategoryIndex = 0;
+      newPosition.topicIndex = 0;
+      newPosition.questionIndex = 0;
+    } else {
+      dispatch({ type: 'SET_COMPLETED', payload: true });
+      return;
     }
-  }
-}, [state.currentPosition, state.questionsData, state.sessionId]);
 
-const navigateToPrevious = useCallback(async () => {
-  const { categoryIndex, subcategoryIndex, topicIndex, questionIndex } = state.currentPosition;
-  
-  let newPosition = { ...state.currentPosition };
+    dispatch({ type: 'SET_CURRENT_POSITION', payload: newPosition });
 
-  // Move to previous question
-  if (questionIndex > 0) {
-    newPosition.questionIndex = questionIndex - 1;
-  }
-  // Move to previous topic
-  else if (topicIndex > 0) {
-    const prevTopic = state.questionsData[categoryIndex].subcategories[subcategoryIndex].topics[topicIndex - 1];
-    newPosition.topicIndex = topicIndex - 1;
-    newPosition.questionIndex = prevTopic.questions.length - 1;
-  }
-  // Move to previous subcategory
-  else if (subcategoryIndex > 0) {
-    const prevSubcategory = state.questionsData[categoryIndex].subcategories[subcategoryIndex - 1];
-    const lastTopic = prevSubcategory.topics[prevSubcategory.topics.length - 1];
-    newPosition.subcategoryIndex = subcategoryIndex - 1;
-    newPosition.topicIndex = prevSubcategory.topics.length - 1;
-    newPosition.questionIndex = lastTopic.questions.length - 1;
-  }
-  // Move to previous category
-  else if (categoryIndex > 0) {
-    const prevCategory = state.questionsData[categoryIndex - 1];
-    const lastSubcategory = prevCategory.subcategories[prevCategory.subcategories.length - 1];
-    const lastTopic = lastSubcategory.topics[lastSubcategory.topics.length - 1];
-    newPosition.categoryIndex = categoryIndex - 1;
-    newPosition.subcategoryIndex = prevCategory.subcategories.length - 1;
-    newPosition.topicIndex = lastSubcategory.topics.length - 1;
-    newPosition.questionIndex = lastTopic.questions.length - 1;
-  }
-
-  dispatch({ type: 'SET_CURRENT_POSITION', payload: newPosition });
-
-  // Save position to database
-  if (state.sessionId) {
-    try {
-      await api.updateUserProgress(state.sessionId, {
-        currentCategory: newPosition.categoryIndex,
-        currentSubcategory: newPosition.subcategoryIndex,
-        currentTopic: newPosition.topicIndex,
-        currentQuestion: newPosition.questionIndex
-      });
-    } catch (error) {
-      console.error('Failed to save progress:', error);
+    if (state.sessionId) {
+      try {
+        await api.updateUserProgress(state.sessionId, {
+          currentCategory: newPosition.categoryIndex,
+          currentSubcategory: newPosition.subcategoryIndex,
+          currentTopic: newPosition.topicIndex,
+          currentQuestion: newPosition.questionIndex
+        });
+      } catch (error) {
+        console.error('Failed to save progress:', error);
+      }
     }
-  }
-}, [state.currentPosition, state.questionsData, state.sessionId]);
+  }, [state.currentPosition, state.questionsData, state.sessionId]);
 
-  
+  const navigateToPrevious = useCallback(async () => {
+    const { categoryIndex, subcategoryIndex, topicIndex, questionIndex } = state.currentPosition;
+    
+    let newPosition = { ...state.currentPosition };
+
+    if (questionIndex > 0) {
+      newPosition.questionIndex = questionIndex - 1;
+    } else if (topicIndex > 0) {
+      const prevTopic = state.questionsData[categoryIndex].subcategories[subcategoryIndex].topics[topicIndex - 1];
+      newPosition.topicIndex = topicIndex - 1;
+      newPosition.questionIndex = prevTopic.questions.length - 1;
+    } else if (subcategoryIndex > 0) {
+      const prevSubcategory = state.questionsData[categoryIndex].subcategories[subcategoryIndex - 1];
+      const lastTopic = prevSubcategory.topics[prevSubcategory.topics.length - 1];
+      newPosition.subcategoryIndex = subcategoryIndex - 1;
+      newPosition.topicIndex = prevSubcategory.topics.length - 1;
+      newPosition.questionIndex = lastTopic.questions.length - 1;
+    } else if (categoryIndex > 0) {
+      const prevCategory = state.questionsData[categoryIndex - 1];
+      const lastSubcategory = prevCategory.subcategories[prevCategory.subcategories.length - 1];
+      const lastTopic = lastSubcategory.topics[lastSubcategory.topics.length - 1];
+      newPosition.categoryIndex = categoryIndex - 1;
+      newPosition.subcategoryIndex = prevCategory.subcategories.length - 1;
+      newPosition.topicIndex = lastSubcategory.topics.length - 1;
+      newPosition.questionIndex = lastTopic.questions.length - 1;
+    }
+
+    dispatch({ type: 'SET_CURRENT_POSITION', payload: newPosition });
+
+    if (state.sessionId) {
+      try {
+        await api.updateUserProgress(state.sessionId, {
+          currentCategory: newPosition.categoryIndex,
+          currentSubcategory: newPosition.subcategoryIndex,
+          currentTopic: newPosition.topicIndex,
+          currentQuestion: newPosition.questionIndex
+        });
+      } catch (error) {
+        console.error('Failed to save progress:', error);
+      }
+    }
+  }, [state.currentPosition, state.questionsData, state.sessionId]);
 
   const calculateProgress = useCallback(() => {
     const totalQuestions = state.progress.totalQuestions;
@@ -487,28 +669,36 @@ const navigateToPrevious = useCallback(async () => {
     return completed;
   }, [state.currentPosition, state.questionsData, state.responses]);
 
- const resetSession = useCallback(() => {
+  // FIXED: Reset session function
+  const resetSession = useCallback(() => {
     localStorage.removeItem('culturalSurveySessionId');
+    localStorage.removeItem('culturalSurveyStartTime');
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      setTimerInterval(null);
+    }
+    surveyStartTimeRef.current = 0; // Reset the ref
     dispatch({ type: 'RESET_FORM' });
-  }, []);
-
+  }, [timerInterval]);
   
-    const value: FormContextType = {
-      state,
-      dispatch,
-      createUserSession,
-      saveResponse,
-      navigateToNext,
-      navigateToPrevious,
-      calculateProgress,
-      getCurrentQuestion,
-      getCurrentQuestionData,
-      getTotalQuestionsInCurrentTopic,
-      getCompletedQuestionsInCurrentTopic,
-      loadUserSession,
-      navigateToPosition,
-      resetSession
-    };
+  const value: FormContextType = {
+    state,
+    dispatch,
+    createUserSession,
+    saveResponse,
+    navigateToNext,
+    navigateToPrevious,
+    calculateProgress,
+    getCurrentQuestion,
+    getCurrentQuestionData,
+    getTotalQuestionsInCurrentTopic,
+    getCompletedQuestionsInCurrentTopic,
+    loadUserSession,
+    navigateToPosition,
+    resetSession,
+    startSurveyTimer,
+    formatTimeRemaining
+  };
 
   return (
     <FormContext.Provider value={value}>

@@ -4,6 +4,8 @@ import { validateAnswer, shouldShowAttentionCheck, generateAttentionCheck, analy
 import ProgressBar from './ProgressBar.tsx';
 import NavigationMenu from './NavigationMenu.tsx';
 import QualityWarningModal from './QualityWarningModel.tsx';
+import SurveyTimer from './SurveyTimer.tsx';
+import TimeWarningModal from './TimeWarningModal.tsx';
 import * as api from '../services/api.ts';
 
 export default function QuestionForm() {
@@ -30,6 +32,11 @@ export default function QuestionForm() {
   const [navigationDirection, setNavigationDirection] = useState<'next' | 'previous' | null>(null);
   const [showNavigationMenu, setShowNavigationMenu] = useState(false);
 
+  // Time warning modal state
+  const [showTimeWarningModal, setShowTimeWarningModal] = useState(false);
+  const [hasShownTimeWarning, setHasShownTimeWarning] = useState(false);
+  const [hasShownTimeCritical, setHasShownTimeCritical] = useState(false);
+
   // Attention check state
   const [isAttentionCheck, setIsAttentionCheck] = useState(false);
   const [attentionCheck, setAttentionCheck] = useState<any>(null);
@@ -55,30 +62,73 @@ export default function QuestionForm() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const currentQuestionData = getCurrentQuestionData();
 
-  // Check if this should be an attention check (every 7 questions)
+  // Handle time warning modals
   useEffect(() => {
-    const totalResponses = state.responses.size;
+    if (state.showTimeWarning && !hasShownTimeWarning) {
+      setShowTimeWarningModal(true);
+      setHasShownTimeWarning(true);
+    } else if (state.showTimeCritical && !hasShownTimeCritical) {
+      setShowTimeWarningModal(true);
+      setHasShownTimeCritical(true);
+    }
     
-    if (lastAttentionCheckAt === totalResponses) return;
+    // Reset warning flags when time status changes
+    if (!state.showTimeWarning && !state.showTimeCritical) {
+      setHasShownTimeWarning(false);
+      setHasShownTimeCritical(false);
+    }
+  }, [state.showTimeWarning, state.showTimeCritical, hasShownTimeWarning, hasShownTimeCritical]);
+
+  // Check if this should be an attention check (every 7 questions)
+useEffect(() => {
+  const totalResponses = state.responses.size;
+  
+  console.log('Attention check logic:', {
+    totalResponses,
+    lastAttentionCheckAt,
+    shouldShow: shouldShowAttentionCheck(totalResponses),
+    currentQuestionId: currentQuestionData?.questionId
+  });
+  
+  // Don't show if we haven't moved to a new response count
+  if (lastAttentionCheckAt === totalResponses) {
+    console.log('Already shown attention check for this response count');
+    return;
+  }
+  
+  if (shouldShowAttentionCheck(totalResponses) && currentQuestionData) {
+    console.log('SHOWING ATTENTION CHECK at response count:', totalResponses);
     
-    if (shouldShowAttentionCheck(totalResponses) && currentQuestionData) {
-      console.log('SHOWING ATTENTION CHECK at response count:', totalResponses);
-      
-      const check = generateAttentionCheck(
-        currentQuestionData.category,
-        currentQuestionData.topic,
-        state.userInfo || undefined
-      );
-      
-      setAttentionCheck(check);
-      setIsAttentionCheck(true);
-      setLastAttentionCheckAt(totalResponses);
-      setAnswer(''); // Clear any existing answer
-    } else if (!shouldShowAttentionCheck(totalResponses)) {
+    const check = generateAttentionCheck(
+      currentQuestionData.category,
+      currentQuestionData.topic,
+      state.userInfo || undefined
+    );
+    
+    setAttentionCheck(check);
+    setIsAttentionCheck(true);
+    setLastAttentionCheckAt(totalResponses);
+    setAnswer(''); // Clear any existing answer
+  } else {
+    // IMPORTANT: Reset attention check state when we shouldn't show one
+    console.log('NOT showing attention check, resetting state');
+    setIsAttentionCheck(false);
+    setAttentionCheck(null);
+  }
+}, [state.responses.size, lastAttentionCheckAt, currentQuestionData?.questionId]);
+
+
+// Add a separate effect to handle attention check completion
+useEffect(() => {
+  // Reset attention check state when moving to a new question that shouldn't be an attention check
+  if (currentQuestionData && !shouldShowAttentionCheck(state.responses.size)) {
+    if (isAttentionCheck) {
+      console.log('Resetting attention check state for new question');
       setIsAttentionCheck(false);
       setAttentionCheck(null);
     }
-  }, [state.responses.size, lastAttentionCheckAt, currentQuestionData]);
+  }
+}, [currentQuestionData?.questionId, state.responses.size, isAttentionCheck]);
 
   // Reset form when question changes
   useEffect(() => {
@@ -93,7 +143,6 @@ export default function QuestionForm() {
       setNavigationDirection(null);
       setQualityWarnings([]);
       
-      // Don't load existing response for attention checks
       if (!isAttentionCheck) {
         const existingResponse = state.responses.get(currentQuestionData.questionId);
         if (existingResponse) {
@@ -104,7 +153,6 @@ export default function QuestionForm() {
           setAnswer('');
         }
       } else {
-        // For attention checks, always start with empty answer
         setAnswer('');
       }
     }
@@ -251,73 +299,82 @@ export default function QuestionForm() {
     }
   };
 
-  // SIMPLIFIED: Just save the response, no automatic validation
+  // Just save the response, no automatic validation for attention checks
   const performSave = async (qualityAnalysis?: any) => {
-    if (!currentQuestionData || !state.sessionId) {
-      console.error('Missing required data for save');
-      return false;
-    }
+  if (!currentQuestionData || !state.sessionId) {
+    console.error('Missing required data for save');
+    return false;
+  }
 
-    // For attention checks, we'll create a special question ID to identify them
-    const questionId = isAttentionCheck 
-      ? `ATTENTION_CHECK_${state.responses.size}_${currentQuestionData.questionId}`
-      : currentQuestionData.questionId;
+  // For attention checks, we'll create a special question ID to identify them
+  const questionId = isAttentionCheck 
+    ? `ATTENTION_CHECK_${state.responses.size}_${currentQuestionData.questionId}`
+    : currentQuestionData.questionId;
 
-    const questionText = isAttentionCheck 
-      ? attentionCheck.question 
-      : currentQuestionData.question;
+  const questionText = isAttentionCheck 
+    ? attentionCheck.question 
+    : currentQuestionData.question;
 
-    if (!qualityAnalysis) {
-      qualityAnalysis = analyzeResponseQuality(answer);
-    }
+  if (!qualityAnalysis) {
+    qualityAnalysis = analyzeResponseQuality(answer);
+  }
 
-    setIsSaving(true);
+  setIsSaving(true);
+  
+  try {
+    const timeSpent = Math.floor((Date.now() - startTime) / 1000);
     
-    try {
-      const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+    const response = {
+      sessionId: state.sessionId,
+      questionId: questionId,
+      categoryIndex: state.currentPosition.categoryIndex,
+      subcategoryIndex: state.currentPosition.subcategoryIndex,
+      topicIndex: state.currentPosition.topicIndex,
+      questionIndex: state.currentPosition.questionIndex,
+      category: currentQuestionData.category,
+      subcategory: currentQuestionData.subcategory,
+      topic: currentQuestionData.topic,
+      question: questionText,
+      answer: answer.trim(),
+      timeSpent,
+      timestamp: new Date().toISOString(),
+      qualityScore: qualityAnalysis.score,
+      // Add metadata for attention checks
+      isAttentionCheck: isAttentionCheck,
+      attentionCheckType: isAttentionCheck ? attentionCheck.type : undefined,
+      expectedAnswer: isAttentionCheck ? attentionCheck.expectedAnswer : undefined
+    };
 
-      console.log('Time calculation:', {
-      startTime: new Date(startTime).toISOString(),
-      endTime: new Date().toISOString(),
-      timeSpentSeconds: timeSpent,
-      answerLength: answer.length
+    console.log('Saving response:', {
+      questionId,
+      isAttentionCheck,
+      answer: answer.substring(0, 50) + '...',
+      totalResponses: state.responses.size
     });
-      
-      const response = {
-        sessionId: state.sessionId,
-        questionId: questionId,
-        categoryIndex: state.currentPosition.categoryIndex,
-        subcategoryIndex: state.currentPosition.subcategoryIndex,
-        topicIndex: state.currentPosition.topicIndex,
-        questionIndex: state.currentPosition.questionIndex,
-        category: currentQuestionData.category,
-        subcategory: currentQuestionData.subcategory,
-        topic: currentQuestionData.topic,
-        question: questionText,
-        answer: answer.trim(),
-        timeSpent,
-        timestamp: new Date().toISOString(),
-        qualityScore: qualityAnalysis.score,
-        // Add metadata for attention checks
-        isAttentionCheck: isAttentionCheck,
-        attentionCheckType: isAttentionCheck ? attentionCheck.type : undefined,
-        expectedAnswer: isAttentionCheck ? attentionCheck.expectedAnswer : undefined
-      };
 
-      await saveResponse(response);
-      await updateAttentionCheckStats();
-      
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 2000);
-      return true;
-      
-    } catch (error) {
-      console.error('SAVE ERROR:', error);
-      throw error;
-    } finally {
-      setIsSaving(false);
+    await saveResponse(response);
+    await updateAttentionCheckStats();
+    
+    // IMPORTANT: Reset attention check state after saving
+    if (isAttentionCheck) {
+      console.log('Attention check response saved, resetting state');
+      setIsAttentionCheck(false);
+      setAttentionCheck(null);
     }
-  };
+    
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 2000);
+    return true;
+    
+  } catch (error) {
+    console.error('SAVE ERROR:', error);
+    throw error;
+  } finally {
+    setIsSaving(false);
+  }
+};
+
+
 
   const handleSave = async () => {
     if (!validateForm() || !currentQuestionData || !state.sessionId) {
@@ -431,6 +488,11 @@ export default function QuestionForm() {
     );
   }
 
+  // If survey has expired, don't render the question form
+  if (state.surveyExpired) {
+    return null; // App.tsx will handle showing SurveyExpired component
+  }
+
   const topicProgress = getTotalQuestionsInCurrentTopic();
   const completedInTopic = getCompletedQuestionsInCurrentTopic();
   const currentQuestionInTopic = state.currentPosition.questionIndex + 1;
@@ -444,10 +506,10 @@ export default function QuestionForm() {
   // For attention checks, use the attention check question, but make it look like a regular question
   const displayQuestionData = isAttentionCheck 
     ? {
-        topic: currentQuestionData.topic, // Keep the current topic
-        category: currentQuestionData.category, // Keep the current category
-        subcategory: currentQuestionData.subcategory, // Keep the current subcategory
-        question: attentionCheck.question // Use the attention check question
+        topic: currentQuestionData.topic,
+        category: currentQuestionData.category,
+        subcategory: currentQuestionData.subcategory,
+        question: attentionCheck.question
       }
     : currentQuestionData;
 
@@ -458,6 +520,13 @@ export default function QuestionForm() {
         background: `linear-gradient(135deg, var(--bg-primary) 0%, var(--color-cream) 50%, var(--bg-secondary) 100%)` 
       }}
     >
+      {/* Timer Components */}
+      <SurveyTimer />
+      <TimeWarningModal 
+        isOpen={showTimeWarningModal}
+        onClose={() => setShowTimeWarningModal(false)}
+      />
+      
       <ProgressBar />
       
       {/* Menu Button */}

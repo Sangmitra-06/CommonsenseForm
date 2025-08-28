@@ -56,8 +56,18 @@ export const validateAnswer = (answer: string): { isValid: boolean; message?: st
 
 // UPDATED: Changed from 15 to 7 questions
 export const shouldShowAttentionCheck = (questionCount: number): boolean => {
+  // Show attention check at questions 7, 14, 21, 28, etc.
+  // But not at 0 (start of survey)
+  console.log('Checking if should show attention check:', {
+    questionCount,
+    isDivisibleBy7: questionCount > 0 && questionCount % 7 === 0,
+    result: questionCount > 0 && questionCount % 7 === 0
+  });
+  
   return questionCount > 0 && questionCount % 7 === 0;
 };
+
+
 
 // Comprehensive quality analysis
 export const analyzeResponseQuality = (answer: string): {

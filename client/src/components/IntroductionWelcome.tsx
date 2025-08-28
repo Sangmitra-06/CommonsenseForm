@@ -49,21 +49,23 @@ export default function IntroductionWelcome({ onContinue }: IntroductionWelcomeP
           <div className="bg-custom-blue-gray-changed border-l-4 border-custom-brown p-6 rounded-r-lg">
             <h2 className="text-2xl font-semibold text-custom-dark-brown mb-4">What to Expect</h2>
             <ul className="list-disc list-inside space-y-2 text-custom-dark-brown">
+              <li><strong>15-minute timed session that must be completed in one sitting</strong></li>
               <li>Questions about various aspects of cultural life in your region</li>
-              <li>Estimated completion time: 2-3 hours (you can save and continue later)</li>
               <li>Your progress will be automatically saved as you go</li>
+              <li>A timer will help you track your remaining time</li>
             </ul>
           </div>
 
           <div className="bg-yellow-50 border-l-4 border-yellow-600 p-6 rounded-r-lg">
             <h2 className="text-2xl font-semibold text-custom-dark-brown mb-4">Important Notes</h2>
             <ul className="list-disc list-inside space-y-2 text-custom-dark-brown">
+              <li><strong>Response quality is evaluated to ensure meaningful cultural insights are collected</strong></li>
               <li>All responses are anonymous and confidential</li>
               <li>Answer based on your personal knowledge and experience</li>
               <li>There are no right or wrong answers - we value your authentic perspective</li>
-              <li>You can pause and resume the survey at any time</li>
               <li>If you're unfamiliar with a practice, you can specify "none" or explain what you do know</li>
               <li>Please provide thoughtful, detailed responses when possible</li>
+              
             </ul>
           </div>
 
