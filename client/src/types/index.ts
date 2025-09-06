@@ -99,6 +99,7 @@ export interface FormState {
 }
 
 export interface AttentionCheck {
+  
   question: string;
   options: string[];
   correctAnswer: number;

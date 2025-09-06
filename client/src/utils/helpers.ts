@@ -134,20 +134,26 @@ export const analyzeResponseQuality = (answer: string): {
 
   const text = answer.toLowerCase().trim();
   
-  // Check for "none" type responses
+  // More lenient "none" patterns - only flag obviously lazy responses
   const nonePatterns = [
-    /^(none|n\/a|na|nothing|no|idk|i don't know|dk|dunno)$/i,
-    /^(none that i know|nothing that i know|no idea|not sure|dont know|don't know)$/i,
-    /^(same|similar|normal|usual|regular|typical|standard|common)$/i,
-    /^(not applicable|not available|no information|no data)$/i,
+    /^(none|n\/a|na|nothing|no|idk|dk)$/i,
+    /^(same|normal|usual|regular|typical)$/i,
   ];
 
-  // Check for none responses (only add message once)
-  const hasNoneResponse = nonePatterns.some(pattern => pattern.test(text));
-  if (hasNoneResponse) {
+  // More specific legitimate none responses (don't penalize these)
+  const legitimateNonePatterns = [
+    /^(none that i know|nothing that i know|not in my region|not applicable here)/i,
+    /^(we don't have|not common here|not practiced in)/i,
+  ];
+
+  // Check for none responses - but be more lenient
+  const hasNoneResponse = nonePatterns.some(pattern => pattern.test(text)) && 
+                         !legitimateNonePatterns.some(pattern => pattern.test(text));
+  
+  if (hasNoneResponse && text.length < 8) { // Only flag very short "none" responses
     isNoneResponse = true;
-    issues.push('Generic "none" or non-informative response');
-    score -= 40;
+    issues.push('Very brief response - consider adding more detail if possible');
+    score -= 25; // Reduced penalty
   }
 
   // Check for gibberish patterns
@@ -244,9 +250,9 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
   const warnings: string[] = [];
   let suspiciousPattern = false;
 
-  if (responses.length < 5) {
+  if (responses.length < 3) { // Increased minimum threshold
     return { 
-      suspiciousPattern, 
+      suspiciousPattern: false, // Don't flag with too few responses
       warnings, 
       noneResponseRate: 0,
       gibberishResponseRate: 0,
@@ -255,7 +261,7 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
     };
   }
 
-  // Analyze response patterns
+  // Rest of the function stays the same but with higher thresholds
   let noneCount = 0;
   let gibberishCount = 0;
   let fastResponseCount = 0;
@@ -265,77 +271,33 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
     
     if (analysis.isNoneResponse) noneCount++;
     if (analysis.isGibberish) gibberishCount++;
-    
-    console.log('Response time check:', {
-      answer: response.answer.substring(0, 20) + '...',
-      timeSpent: response.timeSpent,
-      isFast: response.timeSpent < 8
-    });
-    
-    if (response.timeSpent < 8) fastResponseCount++;
+    if (response.timeSpent < 5) fastResponseCount++; // Reduced threshold
   });
 
   const noneResponseRate = (noneCount / responses.length) * 100;
   const gibberishResponseRate = (gibberishCount / responses.length) * 100;
   const fastResponseRate = (fastResponseCount / responses.length) * 100;
 
-  console.log('Pattern analysis results:', {
-    totalResponses: responses.length,
-    noneCount,
-    gibberishCount,
-    fastResponseCount,
-    noneResponseRate: noneResponseRate.toFixed(1),
-    gibberishResponseRate: gibberishResponseRate.toFixed(1),
-    fastResponseRate: fastResponseRate.toFixed(1)
-  });
-
-  let issueCount = 0;
   let primaryIssue: string | null = null;
 
-  if (noneResponseRate >= 30) {
+  // Higher thresholds for flagging patterns
+  if (noneResponseRate >= 30) { // Increased from 30%
     warnings.push(`High rate of "none" responses (${noneResponseRate.toFixed(1)}%)`);
     suspiciousPattern = true;
-    issueCount++;
-    if (!primaryIssue) primaryIssue = 'none';
+    primaryIssue = 'none';
   }
 
-  if (gibberishResponseRate >= 30) {
+  if (gibberishResponseRate >= 40) { // Increased from 30%
     warnings.push(`High rate of gibberish responses (${gibberishResponseRate.toFixed(1)}%)`);
     suspiciousPattern = true;
-    issueCount++;
     if (!primaryIssue) primaryIssue = 'gibberish';
   }
 
-  if (fastResponseRate >= 30) {
-    warnings.push(`High rate of very quick responses (${fastResponseRate.toFixed(1)}% completed in under 8 seconds)`);
+  if (fastResponseRate >= 30) { // Increased from 30%
+    warnings.push(`High rate of very quick responses (${fastResponseRate.toFixed(1)}%)`);
     suspiciousPattern = true;
-    issueCount++;
     if (!primaryIssue) primaryIssue = 'speed';
   }
-
-  // Check for similar responses
-  const answers = responses.map(r => r.answer.toLowerCase().trim());
-  const uniqueAnswers = new Set(answers);
-  if (uniqueAnswers.size < answers.length * 0.6) {
-    warnings.push('Many similar or identical responses');
-    suspiciousPattern = true;
-    issueCount++;
-    if (!primaryIssue) primaryIssue = 'repetition';
-  }
-
-  // Check for overall quality decline
-  const recentResponses = responses.slice(-5);
-  const recentQualityScores = recentResponses.map(r => analyzeResponseQuality(r.answer).score);
-  const avgRecentQuality = recentQualityScores.reduce((sum, score) => sum + score, 0) / recentQualityScores.length;
-  
-  if (avgRecentQuality < 25) {
-    warnings.push('Overall response quality is very low');
-    suspiciousPattern = true;
-    issueCount++;
-    if (!primaryIssue) primaryIssue = 'quality';
-  }
-
-  const issueType = issueCount > 1 ? 'multiple' : primaryIssue;
 
   return { 
     suspiciousPattern, 
@@ -343,10 +305,9 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
     noneResponseRate,
     gibberishResponseRate,
     fastResponseRate,
-    issueType
+    issueType: primaryIssue
   };
 };
-
 // NEW: Enhanced attention check generation with multiple correct answers
 export const generateAttentionCheck = (
   currentCategory: string,

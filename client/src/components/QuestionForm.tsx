@@ -38,7 +38,7 @@ export default function QuestionForm() {
   const [attentionChecksPassed, setAttentionChecksPassed] = useState(0);
   const [attentionChecksFailed, setAttentionChecksFailed] = useState(0);
   const [attentionCheckFailed, setAttentionCheckFailed] = useState(false);
-
+  
   // Store the question data and answer before attention check (without saving to responses)
   const [preAttentionData, setPreAttentionData] = useState<{
     questionData: any;
@@ -71,7 +71,7 @@ export default function QuestionForm() {
       .length;
   }, [state.responses]);
 
-  // Quality check monitoring - runs after each response is saved
+// Quality check monitoring - runs after each response is saved
   useEffect(() => {
     // Only check quality for actual question responses, not attention checks
     const actualResponses = Array.from(state.responses.values())
@@ -115,6 +115,7 @@ export default function QuestionForm() {
     hasShownQualityAlert,
     lastQualityAlertAt
   ]);
+
 
   // Separate effect to trigger attention check when navigating to a new question
   useEffect(() => {
@@ -476,21 +477,21 @@ export default function QuestionForm() {
         const qualityAnalysis = analyzeResponseQuality(answer);
         
         // If this individual response is very low quality, show warning
-        if (qualityAnalysis.isLowQuality && qualityAnalysis.score < 15) {
-          console.log('Individual response quality too low:', qualityAnalysis.score);
-          setCurrentQualityIssue({
-            type: 'individual',
-            noneRate: qualityAnalysis.isNoneResponse ? 100 : 0,
-            gibberishRate: qualityAnalysis.isGibberish ? 100 : 0,
-            speedRate: 0
-          });
-          setQualityWarnings([
-            'This response appears to be very low quality',
-            ...qualityAnalysis.issues
-          ]);
-          setShowQualityModal(true);
-          return; // Don't proceed with save
-        }
+        if (qualityAnalysis.isLowQuality && qualityAnalysis.score < 10 && qualityAnalysis.isGibberish) {
+        console.log('Individual response quality extremely poor:', qualityAnalysis.score);
+        setCurrentQualityIssue({
+          type: 'individual',
+          noneRate: qualityAnalysis.isNoneResponse ? 100 : 0,
+          gibberishRate: qualityAnalysis.isGibberish ? 100 : 0,
+          speedRate: 0
+        });
+        setQualityWarnings([
+          'This response appears to be random characters or gibberish',
+          ...qualityAnalysis.issues.slice(0, 2) // Limit issues shown
+        ]);
+        setShowQualityModal(true);
+        return;
+      }
       }
       
       const saveSuccessful = await handleSave();
