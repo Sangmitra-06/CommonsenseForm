@@ -26,7 +26,7 @@ export default function IntroductionStructure({ onStartNew, onResume, hasExistin
             className="text-3xl md:text-4xl font-bold mb-4"
             style={{ color: 'var(--text-primary)' }}
           >
-            How to Give Good Responses
+            How to Give Quality Responses
           </h1>
           <div 
             className="w-24 h-1 mx-auto rounded-full"
@@ -59,7 +59,7 @@ export default function IntroductionStructure({ onStartNew, onResume, hasExistin
             className="text-lg text-center mb-8"
             style={{ color: 'var(--text-secondary)' }}
           >
-            Here's what makes a helpful response, using this sample question:
+            Please note, quality responses are required for successful participation and full compensation. Here's what makes a quality response, using this sample question:
           </p>
 
           {/* Sample Question */}
@@ -88,7 +88,7 @@ export default function IntroductionStructure({ onStartNew, onResume, hasExistin
 >
   <h2 className="text-2xl font-semibold mb-4 flex items-center">
     <span className="text-2xl mr-2">✅</span>
-    <span style={{ color: 'var(--text-primary)' }}>Good Response Example</span>
+    <span style={{ color: 'var(--text-primary)' }}>Quality Response Example</span>
   </h2>
   <div className="bg-white p-4 rounded-lg border-l-4 border-green-500">
     <p className="text-custom-dark-brown italic mb-3">
@@ -161,7 +161,7 @@ export default function IntroductionStructure({ onStartNew, onResume, hasExistin
               className="text-2xl font-semibold mb-4"
               style={{ color: 'var(--text-primary)' }}
             >
-              💡 Quick Tips for Great Responses
+              💡 Quick Tips for Quality Responses
             </h2>
             <ul className="list-disc list-inside space-y-2" style={{ color: '#92400e' }}>
               <li><strong>Be specific about your region:</strong> North/South/East/West/Central India</li>
