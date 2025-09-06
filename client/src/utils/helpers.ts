@@ -355,36 +355,21 @@ export const generateAttentionCheck = (
 ): AttentionCheck => {
   const checks = [
     {
-      question: 'What color is the sun? Please type exactly one color.',
-      correctAnswers: ['yellow', 'gold', 'golden', 'orange'],
-      type: 'basic'
-    },
-    {
-      question: 'How many days are in one week? Please enter only the number in words.',
-      correctAnswers: ['7', 'seven'],
-      type: 'basic'
-    },
-    {
       question: 'This survey is about cultural practices in which country? Please type the country name.',
       correctAnswers: ['india', 'bharat'],
       type: 'basic'
     },
-    {
-      question: 'What day comes after Monday? Please type only the day name.',
-      correctAnswers: ['tuesday', 'tue'],
-      type: 'basic'
-    },
-    {
-      question: 'How many fingers are on one human hand? Please enter only the number in words.',
-      correctAnswers: ['5', 'five'],
-      type: 'basic'
-    },
-    {
-      question: 'How many months are in one year? Please enter only the number in words.',
-      correctAnswers: ['12', 'twelve'],
-      type: 'basic'
-    }
+   
   ];
+
+  // Add personal verification if userInfo available
+  if (userInfo) {
+    checks.push({
+      question: `What region of India did you specify at the beginning of this survey? Please write the name of the region (North, South, East, West, or Central).`,
+      correctAnswers: [userInfo.region.toLowerCase()],
+      type: 'personal'
+    });
+  }
 
   
   
