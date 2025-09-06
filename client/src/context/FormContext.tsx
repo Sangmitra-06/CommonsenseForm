@@ -1,12 +1,10 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode, useCallback, useRef, useState } from 'react';
-import { FormState, UserInfo, QuestionResponse, Category, Progress } from '../types/index.ts';
+import { FormState, UserInfo, QuestionResponse, Category, Progress, SurveyTiming } from '../types/index.ts';
 import { loadQuestionsData } from '../utils/helpers.ts';
 import * as api from '../services/api.ts';
 
-// Timer constants
-const SURVEY_TIME_LIMIT = 1 * 60 * 1000; // 15 minutes in milliseconds
-const WARNING_TIME_REMAINING = 2 * 60 * 1000; // Show warning at 2 minutes remaining
-const CRITICAL_TIME_REMAINING = 30 * 1000; // Show critical warning at 30 seconds
+// Timer constants - simplified
+const TIMER_UPDATE_INTERVAL = 1000; // Update every second
 
 type FormAction =
   | { type: 'SET_LOADING'; payload: boolean }
@@ -22,10 +20,13 @@ type FormAction =
   | { type: 'SET_LAST_SAVE_TIME'; payload: number }
   | { type: 'SET_COMPLETED'; payload: boolean }
   | { type: 'RESET_FORM' }
-  // Timer actions
+  // Simplified timer actions
   | { type: 'START_SURVEY_TIMER' }
-  | { type: 'UPDATE_TIMER'; payload: { timeRemaining: number; showWarning: boolean; showCritical: boolean } }
-  | { type: 'EXPIRE_SURVEY' };
+  | { type: 'UPDATE_TIMER'; payload: { timeElapsed: number } }
+  // Attention check failure
+  | { type: 'SET_ATTENTION_CHECK_FAILED'; payload: boolean }
+  // NEW: Timing action
+  | { type: 'SET_TIMING'; payload: SurveyTiming | null };
 
 const initialState: FormState = {
   sessionId: null,
@@ -54,13 +55,16 @@ const initialState: FormState = {
   startTime: 0,
   lastSaveTime: 0,
   isCompleted: false,
-  // Timer state
+  // Simplified timer state
   surveyStartTime: 0,
-  surveyTimeLimit: SURVEY_TIME_LIMIT,
-  surveyTimeRemaining: SURVEY_TIME_LIMIT,
-  showTimeWarning: false,
-  showTimeCritical: false,
-  surveyExpired: false
+  surveyTimeElapsed: 0, // Count up from 0
+  surveyExpired: false, // Keep this false always now
+  showTimeWarning: false, // Always false now
+  showTimeCritical: false, // Always false now
+  // Attention check failure state
+  attentionCheckFailed: false,
+  // NEW: Timing state
+  timing: null,
 };
 
 function formReducer(state: FormState, action: FormAction): FormState {
@@ -100,12 +104,12 @@ function formReducer(state: FormState, action: FormAction): FormState {
       return { ...state, isCompleted: action.payload };
     case 'RESET_FORM':
       return { ...initialState, questionsData: state.questionsData };
-    // Timer cases
+    // Simplified timer cases
     case 'START_SURVEY_TIMER':
       return {
         ...state,
         surveyStartTime: Date.now(),
-        surveyTimeRemaining: state.surveyTimeLimit,
+        surveyTimeElapsed: 0,
         showTimeWarning: false,
         showTimeCritical: false,
         surveyExpired: false
@@ -113,17 +117,18 @@ function formReducer(state: FormState, action: FormAction): FormState {
     case 'UPDATE_TIMER':
       return {
         ...state,
-        surveyTimeRemaining: action.payload.timeRemaining,
-        showTimeWarning: action.payload.showWarning,
-        showTimeCritical: action.payload.showCritical
+        surveyTimeElapsed: action.payload.timeElapsed
       };
-    case 'EXPIRE_SURVEY':
+    // Attention check failure case
+    case 'SET_ATTENTION_CHECK_FAILED':
       return {
         ...state,
-        surveyExpired: true,
-        surveyTimeRemaining: 0,
-        isCompleted: true
+        attentionCheckFailed: action.payload
       };
+    // NEW: Timing case
+    case 'SET_TIMING':
+      return { ...state, timing: action.payload };
+    
     default:
       return state;
   }
@@ -151,9 +156,14 @@ interface FormContextType {
   loadUserSession: (sessionId: string) => Promise<void>;
   navigateToPosition: (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => Promise<void>;
   resetSession: () => void;
-  // Timer functions
+  // Simplified timer functions
   startSurveyTimer: () => void;
-  formatTimeRemaining: (milliseconds: number) => string;
+  resumeSurveyTimer: (startTime: number) => void;
+  formatTimeElapsed: (milliseconds: number) => string;
+  // Attention check failure function
+  setAttentionCheckFailed: (failed: boolean) => void;
+  // NEW: Timing function
+  setTiming: (timing: SurveyTiming | null) => void;
 }
 
 const FormContext = createContext<FormContextType | undefined>(undefined);
@@ -163,8 +173,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
   const hasLoadedQuestions = useRef(false);
   const isLoadingSession = useRef(false);
   const [timerInterval, setTimerInterval] = useState<ReturnType<typeof setInterval> | null>(null);
-  const surveyStartTimeRef = useRef<number>(0); // Add this ref to track start time
-
+  const surveyStartTimeRef = useRef<number>(0);
 
   // Load questions data only once
   useEffect(() => {
@@ -210,24 +219,11 @@ export function FormProvider({ children }: { children: ReactNode }) {
     }, 0);
   };
 
-  // Auto-complete survey when time expires
-  const completeExpiredSurvey = useCallback(async () => {
-    if (state.sessionId) {
-      try {
-        console.log('Survey time expired, auto-completing...');
-        await api.completeUser(state.sessionId);
-        dispatch({ type: 'SET_COMPLETED', payload: true });
-      } catch (error) {
-        console.error('Error auto-completing expired survey:', error);
-      }
-    }
-  }, [state.sessionId]);
-  // FIXED: Start timer function
+  // Simplified start timer function - counts UP
   const startSurveyTimer = useCallback(() => {
     const startTime = Date.now();
     console.log('Starting survey timer at:', new Date(startTime).toISOString());
     
-    // Update both state and ref
     dispatch({ type: 'START_SURVEY_TIMER' });
     surveyStartTimeRef.current = startTime;
     
@@ -236,71 +232,34 @@ export function FormProvider({ children }: { children: ReactNode }) {
       clearInterval(timerInterval);
     }
 
-    // Start new timer using the ref value
+    // Start new timer that counts UP
     const interval = setInterval(() => {
       const now = Date.now();
-      const elapsed = now - surveyStartTimeRef.current; // Use ref instead of state
-      const remaining = Math.max(0, SURVEY_TIME_LIMIT - elapsed);
+      const elapsed = now - surveyStartTimeRef.current;
       
-      console.log('Timer update:', {
-        elapsed: Math.floor(elapsed / 1000) + 's',
-        remaining: Math.floor(remaining / 1000) + 's'
+      dispatch({ 
+        type: 'UPDATE_TIMER', 
+        payload: { 
+          timeElapsed: elapsed
+        } 
       });
-      
-      const showWarning = remaining <= WARNING_TIME_REMAINING && remaining > CRITICAL_TIME_REMAINING;
-      const showCritical = remaining <= CRITICAL_TIME_REMAINING && remaining > 0;
-      
-      if (remaining <= 0) {
-        console.log('Timer expired!');
-        dispatch({ type: 'EXPIRE_SURVEY' });
-        clearInterval(interval);
-        setTimerInterval(null);
-        completeExpiredSurvey();
-      } else {
-        dispatch({ 
-          type: 'UPDATE_TIMER', 
-          payload: { 
-            timeRemaining: remaining, 
-            showWarning, 
-            showCritical 
-          } 
-        });
-      }
-    }, 1000); // Update every second
+    }, TIMER_UPDATE_INTERVAL);
 
     setTimerInterval(interval);
-  }, [timerInterval, completeExpiredSurvey]);
+  }, [timerInterval]);
 
-  // FIXED: Resume timer function
+  // Simplified resume timer function
   const resumeSurveyTimer = useCallback((startTime: number) => {
     console.log('Resuming survey timer from:', new Date(startTime).toISOString());
+    
+    surveyStartTimeRef.current = startTime;
     const now = Date.now();
     const elapsed = now - startTime;
-    const remaining = Math.max(0, SURVEY_TIME_LIMIT - elapsed);
-    
-    console.log('Resume timer:', {
-      startTime: new Date(startTime).toISOString(),
-      elapsed: Math.floor(elapsed / 1000) + 's',
-      remaining: Math.floor(remaining / 1000) + 's'
-    });
-    
-    if (remaining <= 0) {
-      console.log('Survey already expired on resume');
-      dispatch({ type: 'EXPIRE_SURVEY' });
-      completeExpiredSurvey();
-      return;
-    }
 
-    // Set the ref to the original start time
-    surveyStartTimeRef.current = startTime;
-
-    // Update state
     dispatch({
       type: 'UPDATE_TIMER',
       payload: {
-        timeRemaining: remaining,
-        showWarning: remaining <= WARNING_TIME_REMAINING,
-        showCritical: remaining <= CRITICAL_TIME_REMAINING
+        timeElapsed: elapsed
       }
     });
 
@@ -309,34 +268,21 @@ export function FormProvider({ children }: { children: ReactNode }) {
       clearInterval(timerInterval);
     }
 
-    // Start timer with correct start time
+    // Start timer continuing from where it left off
     const interval = setInterval(() => {
       const now = Date.now();
-      const elapsed = now - surveyStartTimeRef.current; // Use the original start time
-      const remaining = Math.max(0, SURVEY_TIME_LIMIT - elapsed);
+      const elapsed = now - surveyStartTimeRef.current;
       
-      const showWarning = remaining <= WARNING_TIME_REMAINING && remaining > CRITICAL_TIME_REMAINING;
-      const showCritical = remaining <= CRITICAL_TIME_REMAINING && remaining > 0;
-      
-      if (remaining <= 0) {
-        dispatch({ type: 'EXPIRE_SURVEY' });
-        clearInterval(interval);
-        setTimerInterval(null);
-        completeExpiredSurvey();
-      } else {
-        dispatch({ 
-          type: 'UPDATE_TIMER', 
-          payload: { 
-            timeRemaining: remaining, 
-            showWarning, 
-            showCritical 
-          } 
-        });
-      }
-    }, 1000);
+      dispatch({ 
+        type: 'UPDATE_TIMER', 
+        payload: { 
+          timeElapsed: elapsed
+        } 
+      });
+    }, TIMER_UPDATE_INTERVAL);
 
     setTimerInterval(interval);
-  }, [timerInterval, completeExpiredSurvey]);
+  }, [timerInterval]);
 
   // Clean up timer on unmount
   useEffect(() => {
@@ -347,21 +293,46 @@ export function FormProvider({ children }: { children: ReactNode }) {
     };
   }, [timerInterval]);
 
-  // FIXED: Format time function
-  const formatTimeRemaining = useCallback((milliseconds: number): string => {
-    const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+  // Simple format time function (shows elapsed time)
+  const formatTimeElapsed = useCallback((milliseconds: number): string => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
     const minutes = Math.floor(totalSeconds / 60);
     const seconds = totalSeconds % 60;
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }, []);
 
-  // FIXED: Create user session
+  // Attention check failure function
+  const setAttentionCheckFailed = useCallback((failed: boolean) => {
+    dispatch({ type: 'SET_ATTENTION_CHECK_FAILED', payload: failed });
+  }, []);
+
+  // NEW: Timing function
+  const setTiming = useCallback((timing: SurveyTiming | null) => {
+    dispatch({ type: 'SET_TIMING', payload: timing });
+  }, []);
+
+  // Create user session - UPDATED to handle timing
   const createUserSession = useCallback(async (userInfo: UserInfo) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
+      console.log('FormContext: Creating user session with:', userInfo);
+      
       const response = await api.createUser(userInfo);
+      
       dispatch({ type: 'SET_SESSION_ID', payload: response.sessionId });
       dispatch({ type: 'SET_USER_INFO', payload: userInfo });
+      
+      // NEW: Set timing if provided from server
+      if (response.startTime) {
+        const serverStartTime = new Date(response.startTime);
+        dispatch({ type: 'SET_TIMING', payload: {
+          startedAt: serverStartTime,
+          completedAt: null,
+          totalTimeSeconds: null,
+          totalTimeFormatted: null
+        }});
+        console.log('FormContext: Server timing initialized:', serverStartTime.toISOString());
+      }
       
       const startTime = Date.now();
       dispatch({ type: 'SET_START_TIME', payload: startTime });
@@ -371,17 +342,24 @@ export function FormProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('culturalSurveyStartTime', startTime.toString());
       
       // Start the survey timer
-      console.log('Creating user session and starting timer');
+      console.log('FormContext: Creating user session and starting timer');
       startSurveyTimer();
       
-    } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to create user session' });
+      console.log('FormContext: User session created successfully');
+      
+    } catch (error: any) {
+      console.error('FormContext: Error creating user session:', error);
+      
+      const errorMessage = error.response?.data?.error || 'Failed to create session';
+      dispatch({ type: 'SET_ERROR', payload: errorMessage });
+      
       throw error;
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
   }, [startSurveyTimer]);
 
+  // Rest of your existing functions remain the same...
   const loadUserSession = useCallback(async (sessionId: string) => {
     if (isLoadingSession.current) return;
     
@@ -395,6 +373,17 @@ export function FormProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'SET_SESSION_ID', payload: sessionId });
       dispatch({ type: 'SET_USER_INFO', payload: user.userInfo });
       dispatch({ type: 'SET_COMPLETED', payload: user.isCompleted });
+      
+      // NEW: Load timing data if available
+      if (user.timing) {
+        dispatch({ type: 'SET_TIMING', payload: {
+          startedAt: new Date(user.timing.startedAt),
+          completedAt: user.timing.completedAt ? new Date(user.timing.completedAt) : null,
+          totalTimeSeconds: user.timing.totalTimeSeconds,
+          totalTimeFormatted: user.timing.totalTimeFormatted
+        }});
+        console.log('FormContext: Timing data loaded from user session');
+      }
       
       // Load responses
       console.log('FormContext: Loading user responses...');
@@ -486,24 +475,30 @@ export function FormProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const saveResponse = useCallback(async (response: QuestionResponse) => {
-    try {
-      console.log('FormContext: Saving response:', response);
-      await api.saveResponse(response);
-      dispatch({ type: 'ADD_RESPONSE', payload: response });
-      dispatch({ type: 'SET_LAST_SAVE_TIME', payload: Date.now() });
+  try {
+    console.log('FormContext: Saving response:', response);
+    await api.saveResponse(response);
+    dispatch({ type: 'ADD_RESPONSE', payload: response });
+    dispatch({ type: 'SET_LAST_SAVE_TIME', payload: Date.now() });
+    
+    // Only count non-attention check responses for progress
+    const wasNewResponse = !state.responses.has(response.questionId);
+    const isActualQuestion = !response.questionId.startsWith('ATTENTION_CHECK_');
+    
+    if (wasNewResponse && isActualQuestion) {
+      const completedQuestions = Array.from(state.responses.keys())
+        .filter(questionId => !questionId.startsWith('ATTENTION_CHECK_'))
+        .length + 1; // +1 for the response we just added
       
-      const isNewResponse = !state.responses.has(response.questionId);
-      if (isNewResponse) {
-        const completedQuestions = state.progress.completedQuestions + 1;
-        dispatch({ type: 'UPDATE_PROGRESS', payload: { completedQuestions } });
-      }
-      
-    } catch (error) {
-      console.error('FormContext: Error saving response:', error);
-      dispatch({ type: 'SET_ERROR', payload: 'Failed to save response' });
-      throw error;
+      dispatch({ type: 'UPDATE_PROGRESS', payload: { completedQuestions } });
     }
-  }, [state.responses, state.progress.completedQuestions]);
+    
+  } catch (error) {
+    console.error('FormContext: Error saving response:', error);
+    dispatch({ type: 'SET_ERROR', payload: 'Failed to save response' });
+    throw error;
+  }
+}, [state.responses]);
 
   const navigateToPosition = useCallback(async (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => {
     const newPosition = { categoryIndex, subcategoryIndex, topicIndex, questionIndex };
@@ -641,10 +636,13 @@ export function FormProvider({ children }: { children: ReactNode }) {
   }, [state.currentPosition, state.questionsData, state.sessionId]);
 
   const calculateProgress = useCallback(() => {
-    const totalQuestions = state.progress.totalQuestions;
-    const completedQuestions = state.responses.size;
-    return totalQuestions > 0 ? (completedQuestions / totalQuestions) * 100 : 0;
-  }, [state.progress.totalQuestions, state.responses.size]);
+  const totalQuestions = state.progress.totalQuestions;
+  // Filter out attention check responses from the count
+  const completedQuestions = Array.from(state.responses.keys())
+    .filter(questionId => !questionId.startsWith('ATTENTION_CHECK_'))
+    .length;
+  return totalQuestions > 0 ? (completedQuestions / totalQuestions) * 100 : 0;
+}, [state.progress.totalQuestions, state.responses]);
 
   const getTotalQuestionsInCurrentTopic = useCallback(() => {
     const { categoryIndex, subcategoryIndex, topicIndex } = state.currentPosition;
@@ -669,7 +667,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
     return completed;
   }, [state.currentPosition, state.questionsData, state.responses]);
 
-  // FIXED: Reset session function
+  // Reset session function
   const resetSession = useCallback(() => {
     localStorage.removeItem('culturalSurveySessionId');
     localStorage.removeItem('culturalSurveyStartTime');
@@ -677,7 +675,7 @@ export function FormProvider({ children }: { children: ReactNode }) {
       clearInterval(timerInterval);
       setTimerInterval(null);
     }
-    surveyStartTimeRef.current = 0; // Reset the ref
+    surveyStartTimeRef.current = 0;
     dispatch({ type: 'RESET_FORM' });
   }, [timerInterval]);
   
@@ -697,7 +695,10 @@ export function FormProvider({ children }: { children: ReactNode }) {
     navigateToPosition,
     resetSession,
     startSurveyTimer,
-    formatTimeRemaining
+    resumeSurveyTimer,
+    formatTimeElapsed,
+    setAttentionCheckFailed,
+    setTiming,
   };
 
   return (

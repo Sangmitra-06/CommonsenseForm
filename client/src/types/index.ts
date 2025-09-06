@@ -19,13 +19,23 @@ export interface Category {
 }
 
 export interface UserInfo {
+  prolificId: string; // NEW: Add this line
   region: 'North' | 'South' | 'East' | 'West' | 'Central';
   age: number;
   yearsInRegion: number;
 }
 
+// Add this new interface
+export interface SurveyTiming {
+  startedAt: Date;
+  completedAt: Date | null;
+  totalTimeSeconds: number | null;
+  totalTimeFormatted: string | null;
+}
+
 // Create a separate type for form errors
 export interface UserInfoErrors {
+  prolificId?: string; // NEW: Add this line
   region?: string;
   age?: string;
   yearsInRegion?: string;
@@ -78,21 +88,25 @@ export interface FormState {
   isCompleted: boolean;
   // Timer fields
   surveyStartTime: number;
-  surveyTimeLimit: number;
-  surveyTimeRemaining: number;
-  showTimeWarning: boolean;
-  showTimeCritical: boolean;
-  surveyExpired: boolean;
+  surveyTimeElapsed: number;  // Changed from surveyTimeRemaining
+  surveyExpired: boolean;     // Keep but always false now
+  showTimeWarning: boolean;   // Keep but always false now  
+  showTimeCritical: boolean;  // Keep but always false now
+  attentionCheckFailed: boolean;
+  // NEW: Add timing field
+  timing: SurveyTiming | null;
+
 }
 
 export interface AttentionCheck {
   question: string;
   options: string[];
   correctAnswer: number;
-  expectedAnswer?: string; // Add this new field
+  expectedAnswer: string;
+  expectedAnswers?: string[]; // NEW: Add this line
   currentTopic: string;
   currentCategory: string;
-  type?: string;
+  type: string;
 }
 
 export const REGIONS = {

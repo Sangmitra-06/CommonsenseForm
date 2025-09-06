@@ -26,7 +26,7 @@ export default function IntroductionStructure({ onStartNew, onResume, hasExistin
             className="text-3xl md:text-4xl font-bold mb-4"
             style={{ color: 'var(--text-primary)' }}
           >
-            Understanding the Survey Structure
+            How to Give Good Responses
           </h1>
           <div 
             className="w-24 h-1 mx-auto rounded-full"
@@ -46,8 +46,8 @@ export default function IntroductionStructure({ onStartNew, onResume, hasExistin
                   Welcome Back!
                 </h3>
                 <p className="text-custom-olive">
-                  We found your previous survey session. You can continue from where you left off 
-                  or start a completely new survey.
+                  We found your previous session. You can continue from where you left off 
+                  or start fresh.
                 </p>
               </div>
             </div>
@@ -59,77 +59,97 @@ export default function IntroductionStructure({ onStartNew, onResume, hasExistin
             className="text-lg text-center mb-8"
             style={{ color: 'var(--text-secondary)' }}
           >
-            This survey is organized into a hierarchical structure to comprehensively cover different aspects of cultural life.
+            Here's what makes a helpful response, using this sample question:
           </p>
 
-          <div 
-            className="border-l-4 p-6 rounded-r-lg"
-            style={{ 
-              backgroundColor: 'var(--color-blue-gray-changed)',
-              borderColor: 'var(--border-dark)'
-            }}
-          >
-            <h2 
-              className="text-2xl font-semibold mb-4"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              Categories
-            </h2>
-            <p className="mb-3" style={{ color: 'var(--text-secondary)' }}>
-              <strong>Categories</strong> represent major areas of cultural life. Think of them as the main themes 
-              that organize different aspects of culture.
-            </p>
-            <p className="text-sm italic" style={{ color: 'var(--text-secondary)' }}>
-              Examples: "Interpersonal Relations," "Religious Practices," "Food and Cuisine," "Festivals and Celebrations"
-            </p>
-          </div>
+          {/* Sample Question */}
+<div 
+  className="border-2 border-dashed p-6 rounded-lg text-center"
+  style={{ 
+    backgroundColor: 'var(--color-cream)',
+    borderColor: 'var(--border-dark)'
+  }}
+>
+  <h3 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+    Sample Question:
+  </h3>
+  <p className="text-lg italic" style={{ color: 'var(--text-secondary)' }}>
+    "In your region, what are two most common spices typically added to everyday staple dishes?"
+  </p>
+</div>
 
-          <div 
-            className="border-l-4 p-6 rounded-r-lg"
-            style={{ 
-              backgroundColor: 'var(--tag-category-bg)',
-              borderColor: 'var(--accent-success)'
-            }}
-          >
-            <h2 
-              className="text-2xl font-semibold mb-4"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              Subcategories
-            </h2>
-            <p className="mb-3" style={{ color: 'var(--text-secondary)' }}>
-              Within each category, <strong>subcategories</strong> break down the main theme into more specific areas. 
-              These help organize related cultural practices together.
-            </p>
-            <p className="text-sm italic" style={{ color: 'var(--text-secondary)' }}>
-              Example: Within "Interpersonal Relations," you might find subcategories like "Visiting and Hospitality," 
-              "Gift Giving," and "Social Etiquette"
-            </p>
-          </div>
+{/* Good Response */}
+<div 
+  className="border-l-4 p-6 rounded-r-lg"
+  style={{ 
+    backgroundColor: '#f0f9ff',
+    borderColor: '#10b981'
+  }}
+>
+  <h2 className="text-2xl font-semibold mb-4 flex items-center">
+    <span className="text-2xl mr-2">✅</span>
+    <span style={{ color: 'var(--text-primary)' }}>Good Response Example</span>
+  </h2>
+  <div className="bg-white p-4 rounded-lg border-l-4 border-green-500">
+    <p className="text-custom-dark-brown italic mb-3">
+      "In South India, we add turmeric and mustard seeds to almost all our daily dishes like sambar, rasam, and vegetable curries. These are the base spices you'll find in every household kitchen."
+    </p>
+  </div>
+  <div className="mt-4">
+    <h4 className="font-semibold text-green-700 mb-2">Why this works:</h4>
+    <ul className="list-disc list-inside space-y-1 text-sm text-green-700">
+      <li>Specific regional information (South India)</li>
+      <li>Provides exactly two spices as requested</li>
+      <li>Shows personal knowledge of local cooking</li>
+    </ul>
+  </div>
+</div>
 
-          <div 
-            className="border-l-4 p-6 rounded-r-lg"
-            style={{ 
-              backgroundColor: 'var(--color-cream)',
-              borderColor: 'var(--border-dark)'
-            }}
-          >
-            <h2 
-              className="text-2xl font-semibold mb-4"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              Topics
-            </h2>
-            <p className="mb-3" style={{ color: 'var(--text-secondary)' }}>
-              <strong>Topics</strong> are the most specific level, focusing on particular aspects within each subcategory. 
-              Each topic contains a set of related questions about that specific cultural practice.
-            </p>
-            <p className="text-sm italic" style={{ color: 'var(--text-secondary)' }}>
-              Example: Within "Visiting and Hospitality," you might have topics like "Etiquette in Reception of Visitors" 
-              and "Occasions for Visiting"
-            </p>
-          </div>
+{/* Bad Response */}
+<div 
+  className="border-l-4 p-6 rounded-r-lg"
+  style={{ 
+    backgroundColor: '#fef2f2',
+    borderColor: '#ef4444'
+  }}
+>
+  <h2 className="text-2xl font-semibold mb-4 flex items-center">
+    <span className="text-2xl mr-2">❌</span>
+    <span style={{ color: 'var(--text-primary)' }}>Poor Response Examples</span>
+  </h2>
+  
+  <div className="space-y-4">
+    <div className="bg-white p-4 rounded-lg border-l-4 border-red-500">
+      <p className="text-custom-dark-brown italic mb-2">
+        "Turmeric is very common here"
+      </p>
+      <p className="text-sm text-red-600">Only mentions one spice when two were specifically requested</p>
+    </div>
 
+    <div className="bg-white p-4 rounded-lg border-l-4 border-red-500">
+      <p className="text-custom-dark-brown italic mb-2">
+        "I don't know what spices we use"
+      </p>
+      <p className="text-sm text-red-600">No attempt to share any knowledge or think about daily cooking</p>
+    </div>
+
+    <div className="bg-white p-4 rounded-lg border-l-4 border-red-500">
+      <p className="text-custom-dark-brown italic mb-2">
+        "I've seen that Indian food typically uses garam masala and curry powder from cooking shows and restaurants"
+      </p>
+      <p className="text-sm text-red-600">Drawing from external sources rather than personal regional experience</p>
+    </div>
+
+    <div className="bg-white p-4 rounded-lg border-l-4 border-red-500">
+      <p className="text-custom-dark-brown italic mb-2">
+        "Various spices are used in cooking throughout the region for flavoring purposes"
+      </p>
+      <p className="text-sm text-red-600">Too vague, no specific spices mentioned, no regional detail</p>
+    </div>
+  </div>
+</div>
+
+          {/* Tips */}
           <div 
             className="border-l-4 p-6 rounded-r-lg"
             style={{ 
@@ -141,12 +161,14 @@ export default function IntroductionStructure({ onStartNew, onResume, hasExistin
               className="text-2xl font-semibold mb-4"
               style={{ color: 'var(--text-primary)' }}
             >
-              How This Helps You
+              💡 Quick Tips for Great Responses
             </h2>
             <ul className="list-disc list-inside space-y-2" style={{ color: '#92400e' }}>
-              <li><strong>Context:</strong> You'll always know what cultural area you're discussing</li>
-              <li><strong>Navigation:</strong> You can jump between sections or return to previous topics</li>
-              <li><strong>Completion:</strong> Celebrate your progress as you complete topics, subcategories, and categories</li>
+              <li><strong>Be specific about your region:</strong> North/South/East/West/Central India</li>
+              <li><strong>Describe what you've seen:</strong> What actually happens in your community?</li>
+              <li><strong>Include details:</strong> When, where, who, how it's done</li>
+              <li><strong>Use local terms:</strong> Include words in your language with explanations</li>
+              <li><strong>If unsure:</strong> Share what you do know rather than just saying "I don't know"</li>
             </ul>
           </div>
         </div>
@@ -222,10 +244,10 @@ export default function IntroductionStructure({ onStartNew, onResume, hasExistin
                   e.currentTarget.style.backgroundImage = 'var(--btn-primary-bg)';
                 }}
               >
-                Begin Survey
+                Start Survey
               </button>
               <p className="text-sm text-custom-olive mt-4">
-                By starting this survey, you agree to participate in this research study.
+                Ready to share your cultural knowledge!
               </p>
             </div>
           )}

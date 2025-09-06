@@ -24,7 +24,7 @@ export default function IntroductionWelcome({ onContinue }: IntroductionWelcomeP
             className="text-4xl md:text-5xl font-bold mb-4"
             style={{ color: 'var(--text-primary)' }}
           >
-            Cultural Practices Survey
+            Indian Cultural Practices Survey
           </h1>
           <div 
             className="w-24 h-1 mx-auto rounded-full"
@@ -34,42 +34,36 @@ export default function IntroductionWelcome({ onContinue }: IntroductionWelcomeP
 
         <div className="prose prose-lg max-w-none text-custom-dark-brown space-y-6">
           <p className="text-xl text-center text-custom-olive mb-8">
-            Help us understand the rich cultural diversity of India by sharing your knowledge about regional practices and traditions.
+            Share your knowledge about the cultural practices and traditions from your region of India.
           </p>
 
           <div className="bg-custom-blue-gray border-l-4 border-custom-olive p-6 rounded-r-lg">
-            <h2 className="text-2xl font-semibold text-custom-dark-brown mb-4">About This Survey</h2>
+            <h2 className="text-2xl font-semibold text-custom-dark-brown mb-4">What You'll Be Doing</h2>
             <p className="text-custom-dark-brown">
-              This survey explores cultural commonsense - the everyday beliefs, behaviors, values, and practices 
-              that are perceived as natural and widely shared within your cultural region. Your responses will 
-              contribute to a comprehensive understanding of India's diverse cultural landscape.
+              You'll answer questions about everyday cultural practices in your region - things like greetings, 
+              food customs, festivals, family traditions, and social behaviors that are common where you're from.
             </p>
           </div>
 
           <div className="bg-custom-blue-gray-changed border-l-4 border-custom-brown p-6 rounded-r-lg">
-            <h2 className="text-2xl font-semibold text-custom-dark-brown mb-4">What to Expect</h2>
+            <h2 className="text-2xl font-semibold text-custom-dark-brown mb-4">Important Details</h2>
             <ul className="list-disc list-inside space-y-2 text-custom-dark-brown">
-              <li><strong>15-minute timed session that must be completed in one sitting</strong></li>
-              <li>Questions about various aspects of cultural life in your region</li>
-              <li>Your progress will be automatically saved as you go</li>
-              <li>A timer will help you track your remaining time</li>
+              <li><strong>This survey must be completed in one sitting</strong></li>
+              <li>Focus on practices from your specific region (North, South, East, West, or Central India)</li>
+              <li>Answer based on what you've personally observed or experienced</li>
+              <li>Your progress is saved automatically as you go</li>
             </ul>
           </div>
 
           <div className="bg-yellow-50 border-l-4 border-yellow-600 p-6 rounded-r-lg">
-            <h2 className="text-2xl font-semibold text-custom-dark-brown mb-4">Important Notes</h2>
+            <h2 className="text-2xl font-semibold text-custom-dark-brown mb-4">Keep in Mind</h2>
             <ul className="list-disc list-inside space-y-2 text-custom-dark-brown">
-              <li><strong>Response quality is evaluated to ensure meaningful cultural insights are collected</strong></li>
               <li>All responses are anonymous and confidential</li>
-              <li>Answer based on your personal knowledge and experience</li>
-              <li>There are no right or wrong answers - we value your authentic perspective</li>
-              <li>If you're unfamiliar with a practice, you can specify "none" or explain what you do know</li>
-              <li>Please provide thoughtful, detailed responses when possible</li>
-              
+              <li>There are no right or wrong answers - we want your authentic experience</li>
+              <li>If you're unfamiliar with something, you can say so or explain what you do know</li>
+              <li><strong>Quality matters</strong> - thoughtful, detailed responses are required for successful participation and full compensation</li>
             </ul>
           </div>
-
-          
         </div>
 
         <div className="text-center mt-10">
@@ -81,7 +75,7 @@ export default function IntroductionWelcome({ onContinue }: IntroductionWelcomeP
               color: 'var(--text-on-dark)'
             }}
           >
-            Continue to Survey Structure
+            Continue to Response Guidelines
           </button>
         </div>
 

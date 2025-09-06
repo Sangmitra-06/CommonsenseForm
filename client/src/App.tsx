@@ -8,7 +8,7 @@ import CompletionPage from './components/CompletionPage.tsx';
 import SurveyExpired from './components/SurveyExpired.tsx';
 import './App.css';
 
-type AppStage = 'welcome' | 'structure' | 'userInfo' | 'questions' | 'completed' | 'expired';
+type AppStage = 'welcome' | 'structure' | 'userInfo' | 'questions' | 'completed' | 'expired' | 'attentionFailed';
 
 function AppContent() {
   const { state, createUserSession, loadUserSession } = useForm();
@@ -18,57 +18,28 @@ function AppContent() {
   const [hasExistingSession, setHasExistingSession] = useState(false);
   const [existingSessionId, setExistingSessionId] = useState<string | null>(null);
 
+  // NEW: Check for attention check failure
+  useEffect(() => {
+    if (state.attentionCheckFailed) {
+      setCurrentStage('attentionFailed');
+    }
+  }, [state.attentionCheckFailed]);
+
   // Wait for questions data to load
   useEffect(() => {
     if (state.questionsData.length > 0 && !hasCheckedSession && !state.isLoading) {
       const checkExistingSession = async () => {
         console.log('App: Checking for existing session...');
-        const savedSessionId = localStorage.getItem('culturalSurveySessionId');
         
-        if (savedSessionId) {
-          try {
-            const response = await fetch(`http://localhost:5000/api/users/${savedSessionId}`);
-            if (response.ok) {
-              const userData = await response.json();
-              console.log('App: Found existing session');
-              
-              if (userData.isCompleted) {
-                localStorage.removeItem('culturalSurveySessionId');
-                localStorage.removeItem('culturalSurveyStartTime');
-                setHasExistingSession(false);
-              } else {
-                // Check if session has expired
-                const savedStartTime = localStorage.getItem('culturalSurveyStartTime');
-                if (savedStartTime) {
-                  const elapsed = Date.now() - parseInt(savedStartTime);
-                  const timeLimit = 15 * 60 * 1000; // 15 minutes
-                  
-                  if (elapsed >= timeLimit) {
-                    console.log('Existing session has expired');
-                    localStorage.removeItem('culturalSurveySessionId');
-                    localStorage.removeItem('culturalSurveyStartTime');
-                    setHasExistingSession(false);
-                  } else {
-                    setHasExistingSession(true);
-                    setExistingSessionId(savedSessionId);
-                  }
-                } else {
-                  // No start time found, treat as expired
-                  localStorage.removeItem('culturalSurveySessionId');
-                  setHasExistingSession(false);
-                }
-              }
-            } else {
-              localStorage.removeItem('culturalSurveySessionId');
-              localStorage.removeItem('culturalSurveyStartTime');
-              setHasExistingSession(false);
-            }
-          } catch (error) {
-            console.error('Error checking existing session:', error);
-            localStorage.removeItem('culturalSurveySessionId');
-            localStorage.removeItem('culturalSurveyStartTime');
-            setHasExistingSession(false);
-          }
+        // For one-sitting surveys, always clear old sessions
+        const savedSessionId = localStorage.getItem('culturalSurveySessionId');
+        const savedStartTime = localStorage.getItem('culturalSurveyStartTime');
+        
+        if (savedSessionId || savedStartTime) {
+          console.log('App: Clearing previous session (one-sitting requirement)');
+          localStorage.removeItem('culturalSurveySessionId');
+          localStorage.removeItem('culturalSurveyStartTime');
+          setHasExistingSession(false);
         }
         
         setHasCheckedSession(true);
@@ -83,7 +54,7 @@ function AppContent() {
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       // Show warning if survey is in progress
-      if (state.sessionId && !state.isCompleted && !state.surveyExpired) {
+      if (state.sessionId && !state.isCompleted && !state.surveyExpired && !state.attentionCheckFailed) {
         e.preventDefault();
         e.returnValue = 'Your survey progress will be lost. Are you sure you want to leave?';
         return 'Your survey progress will be lost. Are you sure you want to leave?';
@@ -105,44 +76,22 @@ function AppContent() {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('unload', handleUnload);
     };
-  }, [state.sessionId, state.isCompleted, state.surveyExpired]);
-
-  // Modified session checking logic
-  useEffect(() => {
-    if (state.questionsData.length > 0 && !hasCheckedSession && !state.isLoading) {
-      const checkExistingSession = async () => {
-        console.log('App: Checking for existing session...');
-        const savedSessionId = localStorage.getItem('culturalSurveySessionId');
-        const savedStartTime = localStorage.getItem('culturalSurveyStartTime');
-        
-        // For one-sitting surveys, always clear old sessions
-        if (savedSessionId || savedStartTime) {
-          console.log('App: Clearing previous session (one-sitting requirement)');
-          localStorage.removeItem('culturalSurveySessionId');
-          localStorage.removeItem('culturalSurveyStartTime');
-          setHasExistingSession(false);
-        }
-        
-        setHasCheckedSession(true);
-        setIsInitializing(false);
-      };
-
-      checkExistingSession();
-    }
-  }, [state.questionsData.length, state.isLoading, hasCheckedSession]);
+  }, [state.sessionId, state.isCompleted, state.surveyExpired, state.attentionCheckFailed]);
 
   // Update stage based on form state
   useEffect(() => {
     if (!hasCheckedSession) return;
     
-    if (state.surveyExpired) {
+    if (state.attentionCheckFailed) {
+      setCurrentStage('attentionFailed');
+    } else if (state.surveyExpired) {
       setCurrentStage('expired');
     } else if (state.isCompleted) {
       setCurrentStage('completed');
     } else if (state.sessionId && state.userInfo) {
       setCurrentStage('questions');
     }
-  }, [state.surveyExpired, state.isCompleted, state.sessionId, state.userInfo, hasCheckedSession]);
+  }, [state.attentionCheckFailed, state.surveyExpired, state.isCompleted, state.sessionId, state.userInfo, hasCheckedSession]);
 
   const handleWelcomeContinue = () => {
     setCurrentStage('structure');
@@ -219,6 +168,10 @@ function AppContent() {
     );
   }
 
+  if (state.attentionCheckFailed) {
+  return <CompletionPage isAttentionCheckFailure={true} />;
+}
+
   switch (currentStage) {
     case 'welcome':
       return <IntroductionWelcome onContinue={handleWelcomeContinue} />;
@@ -236,6 +189,8 @@ function AppContent() {
       return <QuestionForm />;
     case 'completed':
       return <CompletionPage />;
+    case 'attentionFailed':
+      return <CompletionPage isAttentionCheckFailure={true} />;
     case 'expired':
       return <SurveyExpired />;
     default:

@@ -1,18 +1,12 @@
 import React from 'react';
 import { useForm } from '../context/FormContext.tsx';
-import NavigationMenu from './NavigationMenu.tsx';
-import { useState } from 'react';
 
+// In ProgressBar.tsx, update the progress display
 export default function ProgressBar() {
   const { 
     state, 
-    calculateProgress, 
-    getTotalQuestionsInCurrentTopic, 
-    getCompletedQuestionsInCurrentTopic 
+    calculateProgress
   } = useForm();
-
-  const [showMenu, setShowMenu] = useState(false);
-
 
   if (!state.questionsData || state.questionsData.length === 0) {
     return (
@@ -40,48 +34,11 @@ export default function ProgressBar() {
   }
 
   const overallProgress = calculateProgress();
-  const totalInTopic = getTotalQuestionsInCurrentTopic();
-  const completedInTopic = getCompletedQuestionsInCurrentTopic();
-  const topicProgress = totalInTopic > 0 ? (completedInTopic / totalInTopic) * 100 : 0;
-
-  const { categoryIndex, subcategoryIndex, topicIndex, questionIndex } = state.currentPosition;
   
-  const currentCategory = state.questionsData[categoryIndex] || null;
-  const currentSubcategory = currentCategory?.subcategories[subcategoryIndex] || null;
-  const currentTopic = currentSubcategory?.topics[topicIndex] || null;
-
-  if (!currentCategory || !currentSubcategory || !currentTopic) {
-    return (
-      <div 
-        className="backdrop-blur-sm border-b px-6 py-3 sticky top-0 z-10 shadow-sm"
-        style={{ 
-          backgroundColor: 'var(--bg-card)',
-          borderColor: 'var(--border-light)'
-        }}
-      >
-        <div className="max-w-4xl mx-auto">
-          <div className="animate-pulse">
-            <div 
-              className="h-3 rounded mb-2"
-              style={{ backgroundColor: 'var(--color-cream)' }}
-            ></div>
-            <div 
-              className="h-2 rounded"
-              style={{ backgroundColor: 'var(--color-blue-gray)' }}
-            ></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const currentQuestionNumber = questionIndex + 1;
-  const totalQuestionsInTopic = currentTopic.questions.length;
-
-  const handleNavigateToQuestion = (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => {
-  // This will be handled by the parent component
-  console.log('Navigate to:', categoryIndex, subcategoryIndex, topicIndex, questionIndex);
-};
+  // Filter out attention check responses for display
+  const actualResponses = Array.from(state.responses.keys())
+    .filter(questionId => !questionId.startsWith('ATTENTION_CHECK_'))
+    .length;
 
   return (
     <div 
@@ -92,63 +49,13 @@ export default function ProgressBar() {
       }}
     >
       <div className="max-w-4xl mx-auto">
-        
-        {/* Breadcrumb Navigation */}
-        <div 
-          className="text-sm mb-2 flex flex-wrap items-center"
-          style={{ color: 'var(--text-secondary)' }}
-        >
-          
-          <span 
-            className="font-medium"
-            style={{ color: 'var(--color-dark-olive)' }}
-          >
-            {currentCategory.category}
-          </span>
-          <span 
-            className="mx-2"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            →
-          </span>
-          <span 
-            className="font-medium"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            {currentSubcategory.subcategory}
-          </span>
-          <span 
-            className="mx-2"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            →
-          </span>
-          <span 
-            className="font-medium"
-            style={{ color: 'var(--accent-primary)' }}
-          >
-            {currentTopic.topic}
-          </span>
-          <span 
-            className="ml-auto text-xs px-2 py-1 rounded-full border"
-            style={{ 
-              backgroundColor: 'var(--bg-progress)',
-              color: 'var(--text-secondary)',
-              borderColor: 'var(--border-light)'
-            }}
-          >
-            Question {currentQuestionNumber} of {totalQuestionsInTopic}
-          </span>
-        </div>
-
-        {/* Overall Survey Progress */}
         <div>
           <div className="flex items-center justify-between text-sm mb-1">
             <span 
               className="font-medium"
               style={{ color: 'var(--text-primary)' }}
             >
-              Overall Progress
+              Survey Progress
             </span>
             <span 
               className="flex items-center text-xs"
@@ -158,7 +65,7 @@ export default function ProgressBar() {
                 className="font-semibold"
                 style={{ color: 'var(--text-primary)' }}
               >
-                {state.responses.size}
+                {actualResponses}
               </span>
               <span className="mx-1">/</span>
               <span>{state.progress.totalQuestions}</span>
@@ -166,11 +73,11 @@ export default function ProgressBar() {
             </span>
           </div>
           <div 
-            className="w-full rounded-full h-2 overflow-hidden"
+            className="w-full rounded-full h-3 overflow-hidden"
             style={{ backgroundColor: 'var(--bg-progress)' }}
           >
             <div 
-              className="h-2 rounded-full transition-all duration-700 ease-out"
+              className="h-3 rounded-full transition-all duration-700 ease-out"
               style={{ 
                 background: 'var(--bg-progress-fill)',
                 width: `${Math.min(overallProgress, 100)}%` 
@@ -183,16 +90,10 @@ export default function ProgressBar() {
           >
             <span>{overallProgress.toFixed(1)}% complete</span>
             <span>
-              {state.progress.totalQuestions - state.responses.size} remaining
+              {state.progress.totalQuestions - actualResponses} remaining
             </span>
           </div>
         </div>
-        {/* Navigation Menu */}
-          <NavigationMenu 
-            isOpen={showMenu}
-            onClose={() => setShowMenu(false)}
-            onNavigateTo={handleNavigateToQuestion}
-          />
       </div>
     </div>
   );

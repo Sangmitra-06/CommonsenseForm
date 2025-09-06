@@ -9,6 +9,16 @@ const userSchema = new mongoose.Schema({
     index: true
   },
   userInfo: {
+    prolificId: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function(v) {
+        return /^[a-zA-Z0-9]{24}$/.test(v);
+      },
+      message: 'Prolific ID must be exactly 24 alphanumeric characters'
+    }
+  },
     region: {
       type: String,
       required: true,
@@ -42,13 +52,46 @@ const userSchema = new mongoose.Schema({
     attentionChecksPassed: { type: Number, default: 0 },
     attentionChecksFailed: { type: Number, default: 0 }
   },
+   completionReason: {
+
+    type: String,
+
+    enum: ['completed', 'attention_check_failed', 'time_expired'],
+
+    default: null
+
+  },
   isCompleted: {
     type: Boolean,
     default: false
   },
+  // NEW: Add this field
+  completedAt: {
+    type: Date,
+    default: null
+  },
   lastActiveAt: {
     type: Date,
     default: Date.now
+  },
+  // NEW: Add timing fields
+  timing: {
+    startedAt: {
+      type: Date,
+      default: Date.now
+    },
+    completedAt: {
+      type: Date,
+      default: null
+    },
+    totalTimeSeconds: {
+      type: Number,
+      default: null
+    },
+    totalTimeFormatted: {
+      type: String,
+      default: null
+    }
   }
 }, {
   timestamps: true
@@ -56,6 +99,7 @@ const userSchema = new mongoose.Schema({
 
 // Index for performance
 userSchema.index({ sessionId: 1, lastActiveAt: -1 });
+userSchema.index({ 'userInfo.prolificId': 1 }, { unique: true });
 
 // Update lastActiveAt and ensure totalQuestions is current on save
 userSchema.pre('save', function(next) {
@@ -71,5 +115,4 @@ userSchema.pre('save', function(next) {
 userSchema.statics.getCurrentTotalQuestions = function() {
   return questionsService.getTotalQuestions();
 };
-
 module.exports = mongoose.model('User', userSchema);

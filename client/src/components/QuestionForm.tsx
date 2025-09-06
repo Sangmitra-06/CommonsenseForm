@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useForm } from '../context/FormContext.tsx';
-import { validateAnswer, shouldShowAttentionCheck, generateAttentionCheck, analyzeResponseQuality, analyzeUserPattern } from '../utils/helpers.ts';
+import { validateAnswer, shouldShowAttentionCheck, generateAttentionCheck, analyzeResponseQuality, analyzeUserPattern, validateAttentionCheck } from '../utils/helpers.ts';
 import ProgressBar from './ProgressBar.tsx';
-import NavigationMenu from './NavigationMenu.tsx';
 import QualityWarningModal from './QualityWarningModel.tsx';
 import SurveyTimer from './SurveyTimer.tsx';
 import TimeWarningModal from './TimeWarningModal.tsx';
@@ -18,6 +17,7 @@ export default function QuestionForm() {
     getTotalQuestionsInCurrentTopic,
     getCompletedQuestionsInCurrentTopic,
     resetSession,
+    dispatch,
     navigateToPosition
   } = useForm();
 
@@ -30,12 +30,6 @@ export default function QuestionForm() {
   const [lastQuestionId, setLastQuestionId] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [navigationDirection, setNavigationDirection] = useState<'next' | 'previous' | null>(null);
-  const [showNavigationMenu, setShowNavigationMenu] = useState(false);
-
-  // Time warning modal state
-  const [showTimeWarningModal, setShowTimeWarningModal] = useState(false);
-  const [hasShownTimeWarning, setHasShownTimeWarning] = useState(false);
-  const [hasShownTimeCritical, setHasShownTimeCritical] = useState(false);
 
   // Attention check state
   const [isAttentionCheck, setIsAttentionCheck] = useState(false);
@@ -43,6 +37,14 @@ export default function QuestionForm() {
   const [lastAttentionCheckAt, setLastAttentionCheckAt] = useState<number>(-1);
   const [attentionChecksPassed, setAttentionChecksPassed] = useState(0);
   const [attentionChecksFailed, setAttentionChecksFailed] = useState(0);
+  const [attentionCheckFailed, setAttentionCheckFailed] = useState(false);
+
+  // Store the question data and answer before attention check (without saving to responses)
+  const [preAttentionData, setPreAttentionData] = useState<{
+    questionData: any;
+    answer: string;
+    startTime: number;
+  } | null>(null);
 
   // Quality tracking state
   const [showQualityModal, setShowQualityModal] = useState(false);
@@ -62,75 +64,108 @@ export default function QuestionForm() {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const currentQuestionData = getCurrentQuestionData();
 
-  // Handle time warning modals
+  // Helper to get actual question response count
+  const getActualQuestionResponseCount = useCallback(() => {
+    return Array.from(state.responses.keys())
+      .filter(questionId => !questionId.startsWith('ATTENTION_CHECK_'))
+      .length;
+  }, [state.responses]);
+
+  // Quality check monitoring - runs after each response is saved
   useEffect(() => {
-    if (state.showTimeWarning && !hasShownTimeWarning) {
-      setShowTimeWarningModal(true);
-      setHasShownTimeWarning(true);
-    } else if (state.showTimeCritical && !hasShownTimeCritical) {
-      setShowTimeWarningModal(true);
-      setHasShownTimeCritical(true);
+    // Only check quality for actual question responses, not attention checks
+    const actualResponses = Array.from(state.responses.values())
+      .filter(response => !response.questionId.startsWith('ATTENTION_CHECK_'));
+      
+    if (actualResponses.length < 5 || isAttentionCheck) {
+      return; // Need at least 5 responses to analyze patterns
     }
-    
-    // Reset warning flags when time status changes
-    if (!state.showTimeWarning && !state.showTimeCritical) {
-      setHasShownTimeWarning(false);
-      setHasShownTimeCritical(false);
+
+    // Avoid showing multiple alerts in quick succession
+    if (hasShownQualityAlert && Date.now() - lastQualityAlertAt < 10000) {
+      return; // Wait at least 10 seconds between alerts
     }
-  }, [state.showTimeWarning, state.showTimeCritical, hasShownTimeWarning, hasShownTimeCritical]);
 
-  // Check if this should be an attention check (every 7 questions)
-useEffect(() => {
-  const totalResponses = state.responses.size;
-  
-  console.log('Attention check logic:', {
-    totalResponses,
-    lastAttentionCheckAt,
-    shouldShow: shouldShowAttentionCheck(totalResponses),
-    currentQuestionId: currentQuestionData?.questionId
-  });
-  
-  // Don't show if we haven't moved to a new response count
-  if (lastAttentionCheckAt === totalResponses) {
-    console.log('Already shown attention check for this response count');
-    return;
-  }
-  
-  if (shouldShowAttentionCheck(totalResponses) && currentQuestionData) {
-    console.log('SHOWING ATTENTION CHECK at response count:', totalResponses);
+    console.log('Running quality analysis on', actualResponses.length, 'actual responses');
     
-    const check = generateAttentionCheck(
-      currentQuestionData.category,
-      currentQuestionData.topic,
-      state.userInfo || undefined
-    );
+    // Analyze the user's response pattern
+    const patternAnalysis = analyzeUserPattern(actualResponses);
     
-    setAttentionCheck(check);
-    setIsAttentionCheck(true);
-    setLastAttentionCheckAt(totalResponses);
-    setAnswer(''); // Clear any existing answer
-  } else {
-    // IMPORTANT: Reset attention check state when we shouldn't show one
-    console.log('NOT showing attention check, resetting state');
-    setIsAttentionCheck(false);
-    setAttentionCheck(null);
-  }
-}, [state.responses.size, lastAttentionCheckAt, currentQuestionData?.questionId]);
-
-
-// Add a separate effect to handle attention check completion
-useEffect(() => {
-  // Reset attention check state when moving to a new question that shouldn't be an attention check
-  if (currentQuestionData && !shouldShowAttentionCheck(state.responses.size)) {
-    if (isAttentionCheck) {
-      console.log('Resetting attention check state for new question');
-      setIsAttentionCheck(false);
-      setAttentionCheck(null);
+    console.log('Pattern analysis results:', patternAnalysis);
+    
+    if (patternAnalysis.suspiciousPattern) {
+      console.log('🚨 SUSPICIOUS PATTERN DETECTED - showing quality modal');
+      
+      setCurrentQualityIssue({
+        type: patternAnalysis.issueType,
+        noneRate: patternAnalysis.noneResponseRate,
+        gibberishRate: patternAnalysis.gibberishResponseRate,
+        speedRate: patternAnalysis.fastResponseRate
+      });
+      
+      setQualityWarnings(patternAnalysis.warnings);
+      setShowQualityModal(true);
+      setLastQualityAlertAt(Date.now());
+      setHasShownQualityAlert(true);
     }
-  }
-}, [currentQuestionData?.questionId, state.responses.size, isAttentionCheck]);
+  }, [
+    // Trigger when actual responses change
+    getActualQuestionResponseCount(),
+    isAttentionCheck,
+    hasShownQualityAlert,
+    lastQualityAlertAt
+  ]);
 
-  // Reset form when question changes
+  // Separate effect to trigger attention check when navigating to a new question
+  useEffect(() => {
+    // Only run this when we have a valid question and we're not already in an attention check
+    if (!currentQuestionData || isAttentionCheck || preAttentionData) {
+      return;
+    }
+
+    const actualQuestionResponses = getActualQuestionResponseCount();
+    
+    console.log('🔍 Checking for attention check trigger:', {
+      actualQuestionResponses,
+      shouldShow: shouldShowAttentionCheck(actualQuestionResponses),
+      lastAttentionCheckAt,
+      currentQuestionId: currentQuestionData.questionId
+    });
+
+    // Check if we should show attention check
+    if (shouldShowAttentionCheck(actualQuestionResponses) && actualQuestionResponses !== lastAttentionCheckAt) {
+      console.log('🚨 TRIGGERING ATTENTION CHECK at count:', actualQuestionResponses);
+      
+      // Store current state before showing attention check
+      if (answer.trim().length >= 4) {
+        setPreAttentionData({
+          questionData: currentQuestionData,
+          answer: answer.trim(),
+          startTime: startTime
+        });
+      }
+      
+      const check = generateAttentionCheck(
+        currentQuestionData.category,
+        currentQuestionData.topic,
+        state.userInfo || undefined
+      );
+      
+      setAttentionCheck(check);
+      setIsAttentionCheck(true);
+      setLastAttentionCheckAt(actualQuestionResponses);
+      setAnswer(''); // Clear answer for attention check
+      setStartTime(Date.now());
+    }
+  }, [
+    currentQuestionData?.questionId, // Trigger when question changes
+    getActualQuestionResponseCount(), // Trigger when response count changes
+    isAttentionCheck,
+    preAttentionData,
+    lastAttentionCheckAt
+  ]);
+
+  // Reset form when question changes - handles both regular navigation and post-attention-check
   useEffect(() => {
     if (currentQuestionData && currentQuestionData.questionId !== lastQuestionId) {
       console.log('Question changed, loading data for:', currentQuestionData.questionId);
@@ -143,60 +178,31 @@ useEffect(() => {
       setNavigationDirection(null);
       setQualityWarnings([]);
       
-      if (!isAttentionCheck) {
-        const existingResponse = state.responses.get(currentQuestionData.questionId);
-        if (existingResponse) {
-          console.log('Found existing response:', existingResponse);
-          setAnswer(existingResponse.answer);
-        } else {
-          console.log('No existing response, clearing form');
-          setAnswer('');
-        }
-      } else {
+      if (isAttentionCheck) {
+        // We're showing an attention check, keep answer cleared
         setAnswer('');
+      } else {
+        // Check if this matches our pre-attention data
+        if (preAttentionData && preAttentionData.questionData.questionId === currentQuestionData.questionId) {
+          console.log('🔄 Restoring pre-attention data for:', currentQuestionData.questionId);
+          setAnswer(preAttentionData.answer);
+          setStartTime(preAttentionData.startTime);
+          // Clear preAttentionData since we're now back to the original question
+          setPreAttentionData(null);
+        } else {
+          // Normal question loading - check for existing response
+          const existingResponse = state.responses.get(currentQuestionData.questionId);
+          if (existingResponse) {
+            console.log('Found existing response:', existingResponse.answer.substring(0, 50) + '...');
+            setAnswer(existingResponse.answer);
+          } else {
+            console.log('No existing response, clearing form');
+            setAnswer('');
+          }
+        }
       }
     }
-  }, [currentQuestionData?.questionId, lastQuestionId, state.responses, isAttentionCheck]);
-
-  // Quality check logic (skip for attention checks)
-  useEffect(() => {
-    const totalResponses = state.responses.size;
-    
-    if (totalResponses < 5 || showQualityModal || isAttentionCheck) return;
-
-    const allResponses = Array.from(state.responses.values());
-    const analysisData = allResponses.map(r => ({ answer: r.answer, timeSpent: r.timeSpent }));
-    const patternAnalysis = analyzeUserPattern(analysisData);
-    
-    if (patternAnalysis.suspiciousPattern && !hasShownQualityAlert) {
-      console.log('SHOWING QUALITY ALERT: First detection at', totalResponses);
-      setShowQualityModal(true);
-      setLastQualityAlertAt(totalResponses);
-      setHasShownQualityAlert(true);
-      setQualityWarnings(patternAnalysis.warnings);
-      setCurrentQualityIssue({
-        type: patternAnalysis.issueType,
-        noneRate: patternAnalysis.noneResponseRate,
-        gibberishRate: patternAnalysis.gibberishResponseRate,
-        speedRate: patternAnalysis.fastResponseRate
-      });
-    }
-    else if (patternAnalysis.suspiciousPattern && 
-             hasShownQualityAlert && 
-             lastQualityAlertAt > 0 && 
-             (totalResponses - lastQualityAlertAt) >= 5) {
-      console.log('SHOWING QUALITY ALERT: Persistent issue after 5 responses');
-      setShowQualityModal(true);
-      setLastQualityAlertAt(totalResponses);
-      setQualityWarnings(patternAnalysis.warnings);
-      setCurrentQualityIssue({
-        type: patternAnalysis.issueType,
-        noneRate: patternAnalysis.noneResponseRate,
-        gibberishRate: patternAnalysis.gibberishResponseRate,
-        speedRate: patternAnalysis.fastResponseRate
-      });
-    }
-  }, [state.responses.size, showQualityModal, hasShownQualityAlert, lastQualityAlertAt, isAttentionCheck]);
+  }, [currentQuestionData?.questionId, lastQuestionId, state.responses, isAttentionCheck, preAttentionData]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -284,97 +290,79 @@ useEffect(() => {
     return null;
   };
 
-  const updateAttentionCheckStats = async () => {
-    if (state.sessionId) {
-      try {
-        await api.updateUserProgress(state.sessionId, {
-          attentionChecksPassed,
-          attentionChecksFailed,
-          completedQuestions: state.responses.size
-        });
-        console.log('Updated attention check stats:', { attentionChecksPassed, attentionChecksFailed });
-      } catch (error) {
-        console.error('Failed to update attention check stats:', error);
+  // UPDATED performSave to handle both regular and pre-attention data
+  const performSave = async (questionDataToUse?: any, answerToUse?: string, startTimeToUse?: number, qualityAnalysis?: any, skipSuccessMessage?: boolean) => {
+    const questionData = questionDataToUse || currentQuestionData;
+    const answerText = answerToUse || answer;
+    const timeStart = startTimeToUse || startTime;
+    
+    if (!questionData || !state.sessionId) {
+      console.error('Missing required data for save');
+      return false;
+    }
+
+    // For attention checks, create a special question ID using actual response count
+    const questionId = isAttentionCheck 
+      ? `ATTENTION_CHECK_${getActualQuestionResponseCount()}_${questionData.questionId}`
+      : questionData.questionId;
+
+    const questionText = isAttentionCheck 
+      ? attentionCheck.question 
+      : questionData.question;
+
+    if (!qualityAnalysis) {
+      qualityAnalysis = analyzeResponseQuality(answerText);
+    }
+
+    setIsSaving(true);
+    
+    try {
+      const timeSpent = Math.floor((Date.now() - timeStart) / 1000);
+      
+      const response = {
+        sessionId: state.sessionId,
+        questionId: questionId,
+        categoryIndex: state.currentPosition.categoryIndex,
+        subcategoryIndex: state.currentPosition.subcategoryIndex,
+        topicIndex: state.currentPosition.topicIndex,
+        questionIndex: state.currentPosition.questionIndex,
+        category: questionData.category,
+        subcategory: questionData.subcategory,
+        topic: questionData.topic,
+        question: questionText,
+        answer: answerText.trim(),
+        timeSpent,
+        timestamp: new Date().toISOString(),
+        qualityScore: qualityAnalysis.score,
+        isAttentionCheck: isAttentionCheck,
+        attentionCheckType: isAttentionCheck ? attentionCheck.type : undefined,
+        expectedAnswer: isAttentionCheck ? attentionCheck.expectedAnswer : undefined
+      };
+
+      console.log('Saving response:', {
+        questionId,
+        isAttentionCheck,
+        answer: answerText.substring(0, 50) + '...',
+        totalResponses: state.responses.size,
+        qualityScore: qualityAnalysis.score
+      });
+
+      await saveResponse(response);
+      
+      // Only show success message if not skipped and not an attention check
+      if (!skipSuccessMessage && !isAttentionCheck) {
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 2000);
       }
+      return true;
+      
+    } catch (error) {
+      console.error('SAVE ERROR:', error);
+      throw error;
+    } finally {
+      setIsSaving(false);
     }
   };
-
-  // Just save the response, no automatic validation for attention checks
-  const performSave = async (qualityAnalysis?: any) => {
-  if (!currentQuestionData || !state.sessionId) {
-    console.error('Missing required data for save');
-    return false;
-  }
-
-  // For attention checks, we'll create a special question ID to identify them
-  const questionId = isAttentionCheck 
-    ? `ATTENTION_CHECK_${state.responses.size}_${currentQuestionData.questionId}`
-    : currentQuestionData.questionId;
-
-  const questionText = isAttentionCheck 
-    ? attentionCheck.question 
-    : currentQuestionData.question;
-
-  if (!qualityAnalysis) {
-    qualityAnalysis = analyzeResponseQuality(answer);
-  }
-
-  setIsSaving(true);
-  
-  try {
-    const timeSpent = Math.floor((Date.now() - startTime) / 1000);
-    
-    const response = {
-      sessionId: state.sessionId,
-      questionId: questionId,
-      categoryIndex: state.currentPosition.categoryIndex,
-      subcategoryIndex: state.currentPosition.subcategoryIndex,
-      topicIndex: state.currentPosition.topicIndex,
-      questionIndex: state.currentPosition.questionIndex,
-      category: currentQuestionData.category,
-      subcategory: currentQuestionData.subcategory,
-      topic: currentQuestionData.topic,
-      question: questionText,
-      answer: answer.trim(),
-      timeSpent,
-      timestamp: new Date().toISOString(),
-      qualityScore: qualityAnalysis.score,
-      // Add metadata for attention checks
-      isAttentionCheck: isAttentionCheck,
-      attentionCheckType: isAttentionCheck ? attentionCheck.type : undefined,
-      expectedAnswer: isAttentionCheck ? attentionCheck.expectedAnswer : undefined
-    };
-
-    console.log('Saving response:', {
-      questionId,
-      isAttentionCheck,
-      answer: answer.substring(0, 50) + '...',
-      totalResponses: state.responses.size
-    });
-
-    await saveResponse(response);
-    await updateAttentionCheckStats();
-    
-    // IMPORTANT: Reset attention check state after saving
-    if (isAttentionCheck) {
-      console.log('Attention check response saved, resetting state');
-      setIsAttentionCheck(false);
-      setAttentionCheck(null);
-    }
-    
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 2000);
-    return true;
-    
-  } catch (error) {
-    console.error('SAVE ERROR:', error);
-    throw error;
-  } finally {
-    setIsSaving(false);
-  }
-};
-
-
 
   const handleSave = async () => {
     if (!validateForm() || !currentQuestionData || !state.sessionId) {
@@ -384,7 +372,7 @@ useEffect(() => {
 
     try {
       const qualityAnalysis = analyzeResponseQuality(answer);
-      return await performSave(qualityAnalysis);
+      return await performSave(undefined, undefined, undefined, qualityAnalysis);
     } catch (error) {
       console.error('Save failed:', error);
       alert('Failed to save response. Please try again.');
@@ -392,6 +380,7 @@ useEffect(() => {
     }
   };
 
+  // FIXED handleNext function
   const handleNext = async () => {
     const isValid = validateForm();
     if (!isValid) {
@@ -399,10 +388,124 @@ useEffect(() => {
       return;
     }
 
+    // Handle attention check validation
+    if (isAttentionCheck && attentionCheck) {
+      const expectedAnswers = attentionCheck.expectedAnswers || [attentionCheck.expectedAnswer];
+      const isAttentionCheckValid = validateAttentionCheck(answer, expectedAnswers);
+      
+      console.log('ATTENTION CHECK VALIDATION:', {
+        userAnswer: answer,
+        expectedAnswers: expectedAnswers,
+        isValid: isAttentionCheckValid,
+        attentionCheckType: attentionCheck.type
+      });
+      
+      if (!isAttentionCheckValid) {
+        console.log('❌ ATTENTION CHECK FAILED - Redirecting to completion');
+        
+        try {
+          await performSave();
+          console.log('Failed attention check response saved');
+        } catch (error) {
+          console.error('Error saving failed attention check:', error);
+        }
+        
+        if (state.sessionId) {
+          try {
+            await api.completeUser(state.sessionId, 'attention_check_failed');
+            console.log('Survey marked as completed due to attention check failure');
+          } catch (error) {
+            console.error('Error marking survey completed:', error);
+          }
+        }
+        
+        dispatch({ type: 'SET_ATTENTION_CHECK_FAILED', payload: true });
+        return;
+      } else {
+        console.log('✅ ATTENTION CHECK PASSED');
+        
+        // Save the attention check response
+        try {
+          await performSave();
+          console.log('Attention check response saved');
+        } catch (error) {
+          console.error('Error saving attention check:', error);
+        }
+        
+        // Save the pre-attention data if it exists
+        if (preAttentionData) {
+          console.log('💾 Saving pre-attention data:', preAttentionData.questionData.questionId);
+          try {
+            await performSave(
+              preAttentionData.questionData,
+              preAttentionData.answer,
+              preAttentionData.startTime,
+              undefined,
+              true // Skip success message
+            );
+            console.log('Pre-attention data saved successfully');
+          } catch (error) {
+            console.error('Error saving pre-attention data:', error);
+          }
+        }
+        
+        // Reset attention check state and clear pre-attention data
+        setIsAttentionCheck(false);
+        setAttentionCheck(null);
+        
+        // TRIGGER NAVIGATION with animation
+        setNavigationDirection('next');
+        setIsNavigating(true);
+        
+        setTimeout(() => {
+          // Clear the answer field to prevent wrong answer from showing
+          setAnswer('');
+          setPreAttentionData(null);
+          
+          // Force re-render by updating the question ID tracker
+          setLastQuestionId(null);
+        }, 300);
+        
+        return;
+      }
+    }
+
+    // Regular question flow - check for quality issues before saving
     try {
+      if (!isAttentionCheck) {
+        const qualityAnalysis = analyzeResponseQuality(answer);
+        
+        // If this individual response is very low quality, show warning
+        if (qualityAnalysis.isLowQuality && qualityAnalysis.score < 15) {
+          console.log('Individual response quality too low:', qualityAnalysis.score);
+          setCurrentQualityIssue({
+            type: 'individual',
+            noneRate: qualityAnalysis.isNoneResponse ? 100 : 0,
+            gibberishRate: qualityAnalysis.isGibberish ? 100 : 0,
+            speedRate: 0
+          });
+          setQualityWarnings([
+            'This response appears to be very low quality',
+            ...qualityAnalysis.issues
+          ]);
+          setShowQualityModal(true);
+          return; // Don't proceed with save
+        }
+      }
+      
       const saveSuccessful = await handleSave();
       
       if (saveSuccessful && isValid) {
+        // If we have pre-attention data and we're saving the same question, clear it
+        if (
+          preAttentionData &&
+          currentQuestionData &&
+          preAttentionData.questionData.questionId === currentQuestionData.questionId
+        ) {
+          console.log('Clearing pre-attention data after saving the same question');
+          setPreAttentionData(null);
+        }
+        
         const milestone = checkForMilestones();
         
         setNavigationDirection('next');
@@ -444,27 +547,22 @@ useEffect(() => {
     }, 300);
   };
 
-  const handleNavigateToQuestion = async (categoryIndex: number, subcategoryIndex: number, topicIndex: number, questionIndex: number) => {
-    const isValid = validateForm();
-    if (isValid && answer.trim()) {
-      console.log('QuestionForm: Saving current response before navigation');
-      try {
-        await handleSave();
-      } catch (error) {
-        console.error('Failed to save before navigation:', error);
-      }
-    }
-    
-    console.log('QuestionForm: Navigating to:', categoryIndex, subcategoryIndex, topicIndex, questionIndex);
-    await navigateToPosition(categoryIndex, subcategoryIndex, topicIndex, questionIndex);
-  };
-
   const handleQualityModalClose = () => {
     console.log('Quality modal closed - user will improve response');
     setShowQualityModal(false);
     
+    // Clear the current answer to force them to rewrite
     setAnswer('');
     setErrors({});
+    setQualityWarnings([]);
+    
+    // Reset the quality issue state
+    setCurrentQualityIssue({
+      type: null,
+      noneRate: 0,
+      gibberishRate: 0,
+      speedRate: 0
+    });
     
     setTimeout(() => {
       if (textareaRef.current) {
@@ -488,30 +586,21 @@ useEffect(() => {
     );
   }
 
-  // If survey has expired, don't render the question form
   if (state.surveyExpired) {
-    return null; // App.tsx will handle showing SurveyExpired component
+    return null;
   }
 
-  const topicProgress = getTotalQuestionsInCurrentTopic();
-  const completedInTopic = getCompletedQuestionsInCurrentTopic();
-  const currentQuestionInTopic = state.currentPosition.questionIndex + 1;
   const isFirstQuestion = state.currentPosition.categoryIndex === 0 && 
                          state.currentPosition.subcategoryIndex === 0 && 
                          state.currentPosition.topicIndex === 0 && 
                          state.currentPosition.questionIndex === 0;
 
   const isFormValid = answer.trim().length >= 4;
+  const displayQuestion = isAttentionCheck ? attentionCheck.question : currentQuestionData.question;
 
-  // For attention checks, use the attention check question, but make it look like a regular question
-  const displayQuestionData = isAttentionCheck 
-    ? {
-        topic: currentQuestionData.topic,
-        category: currentQuestionData.category,
-        subcategory: currentQuestionData.subcategory,
-        question: attentionCheck.question
-      }
-    : currentQuestionData;
+  if (attentionCheckFailed) {
+    return null;
+  }
 
   return (
     <div 
@@ -520,38 +609,9 @@ useEffect(() => {
         background: `linear-gradient(135deg, var(--bg-primary) 0%, var(--color-cream) 50%, var(--bg-secondary) 100%)` 
       }}
     >
-      {/* Timer Components */}
       <SurveyTimer />
-      <TimeWarningModal 
-        isOpen={showTimeWarningModal}
-        onClose={() => setShowTimeWarningModal(false)}
-      />
-      
       <ProgressBar />
-      
-      {/* Menu Button */}
-      <div className="fixed top-20 right-6 z-40">
-        <button
-          onClick={() => setShowNavigationMenu(true)}
-          className="p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
-          style={{ 
-            background: 'var(--btn-primary-bg)',
-            color: 'var(--text-on-dark)'
-          }}
-          title="Navigation Menu"
-        >
-          <span className="text-xl">📋</span>
-        </button>
-      </div>
 
-      {/* Navigation Menu */}
-      <NavigationMenu 
-        isOpen={showNavigationMenu}
-        onClose={() => setShowNavigationMenu(false)}
-        onNavigateTo={handleNavigateToQuestion}
-      />
-
-      {/* Quality Warning Modal (not shown for attention checks) */}
       {!isAttentionCheck && (
         <QualityWarningModal
           isOpen={showQualityModal}
@@ -564,7 +624,6 @@ useEffect(() => {
         />
       )}
       
-      {/* Celebration Modal */}
       {showCelebration && (
         <CelebrationModal 
           celebration={showCelebration} 
@@ -573,7 +632,6 @@ useEffect(() => {
       )}
       
       <div className="max-w-4xl mx-auto px-4 py-6">
-        {/* Question Card Container */}
         <div className="relative overflow-hidden">
           <div className={`transform transition-all duration-500 ease-in-out ${
             isNavigating 
@@ -582,82 +640,7 @@ useEffect(() => {
                 : 'translate-x-full opacity-0'
               : 'translate-x-0 opacity-100'
           }`}>
-            
-            {/* Topic Header Card */}
-            <div 
-              className="backdrop-blur-sm rounded-2xl shadow-lg p-6 mb-6"
-              style={{ 
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-light)'
-              }}
-            >
-              <div className="text-center mb-4">
-                <div 
-                  className="inline-flex items-center px-4 py-2 text-white rounded-full text-sm font-medium mb-4 shadow-sm"
-                  style={{ 
-                    background: 'var(--btn-primary-bg)' 
-                  }}
-                >
-                  Question {currentQuestionInTopic} of {topicProgress}
-                </div>
-                
-                <h1 
-                  className="text-2xl md:text-3xl font-semibold mb-3"
-                  style={{ color: 'var(--text-primary)' }}
-                >
-                  {displayQuestionData.topic}
-                </h1>
-                
-                <div className="flex items-center justify-center space-x-2 text-sm">
-                  <span 
-                    className="px-3 py-1 rounded-full font-medium"
-                    style={{ 
-                      backgroundColor: 'var(--tag-category-bg)',
-                      color: 'var(--tag-category-text)',
-                      border: '1px solid var(--border-light)'
-                    }}
-                  >
-                    {displayQuestionData.category}
-                  </span>
-                  <span style={{ color: 'var(--text-muted)' }}>•</span>
-                  <span 
-                    className="px-3 py-1 rounded-full font-medium"
-                    style={{ 
-                      backgroundColor: 'var(--tag-subcategory-bg)',
-                      color: 'var(--tag-subcategory-text)',
-                      border: '1px solid var(--border-light)'
-                    }}
-                  >
-                    {displayQuestionData.subcategory}
-                  </span>
-                </div>
-              </div>
 
-              {/* Topic Progress Bar */}
-              <div className="relative">
-                <div 
-                  className="w-full rounded-full h-2 overflow-hidden"
-                  style={{ backgroundColor: 'var(--bg-progress)' }}
-                >
-                  <div 
-                    className="h-2 rounded-full transition-all duration-1000 ease-out"
-                    style={{ 
-                      background: 'var(--bg-progress-fill)',
-                      width: `${(completedInTopic / topicProgress) * 100}%` 
-                    }}
-                  ></div>
-                </div>
-                
-                <div 
-                  className="text-center text-sm mt-2"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  {completedInTopic} of {topicProgress} questions completed
-                </div>
-              </div>
-            </div>
-
-            {/* Main Question Card */}
             <div 
               className="backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden"
               style={{ 
@@ -666,7 +649,6 @@ useEffect(() => {
               }}
             >
               
-              {/* Question Header - looks identical for both regular and attention check questions */}
               <div 
                 className="p-6"
                 style={{ 
@@ -674,12 +656,12 @@ useEffect(() => {
                   color: 'var(--text-on-dark)'
                 }}
               >
+                {isAttentionCheck}
                 <h2 className="text-lg md:text-xl font-medium leading-relaxed">
-                  {displayQuestionData.question}
+                  {displayQuestion}
                 </h2>
               </div>
 
-              {/* Answer Section */}
               <div className="p-6">
                 <div className="mb-6">
                   <div className="flex justify-between items-center mb-3">
@@ -704,7 +686,6 @@ useEffect(() => {
                     </button>
                   </div>
                   
-                  {/* Regular Question Textarea - same for both regular and attention checks */}
                   <div className="relative">
                     <textarea
                       ref={textareaRef}
@@ -742,7 +723,6 @@ useEffect(() => {
                   )}
                 </div>
 
-                {/* Real-time Quality Warnings (for regular questions only) */}
                 {!isAttentionCheck && qualityWarnings.length > 0 && (
                   <div 
                     className="mb-4 p-3 border rounded-xl"
@@ -768,7 +748,6 @@ useEffect(() => {
                   </div>
                 )}
 
-                {/* Success Message */}
                 {showSuccess && (
                   <div 
                     className="mb-4 p-3 border rounded-xl animate-bounce-in"
@@ -785,7 +764,6 @@ useEffect(() => {
                   </div>
                 )}
 
-                {/* Validation Warning */}
                 {!isFormValid && (
                   <div 
                     className="mb-4 p-3 border rounded-xl"
@@ -806,14 +784,13 @@ useEffect(() => {
                   </div>
                 )}
 
-                {/* Navigation Buttons */}
                 <div 
                   className="flex justify-between items-center pt-4 border-t"
                   style={{ borderColor: 'var(--border-light)' }}
                 >
                   <button
                     onClick={handlePrevious}
-                    disabled={isFirstQuestion || isNavigating}
+                    disabled={isFirstQuestion || isNavigating || isAttentionCheck}
                     className="flex items-center px-4 py-2 font-medium rounded-xl transition-all duration-200 disabled:cursor-not-allowed text-sm disabled:opacity-50"
                     style={{ 
                       background: 'var(--btn-warning-bg)',
@@ -825,7 +802,6 @@ useEffect(() => {
                   </button>
 
                   <div className="flex space-x-3">
-                    {/* Hide skip for attention checks */}
                     {!isAttentionCheck && (
                       <button
                         onClick={handleSkip}
@@ -879,7 +855,7 @@ useEffect(() => {
   );
 }
 
-// Celebration Modal Component (keep icons only, no emojis)
+// Celebration Modal Component
 function CelebrationModal({ celebration, onClose }: { 
   celebration: {type: string, data: any}, 
   onClose: () => void 
@@ -887,15 +863,18 @@ function CelebrationModal({ celebration, onClose }: {
   const celebrations = {
     topic: {
       icon: '🎯',
-      title: 'Topic Completed!',
+      title: 'Section Completed!',
+      message: 'Great progress! Keep going!'
     },
     subcategory: {
       icon: '🏆',
-      title: 'Subcategory Mastered!',
+      title: 'Section Mastered!',
+      message: 'Excellent work! Moving to next section!'
     },
     category: {
       icon: '👑',
-      title: 'Category Champion!',
+      title: 'Major Section Complete!',
+      message: 'Outstanding! You\'re making great progress!'
     }
   };
 
@@ -917,28 +896,12 @@ function CelebrationModal({ celebration, onClose }: {
         >
           {config.title}
         </h2>
-        <div 
-          className="p-4 rounded-xl mb-4"
-          style={{ 
-            background: 'linear-gradient(to right, var(--tag-category-bg), var(--tag-subcategory-bg))',
-            border: '1px solid var(--border-light)'
-          }}
+        <p 
+          className="text-lg mb-4"
+          style={{ color: 'var(--text-secondary)' }}
         >
-          <p 
-            className="font-medium text-lg mb-2"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            "{celebration.data.name}"
-          </p>
-          <p 
-            className="text-sm"
-            style={{ color: 'var(--text-secondary)' }}
-          >
-            {celebration.type === 'topic' && `in ${celebration.data.subcategoryName}`}
-            {celebration.type === 'subcategory' && `from ${celebration.data.categoryName}`}
-            {celebration.type === 'category' && 'Entire category completed!'}
-          </p>
-        </div>
+          {config.message}
+        </p>
         <button
           onClick={onClose}
           className="px-6 py-2 font-medium rounded-xl transition-all duration-200"

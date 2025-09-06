@@ -54,10 +54,7 @@ export const validateAnswer = (answer: string): { isValid: boolean; message?: st
   return { isValid: true };
 };
 
-// UPDATED: Changed from 15 to 7 questions
 export const shouldShowAttentionCheck = (questionCount: number): boolean => {
-  // Show attention check at questions 7, 14, 21, 28, etc.
-  // But not at 0 (start of survey)
   console.log('Checking if should show attention check:', {
     questionCount,
     isDivisibleBy7: questionCount > 0 && questionCount % 7 === 0,
@@ -67,9 +64,62 @@ export const shouldShowAttentionCheck = (questionCount: number): boolean => {
   return questionCount > 0 && questionCount % 7 === 0;
 };
 
+// NEW: Improved attention check validation
+export const validateAttentionCheck = (userAnswer: string, expectedAnswers: string[]): boolean => {
+  if (!userAnswer || typeof userAnswer !== 'string') {
+    console.log('Attention check failed: Empty or invalid answer');
+    return false;
+  }
 
+  // Clean and normalize the user's answer
+  const cleanAnswer = userAnswer
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s]/g, '') // Remove punctuation
+    .replace(/\s+/g, ' '); // Normalize whitespace
+
+  console.log('Validating attention check:', {
+    originalAnswer: userAnswer,
+    cleanAnswer: cleanAnswer,
+    expectedAnswers: expectedAnswers
+  });
+
+  // Check against all accepted answers
+  const isValid = expectedAnswers.some(acceptedAnswer => {
+    const cleanAccepted = acceptedAnswer.toLowerCase().trim();
+    
+    // Exact match
+    if (cleanAnswer === cleanAccepted) {
+      console.log('Attention check passed: Exact match');
+      return true;
+    }
+    
+    // Check if the answer contains the expected word (for cases like "the sun is yellow")
+    if (cleanAnswer.includes(cleanAccepted)) {
+      console.log('Attention check passed: Contains expected answer');
+      return true;
+    }
+    
+    // Check for common variations
+    if (cleanAccepted === 'yellow' && (cleanAnswer.includes('gold') || cleanAnswer === 'golden')) {
+      console.log('Attention check passed: Yellow variation');
+      return true;
+    }
+    
+    if (cleanAccepted === 'tuesday' && cleanAnswer === 'tue') {
+      console.log('Attention check passed: Tuesday abbreviation');
+      return true;
+    }
+    
+    return false;
+  });
+
+  console.log('Attention check result:', isValid);
+  return isValid;
+};
 
 // Comprehensive quality analysis
+// Fixed version for helpers.ts
 export const analyzeResponseQuality = (answer: string): {
   isLowQuality: boolean;
   issues: string[];
@@ -92,13 +142,13 @@ export const analyzeResponseQuality = (answer: string): {
     /^(not applicable|not available|no information|no data)$/i,
   ];
 
-  nonePatterns.forEach(pattern => {
-    if (pattern.test(text)) {
-      isNoneResponse = true;
-      issues.push('Generic "none" or non-informative response');
-      score -= 40;
-    }
-  });
+  // Check for none responses (only add message once)
+  const hasNoneResponse = nonePatterns.some(pattern => pattern.test(text));
+  if (hasNoneResponse) {
+    isNoneResponse = true;
+    issues.push('Generic "none" or non-informative response');
+    score -= 40;
+  }
 
   // Check for gibberish patterns
   const gibberishPatterns = [
@@ -116,21 +166,21 @@ export const analyzeResponseQuality = (answer: string): {
     /(.)\1{4,}/, // Same character repeated 5+ times
   ];
 
-  gibberishPatterns.forEach(pattern => {
-    if (pattern.test(text)) {
-      isGibberish = true;
-      issues.push('Appears to be random characters or gibberish');
-      score -= 60;
-    }
-  });
+  // Check for gibberish (only add message once)
+  const hasGibberish = gibberishPatterns.some(pattern => pattern.test(text));
+  if (hasGibberish) {
+    isGibberish = true;
+    issues.push('Appears to be random characters or gibberish');
+    score -= 60;
+  }
 
-  mashingPatterns.forEach(pattern => {
-    if (pattern.test(text)) {
-      isGibberish = true;
-      issues.push('Keyboard mashing or test input detected');
-      score -= 50;
-    }
-  });
+  // Check for keyboard mashing (only add message once)
+  const hasMashing = mashingPatterns.some(pattern => pattern.test(text));
+  if (hasMashing && !hasGibberish) { // Only add if not already marked as gibberish
+    isGibberish = true;
+    issues.push('Keyboard mashing or test input detected');
+    score -= 50;
+  }
 
   // Check for excessive repetition of words
   const words = text.split(/\s+/).filter(word => word.length > 2);
@@ -183,8 +233,6 @@ export const analyzeResponseQuality = (answer: string): {
   };
 };
 
-// FIXED: Comprehensive pattern analysis
-// Comprehensive pattern analysis
 export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: number}>): {
   suspiciousPattern: boolean;
   warnings: string[];
@@ -218,9 +266,6 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
     if (analysis.isNoneResponse) noneCount++;
     if (analysis.isGibberish) gibberishCount++;
     
-    // FIXED: Check for responses that are TOO FAST (less than 8 seconds)
-    // Previously this was checking if timeSpent < 8, which is correct
-    // But make sure we're getting actual time values
     console.log('Response time check:', {
       answer: response.answer.substring(0, 20) + '...',
       timeSpent: response.timeSpent,
@@ -247,7 +292,6 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
   let issueCount = 0;
   let primaryIssue: string | null = null;
 
-  // Check for problematic patterns (30% threshold for all)
   if (noneResponseRate >= 30) {
     warnings.push(`High rate of "none" responses (${noneResponseRate.toFixed(1)}%)`);
     suspiciousPattern = true;
@@ -262,19 +306,11 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
     if (!primaryIssue) primaryIssue = 'gibberish';
   }
 
-  // FIXED: Make sure this is checking for responses that are TOO FAST
   if (fastResponseRate >= 30) {
     warnings.push(`High rate of very quick responses (${fastResponseRate.toFixed(1)}% completed in under 8 seconds)`);
     suspiciousPattern = true;
     issueCount++;
     if (!primaryIssue) primaryIssue = 'speed';
-    
-    console.log('Fast response pattern detected:', {
-      fastResponseRate: fastResponseRate.toFixed(1),
-      threshold: '30%',
-      fastResponseCount,
-      totalResponses: responses.length
-    });
   }
 
   // Check for similar responses
@@ -299,15 +335,7 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
     if (!primaryIssue) primaryIssue = 'quality';
   }
 
-  // Set issue type based on count
   const issueType = issueCount > 1 ? 'multiple' : primaryIssue;
-
-  console.log('Final pattern analysis:', {
-    suspiciousPattern,
-    warnings,
-    issueType,
-    primaryIssue
-  });
 
   return { 
     suspiciousPattern, 
@@ -319,7 +347,7 @@ export const analyzeUserPattern = (responses: Array<{answer: string, timeSpent: 
   };
 };
 
-// Enhanced attention check questions
+// NEW: Enhanced attention check generation with multiple correct answers
 export const generateAttentionCheck = (
   currentCategory: string,
   currentTopic: string,
@@ -327,53 +355,47 @@ export const generateAttentionCheck = (
 ): AttentionCheck => {
   const checks = [
     {
-      question: `What category of cultural practices are you currently answering questions about? Please write the name of the main category.`,
-      correctAnswer: currentCategory.toLowerCase(),
-      type: 'context'
-    },
-    {
-      question: `What specific cultural topic are you currently focused on within ${currentCategory}? Please write the name of the current topic.`,
-      correctAnswer: currentTopic.toLowerCase(),
-      type: 'context'
-    },
-    {
-      question: 'This survey is about cultural practices in which country? Please write the name of the country.',
-      correctAnswer: 'india',
+      question: 'What color is the sun? Please type exactly one color.',
+      correctAnswers: ['yellow', 'gold', 'golden', 'orange'],
       type: 'basic'
     },
     {
-      question: 'How many regions of India were you asked to choose from when you started this survey? Please write the number.',
-      correctAnswer: 'five',
+      question: 'How many days are in one week? Please enter only the number in words.',
+      correctAnswers: ['7', 'seven'],
       type: 'basic'
     },
     {
-      question: 'What should you write if you are not familiar with a cultural practice mentioned in a question? Please write the word you should use.',
-      correctAnswer: 'none',
-      type: 'instruction'
+      question: 'This survey is about cultural practices in which country? Please type the country name.',
+      correctAnswers: ['india', 'bharat'],
+      type: 'basic'
     },
     {
-      question: 'This survey focuses on cultural practices and traditions. What type of knowledge should you base your answers on? Please write "personal" if you should use your personal knowledge, or "internet" if you should look things up online.',
-      correctAnswer: 'personal',
-      type: 'instruction'
+      question: 'What day comes after Monday? Please type only the day name.',
+      correctAnswers: ['tuesday', 'tue'],
+      type: 'basic'
+    },
+    {
+      question: 'How many fingers are on one human hand? Please enter only the number in words.',
+      correctAnswers: ['5', 'five'],
+      type: 'basic'
+    },
+    {
+      question: 'How many months are in one year? Please enter only the number in words.',
+      correctAnswers: ['12', 'twelve'],
+      type: 'basic'
     }
   ];
 
-  // Add personal verification if userInfo available
-  if (userInfo) {
-    checks.push({
-      question: `What region of India did you specify at the beginning of this survey? Please write the name of the region (North, South, East, West, or Central).`,
-      correctAnswer: userInfo.region.toLowerCase(),
-      type: 'personal'
-    });
-  }
+  
   
   const randomCheck = checks[Math.floor(Math.random() * checks.length)];
   
   return {
     question: randomCheck.question,
-    options: [randomCheck.correctAnswer], // Keep for compatibility but not used
-    correctAnswer: 0, // Keep for compatibility but not used
-    expectedAnswer: randomCheck.correctAnswer, // New field for text matching
+    options: [], // Not used for text input
+    correctAnswer: 0, // Not used for text input
+    expectedAnswer: randomCheck.correctAnswers[0], // Primary expected answer for backward compatibility
+    expectedAnswers: randomCheck.correctAnswers, // NEW: Array of acceptable answers
     currentTopic,
     currentCategory,
     type: randomCheck.type

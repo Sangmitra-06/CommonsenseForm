@@ -1,72 +1,91 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useForm } from '../context/FormContext.tsx';
 import * as api from '../services/api.ts';
 
-export default function CompletionPage() {
+interface CompletionPageProps {
+  isAttentionCheckFailure?: boolean;
+}
+
+export default function CompletionPage({ isAttentionCheckFailure = false }: CompletionPageProps) {
   const { state, calculateProgress } = useForm();
   const [actualTimeSpent, setActualTimeSpent] = useState<number>(0);
+  const [prolificCode, setProlificCode] = useState<string>('');
+  const hasMarkedCompleted = useRef(false); // NEW: Prevent multiple API calls
   const progress = calculateProgress();
 
+  // NEW: Prevent refresh/back button for attention check failures
   useEffect(() => {
-    // Mark survey as completed in the database
+    if (isAttentionCheckFailure) {
+      const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+        e.preventDefault();
+        e.returnValue = 'Please do not refresh this page. Use the Prolific code to return the survey.';
+        return 'Please do not refresh this page. Use the Prolific code to return the survey.';
+      };
+
+      const handlePopState = (e: PopStateEvent) => {
+        e.preventDefault();
+        window.history.pushState(null, '', window.location.href);
+      };
+
+      // Prevent back button
+      window.history.pushState(null, '', window.location.href);
+      
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      window.addEventListener('popstate', handlePopState);
+
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+        window.removeEventListener('popstate', handlePopState);
+      };
+    }
+  }, [isAttentionCheckFailure]);
+
+  useEffect(() => {
+    // Generate Prolific completion code
+    const generateProlificCode = () => {
+      if (isAttentionCheckFailure) {
+        // Specific code for attention check failures
+        setProlificCode('CULT-ATTN-FAIL-2024');
+      } else {
+        // Success completion code
+        setProlificCode('CULT-SURVEY-COMPLETE-2024');
+      }
+    };
+
+    // Mark survey as completed in the database - ONLY ONCE
     const markCompleted = async () => {
-      if (state.sessionId) {
+      if (state.sessionId && !hasMarkedCompleted.current) { // Check the ref
         try {
-          await api.completeUser(state.sessionId);
+          hasMarkedCompleted.current = true; // Set immediately to prevent duplicates
+          console.log('Marking survey as completed (once)');
+          // Send completion reason
+          const reason = isAttentionCheckFailure ? 'attention_check_failed' : 'completed';
+          await api.completeUser(state.sessionId, reason);
         } catch (error) {
           console.error('Error marking survey as completed:', error);
+          hasMarkedCompleted.current = false; // Reset on error
         }
       }
     };
 
-    // Calculate actual time spent from responses
+    // Calculate actual time spent from timer
     const calculateActualTime = () => {
-      if (state.responses.size > 0) {
+      if (state.surveyTimeElapsed > 0) {
+        setActualTimeSpent(Math.floor(state.surveyTimeElapsed / 1000));
+      } else if (state.responses.size > 0) {
+        // Fallback to response-based calculation
         const responses = Array.from(state.responses.values());
-        
-        // Method 1: Sum of individual question times
         const totalTimeFromResponses = responses.reduce((total, response) => {
           return total + (response.timeSpent || 0);
         }, 0);
-
-        // Method 2: Calculate from start time to now (if available)
-        const sessionDuration = state.startTime > 0 
-          ? Math.floor((Date.now() - state.startTime) / 1000)
-          : 0;
-
-        // Method 3: Calculate from first response to last response
-        const timestamps = responses
-          .map(r => new Date(r.timestamp).getTime())
-          .sort((a, b) => a - b);
-        
-        const firstResponseTime = timestamps[0];
-        const lastResponseTime = timestamps[timestamps.length - 1];
-        const responseSpanTime = firstResponseTime && lastResponseTime 
-          ? Math.floor((lastResponseTime - firstResponseTime) / 1000)
-          : 0;
-
-        console.log('Time calculations:', {
-          totalTimeFromResponses,
-          sessionDuration,
-          responseSpanTime,
-          responseCount: responses.length
-        });
-
-        // Use the most reasonable time calculation
-        // Usually responseSpanTime + some buffer is most accurate
-        const estimatedTime = Math.max(
-          totalTimeFromResponses,
-          responseSpanTime,
-          sessionDuration * 0.8 // Assume 80% of session time was active
-        );
-
-        setActualTimeSpent(estimatedTime);
+        setActualTimeSpent(totalTimeFromResponses);
       }
     };
 
+    generateProlificCode();
     markCompleted();
     calculateActualTime();
-  }, [state.sessionId, state.responses, state.startTime]);
+  }, [state.sessionId, isAttentionCheckFailure]); // Removed dependencies that cause re-runs
 
   const formatTime = (seconds: number): string => {
     if (seconds === 0) return 'Less than a minute';
@@ -83,21 +102,143 @@ export default function CompletionPage() {
     return parts.join(', ');
   };
 
-  const stats = {
-    totalQuestions: state.progress.totalQuestions,
-    answeredQuestions: state.responses.size,
-    completionRate: progress,
-    timeSpent: actualTimeSpent,
-    categoriesCompleted: state.questionsData.length,
-    topicsCompleted: state.questionsData.reduce((total, category) => {
-      return total + category.subcategories.reduce((subTotal, subcategory) => {
-        return subTotal + subcategory.topics.length;
-      }, 0);
-    }, 0),
-    averageTimePerQuestion: actualTimeSpent > 0 && state.responses.size > 0 
-      ? Math.round(actualTimeSpent / state.responses.size) 
-      : 0
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(prolificCode);
+    alert('Prolific code copied to clipboard!');
   };
+
+  // Fix the stats calculation in CompletionPage.tsx
+const stats = {
+  totalQuestions: state.progress.totalQuestions,
+  // Filter out attention check responses
+  answeredQuestions: Array.from(state.responses.keys())
+    .filter(questionId => !questionId.startsWith('ATTENTION_CHECK_'))
+    .length,
+  completionRate: progress,
+  timeSpent: actualTimeSpent,
+  // Use actual question responses for average calculation
+  averageTimePerQuestion: (() => {
+    const actualQuestionResponses = Array.from(state.responses.values())
+      .filter(response => !response.questionId.startsWith('ATTENTION_CHECK_'));
+    return actualTimeSpent > 0 && actualQuestionResponses.length > 0 
+      ? Math.round(actualTimeSpent / actualQuestionResponses.length) 
+      : 0;
+  })()
+};
+
+  if (isAttentionCheckFailure) {
+    return (
+      <div 
+        className="min-h-screen flex items-center justify-center p-4"
+        style={{ 
+          background: `linear-gradient(135deg, var(--bg-primary) 0%, var(--color-cream) 50%, var(--bg-secondary) 100%)` 
+        }}
+      >
+        <div 
+          className="max-w-3xl mx-auto rounded-3xl shadow-2xl p-8 md:p-12 animate-fade-in"
+          style={{ backgroundColor: 'var(--bg-card)' }}
+        >
+          {/* Header */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6"
+                 style={{ backgroundColor: 'var(--accent-warning)' }}>
+              <span className="text-4xl">⚠️</span>
+            </div>
+            
+            <h1 
+              className="text-4xl md:text-5xl font-bold mb-4"
+              style={{ color: 'var(--accent-error)' }}
+            >
+              Survey Ended
+            </h1>
+            
+            <p 
+              className="text-xl mb-6"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Attention Check Failed
+            </p>
+          </div>
+
+          {/* Prolific Code - RED */}
+          <div 
+            className="border-2 rounded-2xl p-8 mb-8 text-center"
+            style={{ 
+              backgroundColor: '#ef4444', // Red background
+              borderColor: '#dc2626'
+            }}
+          >
+            <h2 
+              className="text-2xl font-bold mb-4"
+              style={{ color: 'white' }}
+            >
+              Please Return This Survey on Prolific
+            </h2>
+            <p 
+              className="text-lg mb-4"
+              style={{ color: 'white' }}
+            >
+              Use this code to return the survey:
+            </p>
+            <div 
+              className="bg-white border-2 border-dashed rounded-lg p-4 mb-4 cursor-pointer hover:bg-gray-50"
+              style={{ borderColor: '#ef4444' }} // Red dashed border
+              onClick={copyToClipboard}
+            >
+              <span className="text-2xl font-mono font-bold text-gray-800">
+                {prolificCode}
+              </span>
+            </div>
+            <button
+              onClick={copyToClipboard}
+              className="px-6 py-2 bg-white font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+              style={{ color: '#ef4444' }} // Red text on white button
+            >
+              📋 Copy Code
+            </button>
+          </div>
+
+          {/* Explanation */}
+          <div 
+            className="border rounded-2xl p-6 mb-8"
+            style={{ 
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              borderColor: 'var(--accent-error)'
+            }}
+          >
+            <h3 
+              className="text-lg font-bold mb-3"
+              style={{ color: 'var(--accent-error)' }}
+            >
+              Why was the survey ended?
+            </h3>
+            <p 
+              className="mb-4"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              The survey includes attention checks to ensure data quality. Unfortunately, your response to an attention check question did not meet the required criteria.
+            </p>
+            <p 
+              className="text-sm"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              Please use the code above to return this survey on Prolific. Thank you for your time.
+            </p>
+          </div>
+
+          {/* Final Message */}
+          <div className="text-center">
+            <p 
+              className="text-lg font-medium"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Thank you for your participation.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div 
@@ -110,13 +251,9 @@ export default function CompletionPage() {
         className="max-w-4xl mx-auto rounded-3xl shadow-2xl p-8 md:p-12 animate-fade-in"
         style={{ backgroundColor: 'var(--bg-card)' }}
       >
+
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-6 animate-bounce-in"
-               style={{ backgroundColor: 'var(--accent-success)' }}>
-            <span className="text-4xl">🎉</span>
-          </div>
-          
           <h1 
             className="text-4xl md:text-5xl font-bold mb-4"
             style={{ color: 'var(--text-primary)' }}
@@ -128,7 +265,7 @@ export default function CompletionPage() {
             className="text-xl mb-6"
             style={{ color: 'var(--text-secondary)' }}
           >
-            You have successfully completed the Survey
+            You have successfully completed the Cultural Practices Survey
           </p>
           
           <div 
@@ -137,8 +274,47 @@ export default function CompletionPage() {
           ></div>
         </div>
 
+        {/* Prolific Completion Code - GREEN */}
+        <div 
+          className="border-2 rounded-2xl p-8 mb-8 text-center"
+          style={{ 
+            backgroundColor: '#dbead7', // Green background
+            borderColor: '#bad6b3'
+          }}
+        >
+          <h2 
+            className="text-2xl font-bold mb-4"
+            style={{ color: 'black' }}
+          >
+            🎉 Survey Complete! 🎉
+          </h2>
+          <p 
+            className="text-lg mb-4"
+            style={{ color: 'black' }}
+          >
+            Please copy this code and paste it into Prolific:
+          </p>
+          <div 
+            className="bg-white border-2 border-dashed rounded-lg p-4 mb-4 cursor-pointer hover:bg-gray-50"
+            style={{ borderColor: '#10b981' }} // Green dashed border
+            onClick={copyToClipboard}
+          >
+            <span className="text-2xl font-mono font-bold text-gray-800">
+              {prolificCode}
+            </span>
+          </div>
+          <button
+            onClick={copyToClipboard}
+            className="px-6 py-2 bg-white font-semibold rounded-lg hover:bg-gray-100 transition-colors focus:outline-none focus:ring-4 focus:ring-#green-300"
+            style={{ color: 'black' }} // Green text on white button
+          >
+            📋 Copy Code
+          </button>
+        </div>
+
+        
         {/* Statistics */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           <div 
             className="p-6 rounded-2xl"
             style={{ 
@@ -160,37 +336,17 @@ export default function CompletionPage() {
             </div>
           </div>
           
-          <div 
-            className="p-6 rounded-2xl"
-            style={{ 
-              background: 'var(--tag-subcategory-bg)',
-              border: '1px solid var(--border-light)'
-            }}
-          >
-            <div 
-              className="text-3xl font-bold mb-2"
-              style={{ color: 'var(--tag-subcategory-text)' }}
-            >
-              {stats.completionRate.toFixed(1)}%
-            </div>
-            <div 
-              className="font-medium"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              Completion Rate
-            </div>
-          </div>
           
           <div 
             className="p-6 rounded-2xl"
             style={{ 
-              background: 'var(--tag-category-bg)',
+              background: 'var(--color-blue-gray-changed)',
               border: '1px solid var(--border-light)'
             }}
           >
             <div 
               className="text-2xl font-bold mb-2"
-              style={{ color: 'var(--tag-category-text)' }}
+              style={{ color: 'var(--tag-subcategory-text)' }}
             >
               {formatTime(stats.timeSpent)}
             </div>
@@ -205,13 +361,13 @@ export default function CompletionPage() {
           <div 
             className="p-6 rounded-2xl"
             style={{ 
-              background: 'var(--tag-subcategory-bg)',
+              background: 'var(--tag-category-bg)',
               border: '1px solid var(--border-light)'
             }}
           >
             <div 
               className="text-3xl font-bold mb-2"
-              style={{ color: 'var(--tag-subcategory-text)' }}
+              style={{ color: 'var(--tag-category-text)' }}
             >
               {stats.averageTimePerQuestion}s
             </div>
@@ -250,51 +406,13 @@ export default function CompletionPage() {
           </div>
         </div>
 
-        {/* Session Information */}
-        <div 
-          className="border rounded-2xl p-6 mb-8"
-          style={{ 
-            backgroundColor: 'rgba(135, 144, 143, 0.1)',
-            borderColor: 'var(--border-light)'
-          }}
-        >
-          <h3 
-            className="text-lg font-bold mb-4"
-            style={{ color: 'var(--text-primary)' }}
-          >
-            Survey Summary
-          </h3>
-          <div className="grid md:grid-cols-2 gap-4 text-sm" style={{ color: 'var(--text-secondary)' }}>
-            <div>
-              <strong>Session ID:</strong> {state.sessionId}
-            </div>
-            <div>
-              <strong>Region:</strong> {state.userInfo?.region} India
-            </div>
-            <div>
-              <strong>Completion Date:</strong> {new Date().toLocaleDateString()}
-            </div>
-            <div>
-              <strong>Total Categories:</strong> {stats.categoriesCompleted}
-            </div>
-            <div>
-              <strong>Topics Covered:</strong> {stats.topicsCompleted}
-            </div>
-          </div>
-        </div>
-
-  
-
-        
-
-
         {/* Final Thank You */}
         <div className="text-center mt-8">
           <p 
             className="text-lg font-medium"
             style={{ color: 'var(--text-secondary)' }}
           >
-            Thank you once again for your time and valuable insights!
+            Don't forget to submit your Prolific code above! Thank you for your time and valuable insights!
           </p>
         </div>
       </div>
