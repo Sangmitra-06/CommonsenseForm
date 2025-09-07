@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FormProvider, useForm } from './context/FormContext.tsx';
+import ConsentForm from './components/ConsentForm.tsx';
+import ConsentDeclined from './components/ConsentDeclines.tsx';
 import IntroductionWelcome from './components/IntroductionWelcome.tsx';
 import IntroductionStructure from './components/IntroductionStructure.tsx';
 import UserInfo from './components/UserInfo.tsx';
@@ -8,11 +10,11 @@ import CompletionPage from './components/CompletionPage.tsx';
 import SurveyExpired from './components/SurveyExpired.tsx';
 import './App.css';
 
-type AppStage = 'welcome' | 'structure' | 'userInfo' | 'questions' | 'completed' | 'expired' | 'attentionFailed';
+type AppStage = 'consent' | 'declined' | 'welcome' | 'structure' | 'userInfo' | 'questions' | 'completed' | 'expired' | 'attentionFailed';
 
 function AppContent() {
   const { state, createUserSession, loadUserSession } = useForm();
-  const [currentStage, setCurrentStage] = useState<AppStage>('welcome');
+  const [currentStage, setCurrentStage] = useState<AppStage>('consent'); // Start with consent
   const [isInitializing, setIsInitializing] = useState(true);
   const [hasCheckedSession, setHasCheckedSession] = useState(false);
   const [hasExistingSession, setHasExistingSession] = useState(false);
@@ -93,6 +95,15 @@ function AppContent() {
     }
   }, [state.attentionCheckFailed, state.surveyExpired, state.isCompleted, state.sessionId, state.userInfo, hasCheckedSession]);
 
+  // Consent handlers
+  const handleConsent = () => {
+    setCurrentStage('welcome');
+  };
+
+  const handleDeclineConsent = () => {
+    setCurrentStage('declined');
+  };
+
   const handleWelcomeContinue = () => {
     setCurrentStage('structure');
   };
@@ -134,6 +145,21 @@ function AppContent() {
     }
   };
 
+  // Show consent form immediately, don't wait for initialization if on consent stage
+  if (currentStage === 'consent') {
+    return (
+      <ConsentForm 
+        onConsent={handleConsent} 
+        onDecline={handleDeclineConsent} 
+      />
+    );
+  }
+
+  // Show declined page immediately
+  if (currentStage === 'declined') {
+    return <ConsentDeclined />;
+  }
+
   if (isInitializing || state.questionsData.length === 0) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -169,8 +195,8 @@ function AppContent() {
   }
 
   if (state.attentionCheckFailed) {
-  return <CompletionPage isAttentionCheckFailure={true} />;
-}
+    return <CompletionPage isAttentionCheckFailure={true} />;
+  }
 
   switch (currentStage) {
     case 'welcome':
@@ -194,7 +220,12 @@ function AppContent() {
     case 'expired':
       return <SurveyExpired />;
     default:
-      return <IntroductionWelcome onContinue={handleWelcomeContinue} />;
+      return (
+        <ConsentForm 
+          onConsent={handleConsent} 
+          onDecline={handleDeclineConsent} 
+        />
+      );
   }
 }
 
