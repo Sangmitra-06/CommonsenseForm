@@ -1,29 +1,28 @@
 [
   {
-    "category": "Clothing and adornment",
+    "category": "Interpersonal Relations",
     "subcategories": [
       {
-        "subcategory": "Ornament",
+        "subcategory": "Visiting and hospitality",
         "topics": [
           {
-            "topic": "Occasions for Wearing Specific Ornaments",
+            "topic": "Occasions for visiting",
             "questions": [
-              "In your region, what types of ornaments are typically avoided by women during mourning periods or at funerals? Please name two most common ones.",
-              "In your region, what ornaments are commonly worn by men during major religious festivals or celebrations? Please specify two most common ones.",
-              "In your region, what types of ornaments are commonly worn by a child during their first birthday celebration? Please name two most common ones.",
-              "random question 1",
-              "random question 2",
-              "random question 3",
-              "random question 4",
-              "random question 5",
-              "random question 6",
-              "random question 7",
-              "random question 8",
-              "random question 9",
-              "random question 10",
-              "random question 11",
-              "random question 12",
-              "random question 13"
+              "In your region, what is the most common festival that involves visiting or celebrating with relatives?",
+              "In your region, what are the 3 most common personal occasions for visiting relatives? Examples of personal occasions could include weddings, births, funerals, etc.",
+              "In your region, what are two common situations where visiting others is considered inappropriate?",
+              "In your region, on what two occasions do people usually visit family elders?",
+              "In your region, which two national holidays are most often for visiting family or friends?",
+              "In your region, on what two common occasions do people visit their in-laws?",
+              "In your region, on what two occasions do people visit teachers or mentors?",
+              "In your region, what two occasions bring neighbors together at someone’s house?",
+              "In your region, on what two occasions do people return to their hometown or village?",
+              "In your region, what is the most common reason family visits late at night?",
+              "In your region, what is the most common reason to visit a friend or colleague at work?",
+              "In your region, do people visit friends or relatives unannounced or with prior notice?",
+              "In your region, what two career events most often prompt visits from friends or family? Examples could include a promotion, retirement, opening a shop, etc.",
+              "In your region, what two occasions involving children prompt visits from relatives or neighbors?",
+              "In your region, what two everyday reasons (outside major events) lead to visits between friends or relatives?"
             ]
           }
         ]
