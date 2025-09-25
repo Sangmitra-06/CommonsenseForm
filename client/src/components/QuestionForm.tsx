@@ -803,19 +803,6 @@ export default function QuestionForm() {
                   </button>
 
                   <div className="flex space-x-3">
-                    {!isAttentionCheck && (
-                      <button
-                        onClick={handleSkip}
-                        disabled={isNavigating}
-                        className="px-4 py-2 font-medium rounded-xl transition-all duration-200 text-sm"
-                        style={{ 
-                          background: 'var(--btn-warning-bg)',
-                          color: '#92400e'
-                        }}
-                      >
-                        Skip
-                      </button>
-                    )}
 
                     <button
                       onClick={handleSave}

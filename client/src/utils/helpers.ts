@@ -65,18 +65,22 @@ export const shouldShowAttentionCheck = (questionCount: number): boolean => {
 };
 
 // NEW: Improved attention check validation
+// NEW: Improved attention check validation
 export const validateAttentionCheck = (userAnswer: string, expectedAnswers: string[]): boolean => {
   if (!userAnswer || typeof userAnswer !== 'string') {
     console.log('Attention check failed: Empty or invalid answer');
     return false;
   }
 
-  // Clean and normalize the user's answer
+  // Clean and normalize the user's answer - handle multi-line input
   const cleanAnswer = userAnswer
     .toLowerCase()
+    .replace(/\r\n/g, ' ') // Replace Windows line breaks with space
+    .replace(/\n/g, ' ')   // Replace Unix line breaks with space
+    .replace(/\r/g, ' ')   // Replace old Mac line breaks with space
     .trim()
     .replace(/[^\w\s]/g, '') // Remove punctuation
-    .replace(/\s+/g, ' '); // Normalize whitespace
+    .replace(/\s+/g, ' '); // Normalize all whitespace to single spaces
 
   console.log('Validating attention check:', {
     originalAnswer: userAnswer,
