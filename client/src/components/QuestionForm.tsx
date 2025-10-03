@@ -675,7 +675,7 @@ export default function QuestionForm() {
                         className="block text-xs font-normal mt-1"
                         style={{ color: 'var(--text-secondary)' }}
                       >
-                        You can specify "none" if no answer exists
+                        You can specify "none" if no answer exists or if you prefer not to answer.
                       </span>
                     </label>
                     <button
