@@ -50,152 +50,195 @@ export default function ConsentForm({ onConsent, onDecline }: ConsentFormProps) 
         >
           <div className="prose prose-sm max-w-none text-custom-dark-brown">
             
-            {/* Potential Benefits */}
+            {/* Invitation */}
             <section className="mb-6">
-              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">Potential Benefits</h2>
-              <p className="mb-2">By participating in this study:</p>
-              <ul className="list-disc list-inside space-y-2">
-                <li>Your responses will help researchers understand how cultural knowledge varies across different regions of India.</li>
-                <li>Your responses will contribute to the development of AI systems and language models that better reflect diverse cultural perspectives and local knowledge.</li>
-              </ul>
+              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">INVITATION</h2>
+              <p>
+                You are invited to participate in a study that involves research. The purpose of this study is to examine regional variations in cultural commonsense knowledge across India. This research will contribute to the development of language models that better reflect diverse cultural perspectives.
+              </p>
             </section>
 
-            {/* Possible Risks */}
+            {/* What's Involved */}
             <section className="mb-6">
-              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">Possible Risks</h2>
-              <p className="mb-2">There are minimal risks associated with this study. However, the few risks associated with this study are as follows:</p>
-              <ul className="list-disc list-inside space-y-2">
-                <li>Questions may occasionally feel sensitive in a cultural sense even though no direct identifiers are requested, which is mitigated by data minimization and plain‑language transparency</li>
-                <li>Minimal privacy risk remains while raw responses are under controlled access prior to de‑identification</li>
-              </ul>
-            </section>
-
-            {/* Withdrawal Process */}
-            <section className="mb-6">
-              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">Withdrawal Process</h2>
-              <p className="mb-4">
-                Participation in this study is completely voluntary, and you may withdraw at any time without penalty. Should you choose to withdraw before publication, we will immediately delete all of your individual data from our systems. After publication, while we can still delete your individual raw data from our systems, we cannot remove your anonymized contributions from published aggregate results such as statistical analyses, figures, or overall findings, as this data will have been combined with other participants' data.
+              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">WHAT'S INVOLVED</h2>
+              <p className="mb-2">As a participant, you will be asked to:</p>
+              <ol className="list-decimal list-inside space-y-2 mb-4">
+                <li>Read and provide informed consent</li>
+                <li>Provide your prolific ID</li>
+                <li>Answer basic demographic questions (region in India, age, years spent in your region)</li>
+                <li>Respond to 15 short-answer questions about cultural practices and commonsense knowledge specific to Indian regions</li>
+              </ol>
+              <p className="mb-2">
+                Participation will take approximately 20 minutes of your time.
               </p>
               <p>
-                To withdraw from the study or exercise any of your data rights, please contact us through Prolific's private messaging system using your Prolific ID.
+                You may enter "none" or "prefer not to answer" for any question you do not wish to answer substantively, though all questions require some form of response to submit the survey.
+              </p>
+            </section>
+
+            {/* Potential Benefits and Risks */}
+            <section className="mb-6">
+              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">POTENTIAL BENEFITS AND RISKS</h2>
+              
+              <p className="mb-2">Possible benefits of participation include:</p>
+              <ul className="list-disc list-inside space-y-2 mb-4">
+                <li>Your responses may help researchers understand how cultural knowledge varies across different regions of India</li>
+                <li>Your responses may contribute to the development of AI systems and language models that better reflect diverse cultural perspectives and local knowledge</li>
+              </ul>
+
+              <p className="mb-2">There are minimal risks associated with participation:</p>
+              <ul className="list-disc list-inside space-y-2 mb-4">
+                <li><strong>Psychological risks:</strong> Questions may occasionally feel culturally sensitive, though questions have been carefully designed to avoid controversial or deeply personal topics. You may experience mild discomfort when answering questions about cultural practices.</li>
+                <li><strong>Social/Privacy risks:</strong> Minimal privacy risk exists while raw responses containing your Prolific ID are under controlled access prior to de-identification. Only the research team (Principal Investigator and Primary Student Investigator) has access to this data, which is stored securely with password protection.</li>
+              </ul>
+
+              <p>
+                These risks are mitigated through data minimization, secure password-protected storage with restricted access, clear transparency about data handling, your right to enter "none" or "prefer not to answer" for any question, and your right to withdraw and have your data deleted before the 31st of December, 2025.
               </p>
             </section>
 
             {/* Confidentiality */}
             <section className="mb-6">
-              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">Confidentiality</h2>
+              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">CONFIDENTIALITY</h2>
               <p className="mb-4">
-                All collected data will remain confidential. We do not collect direct identifiers like your name, email, or phone number. Demographic data regarding regional familiarity, age, and Prolific ID will be collected.
+                All information you provide is considered confidential. We do not collect direct identifiers like your name, email, or phone number. We will collect your Prolific ID (for payment and communication purposes only), demographic information (region in India, age, years spent in region), and your responses to cultural questions.
               </p>
-              <p>
-                Data will always be stored securely using password protection and restricted access to only those involved in this study, as well, all data will be used solely for research purposes. No identifying information will appear in any reports or publications.
-              </p>
-            </section>
 
-            {/* Legal Framework and Your Rights */}
-            <section className="mb-6">
-              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">Legal Framework and Your Rights</h2>
-              <p className="mb-4">
-                This research operates under your explicit consent and complies with GDPR and PIPEDA requirements.
-              </p>
+              <h3 className="text-lg font-semibold mb-2 text-custom-dark-brown">Data Management:</h3>
               
-              <h3 className="text-lg font-semibold mb-2 text-custom-dark-brown">Data Categories:</h3>
-              <p className="mb-2">We collect:</p>
-              <ul className="list-disc list-inside space-y-1 mb-4">
-                <li>Prolific ID (for payment and communication)</li>
-                <li>Region of India you're from</li>
-                <li>Age</li>
-                <li>Years spent in your region</li>
-                <li>Your responses to cultural questions</li>
-              </ul>
+              <p className="mb-2"><strong>Storage during collection:</strong> Data will be stored in a MongoDB Atlas password-protected cloud database (US-based servers, Google Cloud Platform, Iowa region) with access restricted to the PI and PSI only.</p>
+              
+              <p className="mb-2"><strong>Storage after collection:</strong> Data will be exported and stored securely on a password-protected file on Brock University OneDrive servers with access restricted to the PI and PSI only.</p>
+              
+              <p className="mb-4"><strong>Identifiers and anonymization:</strong> Prolific IDs will be removed from the dataset and data will be anonymized within 30 days of data collection. Participants may request to have their data deleted by December 31, 2025. After this date, individual responses cannot be linked back to participants.</p>
 
-              <p className="mb-4">
-                Your personal data (Prolific ID and responses) will be processed solely for scientific research purposes to advance understanding of regional knowledge. Please note that data will be stored on US-based servers (GitHub for secure storage) under appropriate privacy safeguards including Standard Contractual Clauses and API configurations that prevent your data from being used for model training.
-              </p>
-
-              <p className="mb-2">Under data protection laws, you have the right to:</p>
-              <ul className="list-disc list-inside space-y-1 mb-4">
-                <li>Access your personal data.</li>
-                <li>Request correction of inaccurate data.</li>
-                <li>Request the deletion of your data. (subject to publication limitations noted above)</li>
-                <li>Restrict the processing of your data.</li>
-                <li>Data portability.</li>
-                <li>Withdraw your consent at any time.</li>
-                <li>Lodge a complaint with a supervisory authorities in Canada or the EU.</li>
-              </ul>
-
-              <p>
-                You can exercise these rights by contacting us through Prolific's private messaging system using your Prolific ID.
-              </p>
-            </section>
-
-            {/* Privacy and Data Sharing Policies */}
-            <section className="mb-6">
-              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">Privacy and Data Sharing Policies</h2>
-              <p className="mb-4">
-                This policy outlines how your data is handled during our research study using a third-party large language model (LLM) service to review response quality. Please read carefully.
-              </p>
-
-              <h3 className="text-lg font-semibold mb-2 text-custom-dark-brown">Data Collection and Usage:</h3>
-              <p className="mb-4">
-                We collect your Prolific ID for payment, your choice of region, your answers to the common-sense questions, and voluntary demographic data (e.g., age range). This data will be used for research analysis, quality control, compensation administration, and the preparation of aggregate, anonymized publications or datasets. No automated decision-making that produces legal or similarly significant effects is performed.
-              </p>
-
-              <h3 className="text-lg font-semibold mb-2 text-custom-dark-brown">International Data Transfers:</h3>
-              <p className="mb-2">As a Canadian institution, your data will be processed in Canada and transferred to:</p>
-              <ul className="list-disc list-inside space-y-1 mb-4">
-                <li>US-based servers (GitHub, LLM services)</li>
-                <li>Adequate protection ensured through Standard Contractual Clauses</li>
-                <li>Technical safeguards prevent unauthorized access or commercial use</li>
-              </ul>
-
-              <h3 className="text-lg font-semibold mb-2 text-custom-dark-brown">Data Retention and Deletion:</h3>
-              <p className="mb-4">
-                Collected data will be stored by the research team for the duration of the research study and will continue to be stored after the completion of the study for the purpose of reanalysis. Upon publication of the subsequent work, any collected data will be deleted in its entirety. Should you wish to withdraw from the study, any collected data stored by the research team will immediately be deleted. Your responses to the questions that are stored in the LLM service may be retained for up to 30 days, post which, it will be deleted. In the event of a withdrawal, data stored by this service cannot be guaranteed to be deleted until the 30 day period has elapsed.
-              </p>
-
-              <h3 className="text-lg font-semibold mb-2 text-custom-dark-brown">Data Security, Sharing and Third-Party Processing:</h3>
+              <h3 className="text-lg font-semibold mb-2 text-custom-dark-brown">Data retention:</h3>
               <ul className="list-disc list-inside space-y-2 mb-4">
-                <li><strong>Research team:</strong> Only authorized team members have access to your complete data</li>
-                <li><strong>LLM service:</strong> The LLM service used for response analysis receives only your responses, region, and years in region for evaluation purposes. They do not receive your Prolific ID or other identifying information</li>
-                <li><strong>Security measures:</strong> All data is encrypted in transit and at rest, stored in password-protected systems</li>
-                <li><strong>No commercial use:</strong> Your data will not be used for commercial purposes or to train AI models for commercial applications</li>
+                <li><strong>Identifiable data (with Prolific IDs):</strong> Retained on secure Brock University OneDrive until December 31, 2025</li>
+                <li><strong>Anonymized research dataset:</strong> Retained on Brock University OneDrive until approximately December 2026 for analysis and publication</li>
+                <li><strong>Aggregated public dataset:</strong> A processed dataset may be made publicly available (expected June 2026) and will remain permanently accessible for research purposes and secondary data analysis. This public dataset will contain:
+                  <ul className="list-disc list-inside ml-6 mt-2 space-y-1">
+                    <li>Regional categories only (North, South, East, West, Central India)</li>
+                    <li>Representative consensus answers for each region based on synthesizing responses from multiple participants (approximately 10 per region)</li>
+                    <li>No individual participant responses</li>
+                    <li>No identifiable information</li>
+                  </ul>
+                </li>
+                <li>All non-public versions of data will be permanently deleted from all storage systems by December 2026</li>
               </ul>
 
+              <p className="mb-4">
+                Your individual responses will be combined with others from your region to create representative regional answers. No individual responses will be published or identifiable.
+              </p>
+
+              <h3 className="text-lg font-semibold mb-2 text-custom-dark-brown">Data deletion:</h3>
+              
+              <div className="mb-4">
+                <p className="mb-2"><strong>Upon withdrawal (before December 31, 2025):</strong> All individual data including Prolific ID and responses will be immediately and permanently deleted from all storage systems</p>
+                <p className="mb-2"><strong>Deletion Steps:</strong></p>
+                <ul className="list-disc list-inside ml-4 space-y-1">
+                  <li><strong>Identification of records:</strong> Your Prolific ID will be used to locate all associated records in the active survey database (MongoDB Atlas) and any exported datasets stored on Brock University OneDrive.</li>
+                  <li><strong>Deletion in primary storage:</strong> Your individual records will be deleted from MongoDB Atlas. Deletion will be verified by re-querying the database to confirm that no records remain.</li>
+                  <li><strong>Deletion in secondary storage:</strong> Your individual records will be removed from exported files stored on OneDrive. Where version-controlled repositories are used, the deletion will be committed and prior versions containing your data will be removed from access (including repository recycle bins and history where feasible), and storage will be re-verified.</li>
+                  <li><strong>Backups:</strong> Backups will be scheduled to expire and be replaced with sanitized datasets that no longer include your records.</li>
+                  <li><strong>Confirmation:</strong> The research team will record the date, systems updated, and verification steps completed. You will receive a brief confirmation message via Prolific once deletions have been completed.</li>
+                </ul>
+              </div>
+
+              <div className="mb-4">
+                <p className="mb-2"><strong>After study completion:</strong> Identifiable data (Prolific IDs) will be permanently deleted by December 31, 2025</p>
+                <p className="mb-2"><strong>Deletion Steps:</strong></p>
+                <ul className="list-disc list-inside ml-4 space-y-1">
+                  <li><strong>Anonymization:</strong> Prolific IDs and other direct identifiers will be removed from the dataset. Response data will be assigned anonymous study codes (e.g. "Participant_001").</li>
+                  <li><strong>Removal of identifiable copies:</strong> Identifiable datasets will be deleted from OneDrive (including recycle bins and prior versions). MongoDB Atlas collections containing identifiers will be deleted.</li>
+                  <li><strong>Recordkeeping:</strong> The completion of anonymization and deletion of identifiable data will be documented by the research team.</li>
+                </ul>
+              </div>
+
+              <div className="mb-4">
+                <p className="mb-2"><strong>All non-public data will be permanently deleted from Brock University OneDrive and all backup systems by December 2026</strong></p>
+                <p className="mb-2"><strong>Deletion Steps:</strong></p>
+                <ul className="list-disc list-inside ml-4 space-y-1">
+                  <li><strong>Inventory and removal:</strong> All non-public versions of the dataset (including working files, exports, local caches, and backups) will be identified and permanently deleted from Brock University OneDrive and associated backup systems.</li>
+                  <li><strong>Final verification:</strong> The research team will conduct a final search to confirm non-public data has been removed and will document completion. Public, aggregated datasets will remain available for research purposes and secondary analysis and do not contain identifiable information.</li>
+                </ul>
+              </div>
+
+              <p className="mb-4">
+                <strong>Consent for Secondary Data Use:</strong> By participating in this study, you consent to your responses being used to create aggregated, regional consensus answers that will be included in a public dataset. This public dataset may be used by other researchers for secondary data analysis and future research purposes. Your individual responses will not be identifiable in this public dataset.
+              </p>
+
               <p>
-                By participating, you agree to this policy and the use of third-party services.
+                No identifying information will appear in any reports or publications.
               </p>
             </section>
 
             {/* Compensation */}
             <section className="mb-6">
-              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">Compensation</h2>
-              
-              <h3 className="text-lg font-semibold mb-2 text-custom-dark-brown">Rate:</h3>
+              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">COMPENSATION</h2>
               <p className="mb-4">
-                You will be compensated <strong>€3.50</strong> for <strong>20</strong> minutes of participation, at a rate of <strong>€10.50/hour</strong>
+                You will receive <strong>£3.50</strong> for completing this study. This compensation is based on an estimated completion time of 20 minutes, at a rate of <strong>£10.50/hour</strong>, in accordance with Prolific's fair payment guidelines.
               </p>
-
-              <h3 className="text-lg font-semibold mb-2 text-custom-dark-brown">Contingency:</h3>
+              <p className="mb-4">
+                You will receive full compensation if you complete the study, which requires providing informed consent, completing the demographic questionnaire, and providing a response to all 15 cultural commonsense questions (you may enter "none" or "prefer not to answer" for questions you prefer to skip).
+              </p>
               <p>
-                Compensation is contingent upon completing all study tasks and adhering to attention checks within the form. Participants who do not complete the full study or who do not demonstrate substantive engagement with the tasks may not receive compensation, in accordance with Prolific's submission guidelines. Submissions are manually reviewed prior to release of payment.
+                All participants who complete these requirements will receive the full £3.50 compensation. Payment will be processed through Prolific's standard payment system.
               </p>
             </section>
 
-            {/* Publication of results */}
+            {/* Voluntary Participation */}
             <section className="mb-6">
-              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">Publication of Results</h2>
+              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">VOLUNTARY PARTICIPATION</h2>
+              <p className="mb-4">
+                Participation in this study is voluntary. If you wish, you may decline to answer any question substantively by entering "none" or "prefer not to answer." Further, you may decide to withdraw from this study at any time during the study period going live.
+              </p>
+              <p className="mb-4">
+                <strong>Before December 31, 2025:</strong> If you choose to withdraw during this period (after completing the study), we will immediately delete all of your individual data from our systems, including your Prolific ID and all responses.
+              </p>
+              <p className="mb-4">
+                <strong>After December 31, 2025:</strong> Once data has been anonymized (Prolific IDs removed), we will no longer be able to identify and delete your specific responses. However, your data will remain anonymous and cannot be linked back to you. We cannot remove anonymized contributions from published aggregate results, including the public dataset.
+              </p>
               <p>
-                The results of this research project may be published and presented at conferences such as The 19th Conference of the European Chapter of the Association for Computational Linguistics, 2026.
+                To withdraw, please contact us through Prolific's private messaging system using your Prolific ID.
               </p>
             </section>
 
-            {/* Contact Information */}
+            {/* Publication of Results */}
             <section className="mb-6">
-              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">Contact Information</h2>
-              <p>
-                If you have questions or concerns about the study, please reach out via Prolific's private messaging system using your Prolific ID.
+              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">PUBLICATION OF RESULTS</h2>
+              <p className="mb-4">
+                Results of this study may be published in professional journals and presented at conferences such as The 64th Annual Meeting of The Association for Computational Linguistics (ACL) 2026.
               </p>
+              <p>
+                If you would like to receive a summary of the study findings, please contact us through Prolific's private messaging system using your Prolific ID. Results are expected to be available approximately by January 2026 and publicly available by June 2026 upon acceptance and publication.
+              </p>
+            </section>
+
+            {/* Contact Information and Ethics Clearance */}
+            <section className="mb-6">
+              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">CONTACT INFORMATION AND ETHICS CLEARANCE</h2>
+              <p className="mb-4">
+                If you have any questions about this study or require further information, please contact us through Prolific's private messaging system using your Prolific ID.
+              </p>
+              <p>
+                This study has been reviewed and received ethics clearance through the Research Ethics Board at Brock University (File #25-079). If you have any comments or concerns about your rights as a research participant, please contact the Office of Research Ethics at (905) 688-5550 Ext. 3035, reb@brocku.ca.
+              </p>
+              <p className="mt-4">
+                Thank you for your assistance in this project.
+              </p>
+            </section>
+
+            {/* Consent */}
+            <section className="mb-6">
+              <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">CONSENT</h2>
+              <p className="mb-2">By clicking "I agree" below, I confirm that:</p>
+              <ul className="list-disc list-inside space-y-2">
+                <li>I have read and understood the information provided above</li>
+                <li>I have had the opportunity to ask questions and receive additional details about the study</li>
+                <li>I understand that my participation is voluntary, and I may withdraw at any time before data anonymization (December 31, 2025)</li>
+                <li>I understand and consent to my anonymized, aggregated responses being included in a public dataset that may be used by other researchers for future research purposes</li>
+              </ul>
             </section>
 
           </div>
@@ -225,7 +268,7 @@ export default function ConsentForm({ onConsent, onDecline }: ConsentFormProps) 
               color: 'var(--text-on-dark)'
             }}
           >
-            ✓ I Consent to Participate
+            ✓ I Agree
           </button>
           
           <button
@@ -251,7 +294,7 @@ export default function ConsentForm({ onConsent, onDecline }: ConsentFormProps) 
 
         <div className="text-center mt-6">
           <p className="text-xs text-custom-olive">
-            By clicking "I Consent to Participate", you acknowledge that you have read and understood this consent form and agree to participate in this research study.
+            By clicking "I Agree", you acknowledge that you have read and understood this consent form and agree to participate in this research study.
           </p>
         </div>
       </div>
