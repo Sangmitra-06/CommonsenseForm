@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { UserInfo, UserInfoErrors, REGIONS } from '../types/index.ts';
-import { checkProlificIdExists } from '../services/api.ts';
 
 interface UserInfoProps {
   onSubmit: (userInfo: UserInfo) => void;
@@ -15,13 +14,8 @@ export default function UserInfoForm({ onSubmit, isLoading }: UserInfoProps) {
     yearsInRegion: 0
   });
   const [errors, setErrors] = useState<UserInfoErrors>({});
-  
-  // NEW: State for Prolific ID checking
-  const [isCheckingProlificId, setIsCheckingProlificId] = useState(false);
-  const [prolificIdExists, setProlificIdExists] = useState(false);
-  const [prolificIdCheckComplete, setProlificIdCheckComplete] = useState(false);
 
-  // Real-time Prolific ID validation
+  // Real-time Prolific ID validation (keeping format validation only)
   const validateProlificId = (id: string): string => {
     if (!id) {
       return 'Prolific ID is required';
@@ -35,67 +29,13 @@ export default function UserInfoForm({ onSubmit, isLoading }: UserInfoProps) {
     return '';
   };
 
-  // NEW: Debounced function to check if Prolific ID exists
-  const checkProlificIdDebounced = useCallback(
-    debounce(async (id: string) => {
-      if (id.length === 24 && /^[a-zA-Z0-9]+$/.test(id)) {
-        setIsCheckingProlificId(true);
-        try {
-          const exists = await checkProlificIdExists(id);
-          setProlificIdExists(exists);
-          setProlificIdCheckComplete(true);
-          
-          if (exists) {
-            setErrors(prev => ({ 
-              ...prev, 
-              prolificId: 'This Prolific ID has already been used. Please check your ID or contact support if you believe this is an error.' 
-            }));
-          } else {
-            // Clear any existing error if the ID is available
-            setErrors(prev => {
-              const newErrors = { ...prev };
-              if (newErrors.prolificId?.includes('already been used')) {
-                delete newErrors.prolificId;
-              }
-              return newErrors;
-            });
-          }
-        } catch (error) {
-          console.error('Error checking Prolific ID:', error);
-          // On error, we don't block the user but log the issue
-          setProlificIdExists(false);
-          setProlificIdCheckComplete(true);
-        } finally {
-          setIsCheckingProlificId(false);
-        }
-      } else {
-        setProlificIdCheckComplete(false);
-        setProlificIdExists(false);
-      }
-    }, 800), // 800ms delay
-    []
-  );
-
-  // NEW: Effect to check Prolific ID when it changes
-  useEffect(() => {
-    if (formData.prolificId) {
-      setProlificIdCheckComplete(false);
-      checkProlificIdDebounced(formData.prolificId);
-    } else {
-      setProlificIdCheckComplete(false);
-      setProlificIdExists(false);
-    }
-  }, [formData.prolificId, checkProlificIdDebounced]);
-
   const validateForm = (): boolean => {
     const newErrors: UserInfoErrors = {};
 
-    // Validate Prolific ID
+    // Validate Prolific ID (format only, no duplicate check)
     const prolificError = validateProlificId(formData.prolificId);
     if (prolificError) {
       newErrors.prolificId = prolificError;
-    } else if (prolificIdExists) {
-      newErrors.prolificId = 'This Prolific ID has already been used. Please check your ID or contact support if you believe this is an error.';
     }
 
     if (!formData.region) {
@@ -116,7 +56,7 @@ export default function UserInfoForm({ onSubmit, isLoading }: UserInfoProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm() && !prolificIdExists) {
+    if (validateForm()) {
       onSubmit(formData);
     }
   };
@@ -134,19 +74,17 @@ export default function UserInfoForm({ onSubmit, isLoading }: UserInfoProps) {
     setFormData(prev => ({ ...prev, prolificId: cleanValue }));
     
     // Clear format validation errors when user starts typing
-    if (errors.prolificId && !errors.prolificId.includes('already been used')) {
+    if (errors.prolificId) {
       setErrors(prev => ({ ...prev, prolificId: undefined }));
     }
   };
 
-  // UPDATED: Check if form is valid (now includes Prolific ID existence check)
+  // Check if form is valid (simplified without duplicate check)
   const isFormValid = Object.keys(errors).length === 0 && 
                      formData.prolificId.length === 24 && 
                      formData.region && 
                      formData.age && 
-                     formData.yearsInRegion >= 0 &&
-                     !prolificIdExists &&
-                     prolificIdCheckComplete; // Must have completed the check
+                     formData.yearsInRegion >= 0;
 
   return (
     <div className="min-h-screen bg-custom-cream flex items-center justify-center p-4">
@@ -178,7 +116,7 @@ export default function UserInfoForm({ onSubmit, isLoading }: UserInfoProps) {
                 className={`w-full px-4 py-3 text-lg rounded-lg border-2 transition-all duration-200 font-mono pr-12
                   ${errors.prolificId 
                     ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
-                    : formData.prolificId.length === 24 && prolificIdCheckComplete && !prolificIdExists
+                    : formData.prolificId.length === 24
                       ? 'border-green-500 focus:ring-green-500 focus:border-green-500'
                       : 'border-custom-blue-gray focus:ring-custom-olive focus:border-custom-olive'
                   } focus:ring-2`}
@@ -189,30 +127,13 @@ export default function UserInfoForm({ onSubmit, isLoading }: UserInfoProps) {
                 }}
               />
               
-              {/* NEW: Status indicator */}
+              {/* Simple status indicator for valid length */}
               <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                {isCheckingProlificId ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-custom-olive"></div>
-                ) : formData.prolificId.length === 24 && prolificIdCheckComplete ? (
-                  prolificIdExists ? (
-                    <span className="text-red-500 text-xl">❌</span>
-                  ) : (
-                    <span className="text-green-500 text-xl">✅</span>
-                  )
-                ) : null}
+                {formData.prolificId.length === 24 && !errors.prolificId && (
+                  <span className="text-green-500 text-xl">✅</span>
+                )}
               </div>
             </div>
-            
-            {/* NEW: Status messages */}
-            {/* AFTER - CORRECT: span inside p */}
-            {isCheckingProlificId && formData.prolificId.length === 24 && (
-              <p className="text-custom-olive text-sm mt-2 flex items-center">
-                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-custom-olive mr-2 inline-block"></span>
-                Checking ID availability...
-              </p>
-            )}
-            
-            
             
             {errors.prolificId && (
               <p className="text-red-600 text-sm mt-2 flex items-center">
@@ -312,56 +233,44 @@ export default function UserInfoForm({ onSubmit, isLoading }: UserInfoProps) {
             </p>
           </div>
 
-          {/* Submit button - FIXED */}
-        <div className="pt-6">
-          <button
-            type="submit"
-            disabled={isLoading || !isFormValid || isCheckingProlificId}
-            className={`w-full font-bold py-4 px-6 rounded-xl text-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center ${
-              isFormValid && !isLoading && !isCheckingProlificId
-                ? 'text-white transform hover:scale-105'
-                : 'text-gray-500 bg-gray-300 cursor-not-allowed'
-            }`}
-            style={{
-              background: isLoading || !isFormValid || isCheckingProlificId
-                ? '#d1d5db'
-                : 'var(--btn-primary-bg)',
-              backgroundImage: isLoading || !isFormValid || isCheckingProlificId
-                ? 'none'
-                : 'var(--btn-primary-bg)'
-            }}
-            onMouseEnter={(e) => {
-              if (!isLoading && isFormValid && !isCheckingProlificId) {
-                e.currentTarget.style.backgroundImage = 'var(--btn-primary-hover)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isLoading && isFormValid && !isCheckingProlificId) {
-                e.currentTarget.style.backgroundImage = 'var(--btn-primary-bg)';
-              }
-            }}
-          >
-            {isLoading ? (
-              <>
-                <span className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-2 inline-block"></span>
-                Creating your session...
-              </>
-            ) : isCheckingProlificId ? (
-              <>
-                <span className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400 mr-2 inline-block"></span>
-                Checking ID...
-              </>
-            ) : (
-              'Start Survey'
-            )}
-          </button>
-            
-            {/* NEW: Helpful message when button is disabled due to duplicate ID */}
-            {prolificIdExists && formData.prolificId.length === 24 && (
-              <p className="text-center text-sm text-red-600 mt-3">
-                Cannot proceed - this Prolific ID has already been used
-              </p>
-            )}
+          {/* Submit button - Simplified */}
+          <div className="pt-6">
+            <button
+              type="submit"
+              disabled={isLoading || !isFormValid}
+              className={`w-full font-bold py-4 px-6 rounded-xl text-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center ${
+                isFormValid && !isLoading
+                  ? 'text-white transform hover:scale-105'
+                  : 'text-gray-500 bg-gray-300 cursor-not-allowed'
+              }`}
+              style={{
+                background: isLoading || !isFormValid
+                  ? '#d1d5db'
+                  : 'var(--btn-primary-bg)',
+                backgroundImage: isLoading || !isFormValid
+                  ? 'none'
+                  : 'var(--btn-primary-bg)'
+              }}
+              onMouseEnter={(e) => {
+                if (!isLoading && isFormValid) {
+                  e.currentTarget.style.backgroundImage = 'var(--btn-primary-hover)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isLoading && isFormValid) {
+                  e.currentTarget.style.backgroundImage = 'var(--btn-primary-bg)';
+                }
+              }}
+            >
+              {isLoading ? (
+                <>
+                  <span className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-2 inline-block"></span>
+                  Creating your session...
+                </>
+              ) : (
+                'Start Survey'
+              )}
+            </button>
           </div>
         </form>
 
@@ -371,17 +280,4 @@ export default function UserInfoForm({ onSubmit, isLoading }: UserInfoProps) {
       </div>
     </div>
   );
-}
-
-// NEW: Debounce utility function
-function debounce<T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: ReturnType<typeof setTimeout>;
-  
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(null, args), wait);
-  };
 }

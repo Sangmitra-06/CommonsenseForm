@@ -108,16 +108,3 @@ export const checkHealth = async () => {
   return response.data;
 };
 
-// Add this new function to your existing api.ts file
-export const checkProlificIdExists = async (prolificId: string) => {
-  try {
-    console.log('Checking if Prolific ID exists:', prolificId);
-    const response = await api.get(`/api/users/check-prolific-id/${prolificId}`);
-    return response.data.exists; // Returns boolean
-  } catch (error) {
-    console.error('Failed to check Prolific ID:', error);
-    // If there's an error (like network issues), we'll assume it doesn't exist
-    // so users aren't blocked unnecessarily
-    return false;
-  }
-};

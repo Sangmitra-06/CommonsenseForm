@@ -6,31 +6,8 @@ const { v4: uuidv4 } = require('uuid');
 
 const router = express.Router();
 
-// Add this new route to your existing routes/users.js file
-// NEW: Check if Prolific ID already exists (for real-time validation)
-router.get('/check-prolific-id/:prolificId', async (req, res) => {
-  try {
-    const { prolificId } = req.params;
-    
-    // Validate the Prolific ID format
-    if (!prolificId || prolificId.length !== 24 || !/^[a-zA-Z0-9]+$/.test(prolificId)) {
-      return res.status(400).json({ error: 'Invalid Prolific ID format' });
-    }
-    
-    console.log('Checking if Prolific ID exists:', prolificId);
-    
-    // Check if a user with this Prolific ID already exists
-    const existingUser = await User.findOne({ 'userInfo.prolificId': prolificId });
-    
-    const exists = !!existingUser;
-    console.log('Prolific ID check result:', { prolificId, exists });
-    
-    res.json({ exists });
-  } catch (error) {
-    console.error('Error checking Prolific ID:', error);
-    res.status(500).json({ error: 'Failed to check Prolific ID' });
-  }
-});
+// REMOVED: Check Prolific ID route - no longer needed
+// router.get('/check-prolific-id/:prolificId', ...) has been removed
 
 // Create new user session
 router.post('/create', [
@@ -51,7 +28,9 @@ router.post('/create', [
 
     const { prolificId, region, age, yearsInRegion } = req.body;
 
-    // Check for duplicate Prolific ID
+    // REMOVED: Duplicate Prolific ID check
+    // The following code has been commented out to allow duplicate Prolific IDs
+    /*
     const existingUser = await User.findOne({ 'userInfo.prolificId': prolificId });
     if (existingUser) {
       console.log('Duplicate Prolific ID detected:', prolificId);
@@ -59,9 +38,10 @@ router.post('/create', [
         error: 'This Prolific ID has already been used. Each participant can only complete the survey once.' 
       });
     }
+    */
 
     const sessionId = uuidv4();
-    const startTime = new Date(); // NEW: Record start time
+    const startTime = new Date(); // Record start time
 
     console.log('Creating user with sessionId:', sessionId);
     console.log('Survey started at:', startTime.toISOString());
@@ -76,7 +56,7 @@ router.post('/create', [
       progress: {
         totalQuestions
       },
-      // NEW: Initialize timing
+      // Initialize timing
       timing: {
         startedAt: startTime,
         completedAt: null,
@@ -92,19 +72,18 @@ router.post('/create', [
       sessionId,
       userInfo: savedUser.userInfo,
       totalQuestions,
-      startTime: startTime.toISOString(), // NEW: Send start time to frontend
+      startTime: startTime.toISOString(), // Send start time to frontend
       message: 'User session created successfully' 
     });
   } catch (error) {
     console.error('Error creating user:', error);
     
+    // MODIFIED: Removed the duplicate Prolific ID error handling
     if (error.code === 11000) {
-      if (error.keyPattern && error.keyPattern['userInfo.prolificId']) {
-        return res.status(400).json({ 
-          error: 'This Prolific ID has already been used. Each participant can only complete the survey once.' 
-        });
+      // Only handle other duplicate key errors (like sessionId)
+      if (error.keyPattern && !error.keyPattern['userInfo.prolificId']) {
+        return res.status(400).json({ error: 'Session ID already exists. Please try again.' });
       }
-      return res.status(400).json({ error: 'Session ID already exists. Please try again.' });
     }
     
     if (error.name === 'ValidationError') {
@@ -210,7 +189,7 @@ router.put('/:sessionId/complete', async (req, res) => {
 
     console.log('Marking survey as completed for sessionId:', sessionId, 'Reason:', reason);
 
-    // NEW: Get the user first to calculate timing
+    // Get the user first to calculate timing
     const user = await User.findOne({ sessionId });
     if (!user) {
       return res.status(404).json({ error: 'User session not found' });
@@ -239,7 +218,7 @@ router.put('/:sessionId/complete', async (req, res) => {
       isCompleted: true,
       lastActiveAt: completionTime,
       completedAt: completionTime,
-      // NEW: Update timing fields
+      // Update timing fields
       'timing.completedAt': completionTime,
       'timing.totalTimeSeconds': totalTimeSeconds,
       'timing.totalTimeFormatted': formatTime(totalTimeSeconds)
@@ -277,7 +256,7 @@ router.put('/:sessionId/complete', async (req, res) => {
   }
 });
 
-// NEW: Get timing statistics
+// Get timing statistics
 router.get('/admin/timing-stats', async (req, res) => {
   try {
     const completedUsers = await User.find({ 
