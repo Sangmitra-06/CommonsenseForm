@@ -177,13 +177,13 @@ export default function ConsentForm({ onConsent, onDecline }: ConsentFormProps) 
             <section className="mb-6">
               <h2 className="text-xl font-semibold mb-3 text-custom-dark-brown">COMPENSATION</h2>
               <p className="mb-4">
-                You will receive <strong>£3.50</strong> for completing this study. This compensation is based on an estimated completion time of 20 minutes, at a rate of <strong>£10.50/hour</strong>, in accordance with Prolific's fair payment guidelines.
+                You will receive <strong>£2.00</strong> for completing this study. This compensation is based on an estimated completion time of 20 minutes, at a rate of <strong>£6.00/hour</strong>, in accordance with Prolific's fair payment guidelines.
               </p>
               <p className="mb-4">
                 You will receive full compensation if you complete the study, which requires providing informed consent, completing the demographic questionnaire, and providing a response to all 15 cultural commonsense questions (you may enter "none" or "prefer not to answer" for questions you prefer to skip).
               </p>
               <p>
-                All participants who complete these requirements will receive the full £3.50 compensation. Payment will be processed through Prolific's standard payment system.
+                All participants who complete these requirements will receive the full £2.00 compensation. Payment will be processed through Prolific's standard payment system.
               </p>
             </section>
 
