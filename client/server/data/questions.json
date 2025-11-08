@@ -1,28 +1,28 @@
 [
   {
-    "category": "Festivals and Rituals",
+    "category": "Traffic and transport behavior",
     "subcategories": [
       {
-        "subcategory": "Rest days and holidays",
+        "subcategory": "Streets and traffic",
         "topics": [
           {
-            "topic": "Secular Festival Practices",
+            "topic": "Adapting to Local Transportation Modes",
             "questions": [
-              "In your region, how is heritage honored by the local community during the most important holiday? Name the holiday and two forms of tribute.",
-              "In your region, during which month is the harvest festival most commonly celebrated?",
-              "In your region, what are two key rituals typically performed during a traditional housewarming ceremony?",
-              "In your region, what are two traditional games or activities commonly conducted during harvest festivals?",
-              "In your region, what are two things people use to decorate the entrance of the home during a housewarming ceremony?",
-              "In your region, during which month is the festival that marks the beginning of the new year usually celebrated?",
-              "In your region, what are two symbols or motifs that are commonly used in decorations for festivals?",
-              "In your region, what customs mark the end of a festival? Name two festivals and one or two closing practices for each.",
-              "In your region, what is the culturally appropriate time of day to conduct the main rituals of the harvest festival?",
-              "In your region, according to traditional housewarming customs, what is the first household item that must be brought into a new home?",
-              "In your region, what are the most commonly used colors for decorating during festivals?",
-              "In your region, what kinds of decorations are typically used during the celebration of festivals? Name two decorations.",
-              "In your region, what traditional games or activities are linked to festivals? Name one activity for two festivals.",
-              "In your region, what are two common public rituals observed during patriotic holidays?",
-              "In your region, what month is the most prominent patriotic holiday celebrated?"
+              "In your region, what types of animals, if any, are commonly permitted on public buses or trains? Please specify the animal and transport they’re allowed on.",
+              "In your region, what are two festivals or public events that feature animals as part of the transportation or procession? Please name the event and the animal involved.",
+              "In your region, what are the two most common public or local transportation methods used by students to commute to school or college?",
+              "In your region, which public or local transport options typically operate through the night? If applicable, please name two .",
+              "In your region, what are the three most widely used forms of public or local transportation?",
+              "In your region, what is a unique local transportation mode that may not be commonly found in other regions?",
+              "In your region, which two public transport modes also carry goods or services, and what do they carry?",
+              "In your region, what payment options are most used and convenient for public transport?",
+              "In your region, what are the two most common ways people get to airports or railway stations?",
+              "In your region, on which public transport modes are vendors or entertainers most commonly seen, and what types of goods or performances are typical?",
+              "In your region, what are the most common methods or gestures used to hail a taxi or auto-rickshaw? Please describe two.",
+              "In your region, what officials other than the driver are typically present on buses, and what are their responsibilities?",
+              "In your region, what officials other than the driver are typically present on trains, and what are their roles?",
+              "In your region, what types of public transport offer separate seating or compartments for women, and what are they usually called? Please specify two.",
+              "In your region, what digital tools or systems are used to check delays or updates for public transport? Please specify the tool and the type of transport."
             ]
           }
         ]
