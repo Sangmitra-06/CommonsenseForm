@@ -1,28 +1,28 @@
 [
   {
-    "category": "Interpersonal Relations",
+    "category": "Festivals and Rituals",
     "subcategories": [
       {
-        "subcategory": "Etiquette",
+        "subcategory": "Rest days and holidays",
         "topics": [
           {
-            "topic": "Greeting and Salutation Etiquette",
+            "topic": "Religious Taboos on Holidays",
             "questions": [
-              "In your region, what are the two most common physical gestures that accompany greetings?",
-              "In your region, what is the most common physical gesture done to greet an elder?",
-              "In your region, what is the most common greeting for morning, afternoon, evening, and night?",
-              "In your region, how is a religious leader or spiritual figure traditionally greeted? Name common phrases and gestures.",
-              "In your region, how do people greet each other on the phone when answering and when calling?",
-              "In your region, how is a friend's parent usually greeted? Focus on the titles used to greet them.",
-              "In your region, how do students or younger people traditionally greet teachers or mentors? Focus on the titles used.",
-              "In your region, is it common to greet an unknown person on the street? If so, how are they normally greeted?",
-              "In your region, what phrases are typically used when beginning and ending a formal letter or email?",
-              "In your region, if one receives a greeting from a stranger, is it common to respond? If yes, how are they commonly responded to?",
-              "In your region, what is the traditional way of saying goodbye to guests after a gathering?",
-              "In your region, what titles or terms are used someone else's parents?",
-              "In your region, how do people greet shopkeepers or service workers in everyday settings?",
-              "In your region, what is the typical greeting exchanged during national holidays?",
-              "In your region, what typical greeting is used during mourning periods or when offering condolences?"
+              "In your region, what are the two most common religious holidays that involve fasting, and what are the specific rules or forms of fasting observed?",
+              "In your region, what are two religious holidays during which certain foods are traditionally avoided? Please name both the holiday and the restricted food items.",
+              "In your region, what personal grooming or appearance-related restrictions are observed during specific religious holidays? Please specify the holiday and the restriction.",
+              "In your region, what religious holidays prohibit specific types of work or leisure activities? Please name the holiday and describe the restriction.",
+              "In your region, what days of the week require abstinence from certain foods or drinks? Please name the day and the items restricted.",
+              "In your region, what religious holidays or observances restrict certain types of purchases or economic transactions? Please name the observance and describe the restriction.",
+              "In your region, what religious holidays require people to avoid wearing or displaying certain colors? Please specify the holiday and the restricted color(s).",
+              "In your region, what religious holidays prohibit the consumption of alcohol or intoxicating substances? Please list the two most commonly observed holidays with such restrictions.",
+              "In your region, during which religious holidays or periods is it considered inappropriate to hold weddings or engagement ceremonies? Please name at least two such periods.",
+              "In your region, what are two religious observances during which the use of technology or entertainment is restricted? Please specify the observance and the type of restriction.",
+              "In your region, what are two holidays that require waking early or staying up late for a specific ritual? Please name the holidays and describe the custom.",
+              "In your region, what are two most common holidays when people are expected to wear new clothes?",
+              "In your region, what religious holidays prohibit eating during daylight hours? Please name the holidays and explain the rules.",
+              "In your region, what occasions require people to avoid wearing jewelry or makeup?",
+              "In your region, what religious holidays require people to avoid attending celebrations, parties, or social gatherings? Please name the holidays and explain the reason for this restriction."
             ]
           }
         ]
