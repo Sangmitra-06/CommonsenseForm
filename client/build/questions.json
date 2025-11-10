@@ -1,28 +1,28 @@
 [
   {
-    "category": "Festivals and Rituals",
+    "category": "Traffic and transport behavior",
     "subcategories": [
       {
-        "subcategory": "Rest days and holidays",
+        "subcategory": "Streets and traffic",
         "topics": [
           {
-            "topic": "Religious Taboos on Holidays",
+            "topic": "Adapting to Local Transportation Modes",
             "questions": [
-              "In your region, what are the two most common religious holidays that involve fasting, and what are the specific rules or forms of fasting observed?",
-              "In your region, what are two religious holidays during which certain foods are traditionally avoided? Please name both the holiday and the restricted food items.",
-              "In your region, what personal grooming or appearance-related restrictions are observed during specific religious holidays? Please specify the holiday and the restriction.",
-              "In your region, what religious holidays prohibit specific types of work or leisure activities? Please name the holiday and describe the restriction.",
-              "In your region, what days of the week require abstinence from certain foods or drinks? Please name the day and the items restricted.",
-              "In your region, what religious holidays or observances restrict certain types of purchases or economic transactions? Please name the observance and describe the restriction.",
-              "In your region, what religious holidays require people to avoid wearing or displaying certain colors? Please specify the holiday and the restricted color(s).",
-              "In your region, what religious holidays prohibit the consumption of alcohol or intoxicating substances? Please list the two most commonly observed holidays with such restrictions.",
-              "In your region, during which religious holidays or periods is it considered inappropriate to hold weddings or engagement ceremonies? Please name at least two such periods.",
-              "In your region, what are two religious observances during which the use of technology or entertainment is restricted? Please specify the observance and the type of restriction.",
-              "In your region, what are two holidays that require waking early or staying up late for a specific ritual? Please name the holidays and describe the custom.",
-              "In your region, what are two most common holidays when people are expected to wear new clothes?",
-              "In your region, what religious holidays prohibit eating during daylight hours? Please name the holidays and explain the rules.",
-              "In your region, what occasions require people to avoid wearing jewelry or makeup?",
-              "In your region, what religious holidays require people to avoid attending celebrations, parties, or social gatherings? Please name the holidays and explain the reason for this restriction."
+              "In your region, what types of animals, if any, are commonly permitted on public buses or trains? Please specify the animal and transport they’re allowed on.",
+              "In your region, what are two festivals or public events that feature animals as part of the transportation or procession? Please name the event and the animal involved.",
+              "In your region, what are the two most common public or local transportation methods used by students to commute to school or college?",
+              "In your region, which public or local transport options typically operate through the night? If applicable, please name two .",
+              "In your region, what are the three most widely used forms of public or local transportation?",
+              "In your region, what is a unique local transportation mode that may not be commonly found in other regions?",
+              "In your region, which two public transport modes also carry goods or services, and what do they carry?",
+              "In your region, what payment options are most used and convenient for public transport?",
+              "In your region, what are the two most common ways people get to airports or railway stations?",
+              "In your region, on which public transport modes are vendors or entertainers most commonly seen, and what types of goods or performances are typical?",
+              "In your region, what are the most common methods or gestures used to hail a taxi or auto-rickshaw? Please describe two.",
+              "In your region, what officials other than the driver are typically present on buses, and what are their responsibilities?",
+              "In your region, what officials other than the driver are typically present on trains, and what are their roles?",
+              "In your region, what types of public transport offer separate seating or compartments for women, and what are they usually called? Please specify two.",
+              "In your region, what digital tools or systems are used to check delays or updates for public transport? Please specify the tool and the type of transport."
             ]
           }
         ]
