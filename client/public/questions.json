@@ -1,28 +1,28 @@
 [
   {
-    "category": "Festivals and Rituals",
+    "category": "Traffic and transport behavior",
     "subcategories": [
       {
-        "subcategory": "Organized ceremonial",
+        "subcategory": "Transportation",
         "topics": [
           {
-            "topic": "Timing of Ceremonies",
+            "topic": "Transport during Special Events",
             "questions": [
-              "In your region, how is an auspicious time for important ceremonies such as weddings typically chosen, and who is involved in making that decision?",
-              "In your region, what traditional calendar that differs from the international calendar is followed to schedule religious or cultural ceremonies?",
-              "In your region, which days or timings are commonly avoided for starting journeys or taking flights?",
-              "In your region, how do the phases of the moon influence the timing of religious festivals or ceremonies? Please provide examples.",
-              "In your region, which days of the week are considered inauspicious for conducting important ceremonies?",
-              "In your region, what types of common sources, such as religious texts, calendars, or astrological systems, are used to determine the best times for important events?",
-              "In your region, which periods of the year are typically avoided for making major decisions or starting new ventures, and why?",
-              "In your region, how is the date or time of the annual harvest festival decided, and what factors influence that decision?",
-              "In your region, which times of the year are considered unfavorable for purchasing new items or property?",
-              "In your region, at what periods during the year are major activities paused or avoided?",
-              "In your region, which life events (such as childbirth or naming ceremonies) are most sensitive to timing, and how is that timing determined?",
-              "In your region, what are the most commonly used terms or names for inauspicious periods in the local calendar system?",
-              "In your region, what are the most common names or labels given to periods considered especially favorable for beginning new ventures?",
-              "In your region, what are the most typical rules about waiting periods before scheduling a new event after a funeral or death in the family?",
-              "In your region, what are the most frequently consulted community-level sources (such as temples, elders, or religious leaders) for guidance on selecting dates?"
+              "In your region, what are the most commonly used transportation modes for getting to sports events like cricket matches?",
+              "In your region, during which two festivals are extra transport services added, and what types of transport are used?",
+              "In your region, what temporary changes are made to transport when government officials or famous celebrities visit an area?",
+              "In your region, during major festivals, what changes do people usually make to their regular transportation habits? Please name the regular mode, the changed mode, and the festival.",
+              "In your region, what transportation arrangements are usually made for visitors from other areas during large events or festivals?",
+              "In your region, what transportation methods are traditionally used to carry deities or religious symbols during processions?",
+              "In your region, what areas typically become pedestrian-only zones during festivals or celebrations, and during which festivals does this occur?",
+              "In your region, what decorated vehicles are commonly part of wedding processions, and what features make them stand out?",
+              "In your region, how do drivers usually decorate their commercial vehicles during major festivals?",
+              "In your region, what changes are made to public transport schedules (buses/trains) during evening performances, concerts, or sports events?",
+              "In your region, what vehicle-sharing practices (e.g., carpooling, shared shuttles), if any, are commonly adopted by attendees during large public events?",
+              "In your region, how is transportation affected during local or national strikes? What alternative transport methods do people commonly rely on?",
+              "In your region, what adjustments are made to road traffic when political rallies or election campaigns are held?",
+              "In your region, what types of vehicles are used in parades or public displays during national celebrations? Specify two most common vehicles.",
+              "In your region, during annual school functions or inter-school competitions, what transportation is typically arranged by schools for students?"
             ]
           }
         ]
