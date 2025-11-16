@@ -1,28 +1,28 @@
 [
   {
-    "category": "Education",
+    "category": "Food processing and consumption",
     "subcategories": [
       {
-        "subcategory": "Teachers and Students",
+        "subcategory": "Food preparation",
         "topics": [
           {
-            "topic": "Norms for Interacting with Teachers",
+            "topic": "Cultural Recipes and Ingredients",
             "questions": [
-              "In your region, how are teachers typically greeted or acknowledged when they enter the classroom? Focus on common actions and sayings.",
-              "In your region, what is considered the appropriate way to address a teacher during class? Focus on common titles or phrases used.",
-              "In your region, how do students typically begin a written communication, such as an email, when addressing a teacher?",
-              "In your region, what is the common classroom protocol if a student arrives late and the teacher is already teaching?",
-              "In your region, what is the usual and respectful way for a student to interrupt a teacher during a lesson to ask a question?",
-              "In your region, how are teachers usually addressed by parents or other adults in school settings?",
-              "In your region, what behaviors are commonly considered disrespectful while a teacher is speaking in class?",
-              "In your region, how do students typically respond when a teacher asks a question to the class?",
-              "In your region, what actions do students usually need to request permission from a teacher to do during class time? Name two of the most common examples.",
-              "In your region, how are students expected to respond when a teacher takes attendance?",
-              "In your region, how do students typically address school principals or head teachers, and how does this differ—if at all—from addressing regular teachers?",
-              "In your region, what types of punishments or disciplinary actions are commonly used by teachers when students break classroom rules or misbehave?",
-              "In your region, what is the common expectation regarding students standing or sitting when speaking to a teacher during class?",
-              "In your region, what kinds of classroom tasks or responsibilities are typically assigned by teachers to students (e.g., distributing materials, cleaning the board)?",
-              "In your region, what behaviors are automatically interpreted as rudeness or defiance toward a teacher, even if nothing is said? Please specify two."
+              "In your region, how are traditional recipes usually passed down, example through demonstration, oral instruction, or written notes?",
+              "In your region, what food item is considered essential during major religious festivals in your region? Name two major festivals and two associated food items for each.",
+              "In your region, what are two common ingredients used in home-cooked remedies believed to promote healing?",
+              "In your region, what cooking methods are considered traditional or culturally unique, such as cooking in clay pots or over woodfires?",
+              "In your region, what dish is traditionally prepared during harvest festivals, and what are its two main ingredients?",
+              "In your region, what traditional dish is prepared during marriage ceremonies, and what are its most essential ingredients?",
+              "In your region, what are two traditional dishes prepared for childbirth-related rituals, and what are their key ingredients?",
+              "In your region, what are two traditional dishes prepared for new year related rituals, and what are their key ingredients?",
+              "In your region, what is a traditional beverage served during festivals, and what two ingredients define its flavor?",
+              "In your region, what food ceremony is traditionally associated with a major festival? Please name both the ceremony and the festival it belongs to.",
+              "In your region, what is a dish made during fasting days, and what are two ingredients typically used?",
+              "In your region, what is a traditional dish commonly offered as blessed food?",
+              "In your region, what food item or meal is traditionally used to break a religious fast?",
+              "In your region, what is the most common traditional dish prepared by a daughter-in-law when she first cooks for the family after marriage?",
+              "In your region, what dish is traditionally prepared when inaugurating a new kitchen or stove, and what two ingredients are always included?"
             ]
           }
         ]
