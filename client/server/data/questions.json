@@ -1,28 +1,28 @@
 [
   {
-    "category": "Food processing and consumption",
+    "category": "Communication",
     "subcategories": [
       {
-        "subcategory": "Diet",
+        "subcategory": "Dissemination of News and Information",
         "topics": [
           {
-            "topic": "Seasonal Diet Modifications",
+            "topic": "Navigating the \"Grapevine\"",
             "questions": [
-              "What foods are commonly consumed in your region during summer to reduce body heat? Specify at least two most common ones.",
-              "What types of warm or energy-rich foods are typically prepared in winter across your region? Specify at least two most common ones.",
-              "What traditional drinks or beverages are commonly consumed in summer to stay cool? Specify at least two most common ones.",
-              "What kinds of foods are commonly associated with springtime festivals in your region? Specify the most common.",
-              "What kinds of desserts are only prepared during certain seasons? Please specify the dessert and the season it is associated with.",
-              "Which spices or herbs are used seasonally? Specify the common herbs associated with the seasons.",
-              "What types of snacks are commonly prepared at home during the monsoon? Specify at least two most common ones.",
-              "What traditional foods are believed to help with seasonal allergies or throat irritation in your region?",
-              "What types of vegetables are commonly used in everyday meals during the summer? Specify at least two most common.",
-              "What types of vegetables are commonly used in everyday meals during the winter? Specify at least two most common.",
-              "What types of vegetables are commonly used in everyday meals during the monsoon season? Specify at least two most common.",
-              "What types of vegetables are commonly used in everyday meals during the spring season? Specify at least two most common.",
-              "What foods are commonly avoided during the summer because they are considered too heat-inducing? Specify at least two most common.",
-              "What traditional drinks or beverages are commonly consumed in winter? Specify at least two most common ones.",
-              "What traditional drinks or beverages are commonly consumed in the monsoon season? Specify at least two most common ones."
+              "In your region, what two social media platforms are most commonly used to share informal or local news?",
+              "In your region, which two festivals or community gatherings are commonly used to circulate news or community updates?",
+              "In your region, what two digital platforms are most commonly used by schools to share informal updates or announcements with parents or students?",
+              "In your region, what two small businesses or local services are most promoted on social media, and on which platform?",
+              "In your region, what is a digital platform used by religious institutions to share information about religious practices?",
+              "In your region, what is the most common digital platform used by residential groups or housing societies to share informal updates?",
+              "In your region, what digital platform is most commonly used by neighborhood shops or vendors to announce promotions or new stock?",
+              "In your region, what is the most common platform or method used to spread news of local strikes or transportation disruptions?",
+              "In your region, what digital platform is most commonly used to circulate missing person or lost pet notices?",
+              "In your region, what platform is most commonly used to alert residents about nearby construction or roadwork updates?",
+              "In your region, how do residents most commonly find out about potential power of water shortages?",
+              "In your region, what are the two most commonly used platforms for getting informal recommendations about places to visit in a new city or town?",
+              "In your region, what platform is most commonly used to rent a house or an apartment?",
+              "In your region, what platform is most commonly used by families to share informal news about engagements, weddings, or childbirth?",
+              "In your region, what is the common platform used to order takeout/food?"
             ]
           }
         ]
