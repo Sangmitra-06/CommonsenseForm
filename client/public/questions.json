@@ -1,28 +1,28 @@
 [
   {
-    "category": "Communication",
+    "category": "Finance",
     "subcategories": [
       {
-        "subcategory": "Dissemination of News and Information",
+        "subcategory": "Credit",
         "topics": [
           {
-            "topic": "Navigating the \"Grapevine\"",
+            "topic": "Negotiating Credit Advances and Discounts",
             "questions": [
-              "In your region, what two social media platforms are most commonly used to share informal or local news?",
-              "In your region, which two festivals or community gatherings are commonly used to circulate news or community updates?",
-              "In your region, what two digital platforms are most commonly used by schools to share informal updates or announcements with parents or students?",
-              "In your region, what two small businesses or local services are most promoted on social media, and on which platform?",
-              "In your region, what is a digital platform used by religious institutions to share information about religious practices?",
-              "In your region, what is the most common digital platform used by residential groups or housing societies to share informal updates?",
-              "In your region, what digital platform is most commonly used by neighborhood shops or vendors to announce promotions or new stock?",
-              "In your region, what is the most common platform or method used to spread news of local strikes or transportation disruptions?",
-              "In your region, what digital platform is most commonly used to circulate missing person or lost pet notices?",
-              "In your region, what platform is most commonly used to alert residents about nearby construction or roadwork updates?",
-              "In your region, how do residents most commonly find out about potential power of water shortages?",
-              "In your region, what are the two most commonly used platforms for getting informal recommendations about places to visit in a new city or town?",
-              "In your region, what platform is most commonly used to rent a house or an apartment?",
-              "In your region, what platform is most commonly used by families to share informal news about engagements, weddings, or childbirth?",
-              "In your region, what is the common platform used to order takeout/food?"
+              "In your region, what two common types of products are most commonly associated with price negotiation before purchase?",
+              "In your region, what two common types of services are most commonly associated with price negotiation before purchase?",
+              "In your region, what two common kinds of goods are most likely to be discounted when bought in bulk?",
+              "In your region, which social groups or professions, if any, are most commonly offered discounts or allowed to buy on credit?",
+              "In your region, for which two common types of products or services are loyal or repeat customers most likely to receive discounts?",
+              "In your region, for which types of professional services is price negotiation considered acceptable (e.g., tutoring, private medical, legal consultation, etc.)?",
+              "In your region, in what most common situation do people typically try to negotiate interest rates with banks or lenders (e.g., for home loans, credit cards, etc.)?",
+              "In your region, during which times of the year are discounts most commonly offered? Please specify two typical occasions or seasons.",
+              "In your region, which markets or localities are most known for active bargaining culture? Please mention by name or type.",
+              "In your region, what aspects of the purchase are usually negotiated when buying a vehicle or property (e.g., price, registration fees, add-ons)?",
+              "In your region, which two products are most likely to see a small discount if purchased toward the end of the day?",
+              "In your region, what kind of freebies or items are typically offered if change is unavailable? Please specify two most common ones.",
+              "In your region, what kinds of relationships most commonly lead to informal discounts? Specify two most common.",
+              "In your region, what types of products are most commonly offered at a discount only during festivals, but not at other times of the year? Specify two most common.",
+              "In your region, what types of shops are least likely to allow price negotiation? Please name two types."
             ]
           }
         ]
