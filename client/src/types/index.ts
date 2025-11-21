@@ -113,7 +113,7 @@ export interface AttentionCheck {
 export const REGIONS = {
   North: [
     'Delhi', 'Punjab', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir', 
-    'Ladakh', 'Uttarakhand', 'Uttar Pradesh', 'Rajasthan', 'Chandigarh'
+    'Ladakh', 'Uttarakhand', 'Uttar Pradesh', 'Chandigarh'
   ],
   South: [
     'Andhra Pradesh', 'Karnataka', 'Kerala', 'Tamil Nadu', 'Telangana',
