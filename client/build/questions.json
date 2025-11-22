@@ -1,28 +1,58 @@
 [
   {
-    "category": "Interpersonal Relations",
+    "category": "Traffic and transport behavior",
     "subcategories": [
       {
-        "subcategory": "Visiting and hospitality",
+        "subcategory": "Transportation",
         "topics": [
           {
-            "topic": "Etiquette in the reception of visitors",
+            "topic": "Transport during Special Events",
             "questions": [
-              "In your region, what are the two most common things visitors do upon entering a home (excluding greetings)?",
-              "In your region, what are the two most common traditional beverages (excluding water) offered to guests upon arrival?",
-              "In your region, what four popular dishes (main, dessert, or appetizer) are typically served to welcome visiting relatives?",
-              "In your region, what three common preparations, such as cleaning, decorating, or traditional practices, are usually done before guests arrive?",
-              "In your region, what utensils or serving dishes are used for guests, and how do they differ from those used daily?",
-              "In your region, what are the common customs or expectations when an out-of-town guest arrives, such as from an airport or train station, in terms of how they come to your home?",
-              "In your region, what are some traditional sweets or snacks that are typically prepared or bought when expecting guests? Please list 2 snacks and 2 sweets.",
-              "In your region, what are the two most common actions taken to greet guests when they arrive at your home?",
-              "In your region, what are the two most common traditional gifts or souvenirs given to guests during their visit?",
-              "In your region, what are the two most common customs or traditions followed when receiving elderly guests?",
-              "In your region, how is food usually served to guests, by the host, a family member (specify the member), or by guests themselves?",
-              "In your region, as a guest, what are the two most common ways to show gratitude before leaving a host’s home?",
-              "In your region, what are the two most common follow-up actions after a guest has visited your home?",
-              "In your region, how is it usually handled when a guest offers to help with meal preparation or cleaning up?",
-              "In your region, what are the two most common rituals or traditions followed when someone visits your home for the first time?"
+              "In your region, what are the most commonly used transportation modes for getting to sports events like cricket matches?",
+              "In your region, during which two festivals are extra transport services added, and what types of transport are used?",
+              "In your region, what temporary changes are made to transport when government officials or famous celebrities visit an area?",
+              "In your region, during major festivals, what changes do people usually make to their regular transportation habits? Please name the regular mode, the changed mode, and the festival.",
+              "In your region, what transportation arrangements are usually made for visitors from other areas during large events or festivals?",
+              "In your region, what transportation methods are traditionally used to carry deities or religious symbols during processions?",
+              "In your region, what areas typically become pedestrian-only zones during festivals or celebrations, and during which festivals does this occur?",
+              "In your region, what decorated vehicles are commonly part of wedding processions, and what features make them stand out?",
+              "In your region, how do drivers usually decorate their commercial vehicles during major festivals?",
+              "In your region, what changes are made to public transport schedules (buses/trains) during evening performances, concerts, or sports events?",
+              "In your region, what vehicle-sharing practices (e.g., carpooling, shared shuttles), if any, are commonly adopted by attendees during large public events?",
+              "In your region, how is transportation affected during local or national strikes? What alternative transport methods do people commonly rely on?",
+              "In your region, what adjustments are made to road traffic when political rallies or election campaigns are held?",
+              "In your region, what types of vehicles are used in parades or public displays during national celebrations? Specify two most common vehicles.",
+              "In your region, during annual school functions or inter-school competitions, what transportation is typically arranged by schools for students?"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Education",
+    "subcategories": [
+      {
+        "subcategory": "Education system",
+        "topics": [
+          {
+            "topic": "Formal Educational Structure",
+            "questions": [
+              "In your region, what are the most common school boards that students attend? Please list all major boards.",
+              "In your region, what are the two most commonly taken entrance exams for college or university admissions?",
+              "In your region, how does the medium of instruction differ across various school boards?",
+              "In your region, what are the specific common subject combinations or streams that students need to choose from in high school?",
+              "In your region, what are the popular international school boards, and how commonly are they chosen?",
+              "In your region, what are the major exams taken during the school years, and at what grade levels are they typically held?",
+              "In your region, what grading system is most commonly used in schools (e.g., letter grades, percentages, GPA)?",
+              "In your region, what grading system is typically used in colleges or universities?",
+              "In your region, do students usually remain in the same classroom while teachers rotate, or do they move between classes for different subjects?",
+              "In your region, what range of grades are typically offered within a single school (e.g., pre-primary to Grade 10)? Please be as specific as possible.",
+              "In your region, what are the standard school levels (e.g., pre-primary, primary, middle, secondary) and the grades they include?",
+              "In your region, what types of schools (e.g., government-run, private, religious, or community-based) are most common?",
+              "In your region, what are the common ways schools communicate important announcements or updates to parents? Specify two most common ways.",
+              "In your region, what is the most common structure for dividing the academic year (e.g., semesters, trimesters), if any?",
+              "In your region, what are the typical administrative roles found in schools (e.g., headmaster, principal, coordinator)? Please name 4 most common ones."
             ]
           }
         ]
