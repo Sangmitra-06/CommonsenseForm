@@ -1,28 +1,28 @@
 [
   {
-    "category": "Interpersonal Relations",
+    "category": "Festivals and Rituals",
     "subcategories": [
       {
-        "subcategory": "Visiting and hospitality",
+        "subcategory": "Organized ceremonial",
         "topics": [
           {
-            "topic": "Etiquette in the reception of visitors",
+            "topic": "Engaging with Religious Music and Dance",
             "questions": [
-              "In your region, what are the two most common things visitors do upon entering a home (excluding greetings)?",
-              "In your region, what are the two most common traditional beverages (excluding water) offered to guests upon arrival?",
-              "In your region, what four popular dishes (main, dessert, or appetizer) are typically served to welcome visiting relatives?",
-              "In your region, what three common preparations, such as cleaning, decorating, or traditional practices, are usually done before guests arrive?",
-              "In your region, what utensils or serving dishes are used for guests, and how do they differ from those used daily?",
-              "In your region, what are the common customs or expectations when an out-of-town guest arrives, such as from an airport or train station, in terms of how they come to your home?",
-              "In your region, what are some traditional sweets or snacks that are typically prepared or bought when expecting guests? Please list 2 snacks and 2 sweets.",
-              "In your region, what are the two most common actions taken to greet guests when they arrive at your home?",
-              "In your region, what are the two most common traditional gifts or souvenirs given to guests during their visit?",
-              "In your region, what are the two most common customs or traditions followed when receiving elderly guests?",
-              "In your region, how is food usually served to guests, by the host, a family member (specify the member), or by guests themselves?",
-              "In your region, as a guest, what are the two most common ways to show gratitude before leaving a host’s home?",
-              "In your region, what are the two most common follow-up actions after a guest has visited your home?",
-              "In your region, how is it usually handled when a guest offers to help with meal preparation or cleaning up?",
-              "In your region, what are the two most common rituals or traditions followed when someone visits your home for the first time?"
+              "In your region, what is the traditional dance form associated with your culture or rituals?",
+              "In your region, what is the traditional music form associated with your culture or rituals?",
+              "In your region, what musical instruments are traditionally used in religious ceremonies? Please specify the instrument and the ceremony it is used in.",
+              "In your region, during which times of the year is traditional religious music or dance most commonly performed? Please name the festival or season.",
+              "In your region, what special attire is traditionally worn by women when performing the traditional dance associated with your culture?",
+              "In your region, what special attire is traditionally worn by men when performing the traditional dance associated with your culture?",
+              "In your region, what special attire is traditionally worn by women when performing the traditional music associated with your culture?",
+              "In your region, what special attire is traditionally worn by men when performing the traditional music associated with your culture?",
+              "In your region, what common religious themes or stories are portrayed through traditional music and dance? Please name one or two examples.",
+              "In your region, can anyone participate in the traditional dance performed during religious rituals, or are there restrictions on who may perform? Please specify.",
+              "In your region, what are the common settings or locations where traditional religious music and dance are typically performed?",
+              "In your region, what are the two most common ways the audience participates during traditional religious music or dance performances?",
+              "In your region, what is the most common time of day when religious music or dance performances usually take place?",
+              "In your region, where do people most commonly learn the traditional dance form, and from whom do they typically learn it?",
+              "In your region, where do people most commonly learn the traditional music form, and from whom do they typically learn it?"
             ]
           }
         ]

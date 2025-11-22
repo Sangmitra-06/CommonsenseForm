@@ -1,28 +1,28 @@
 [
   {
-    "category": "Finance",
+    "category": "Interpersonal Relations",
     "subcategories": [
       {
-        "subcategory": "Saving & Investment",
+        "subcategory": "Visiting and hospitality",
         "topics": [
           {
-            "topic": "Safekeeping of Valuables",
+            "topic": "Etiquette in the reception of visitors",
             "questions": [
-              "In your region, what are the two most common places where people store cash or gold at home?",
-              "In your region, which valuables are most commonly kept in a bank locker or safe deposit box?",
-              "In your region, what are the most common methods used to protect important documents like property papers or wills?",
-              "In your region, which valuables are most commonly insured, and for what types of risks?",
-              "In your region, what digital methods are commonly used to safeguard important records or documents (e.g., cloud storage, scanned copies)?",
-              "In your region, what are two traditional hiding places used in homes for storing valuables discreetly?",
-              "In your region, what are the two most common materials or containers used to store valuables safely at home (e.g., metal boxes, wooden lockers)?",
-              "In your region, what are two common methods used to transport valuables like jewelry or cash securely when travelling?",
-              "In your region, how are keys or passwords to lockers or safes typically stored?",
-              "In your region, what small daily habits are followed to ensure valuables remain secure inside the home?",
-              "In your region, what are two common visual or physical signs used to indicate that a storage area (like a cupboard or drawer) contains valuables?",
-              "In your region, what are two common precautions taken when strangers or workers visit the home to protect valuables?",
-              "In your region, what are the two most common situations when people temporarily move valuables out of the home for safekeeping?",
-              "In your region, what are two common reasons people choose not to store valuables in a bank locker or safe deposit box?",
-              "In your region, what two types of people in a household are usually given the responsibility of managing access to valuables?"
+              "In your region, what are the two most common things visitors do upon entering a home (excluding greetings)?",
+              "In your region, what are the two most common traditional beverages (excluding water) offered to guests upon arrival?",
+              "In your region, what four popular dishes (main, dessert, or appetizer) are typically served to welcome visiting relatives?",
+              "In your region, what three common preparations, such as cleaning, decorating, or traditional practices, are usually done before guests arrive?",
+              "In your region, what utensils or serving dishes are used for guests, and how do they differ from those used daily?",
+              "In your region, what are the common customs or expectations when an out-of-town guest arrives, such as from an airport or train station, in terms of how they come to your home?",
+              "In your region, what are some traditional sweets or snacks that are typically prepared or bought when expecting guests? Please list 2 snacks and 2 sweets.",
+              "In your region, what are the two most common actions taken to greet guests when they arrive at your home?",
+              "In your region, what are the two most common traditional gifts or souvenirs given to guests during their visit?",
+              "In your region, what are the two most common customs or traditions followed when receiving elderly guests?",
+              "In your region, how is food usually served to guests, by the host, a family member (specify the member), or by guests themselves?",
+              "In your region, as a guest, what are the two most common ways to show gratitude before leaving a host’s home?",
+              "In your region, what are the two most common follow-up actions after a guest has visited your home?",
+              "In your region, how is it usually handled when a guest offers to help with meal preparation or cleaning up?",
+              "In your region, what are the two most common rituals or traditions followed when someone visits your home for the first time?"
             ]
           }
         ]
