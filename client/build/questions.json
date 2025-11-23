@@ -1,58 +1,28 @@
 [
   {
-    "category": "Food processing and consumption",
+    "category": "Education",
     "subcategories": [
       {
-        "subcategory": "Food preparation",
+        "subcategory": "Teachers and Students",
         "topics": [
           {
-            "topic": "Cultural Recipes and Ingredients",
+            "topic": "Student Extracurricular Activities",
             "questions": [
-              "In your region, how are traditional recipes usually passed down, example through demonstration, oral instruction, or written notes?",
-              "In your region, what food item is considered essential during major religious festivals in your region? Name two major festivals and two associated food items for each.",
-              "In your region, what are two common ingredients used in home-cooked remedies believed to promote healing?",
-              "In your region, what cooking methods are considered traditional or culturally unique, such as cooking in clay pots or over woodfires?",
-              "In your region, what dish is traditionally prepared during harvest festivals, and what are its two main ingredients?",
-              "In your region, what traditional dish is prepared during marriage ceremonies, and what are its most essential ingredients?",
-              "In your region, what are two traditional dishes prepared for childbirth-related rituals, and what are their key ingredients?",
-              "In your region, what are two traditional dishes prepared for new year related rituals, and what are their key ingredients?",
-              "In your region, what is a traditional beverage served during festivals, and what two ingredients define its flavor?",
-              "In your region, what food ceremony is traditionally associated with a major festival? Please name both the ceremony and the festival it belongs to.",
-              "In your region, what is a dish made during fasting days, and what are two ingredients typically used?",
-              "In your region, what is a traditional dish commonly offered as blessed food?",
-              "In your region, what food item or meal is traditionally used to break a religious fast?",
-              "In your region, what is the most common traditional dish prepared by a daughter-in-law when she first cooks for the family after marriage?",
-              "In your region, what dish is traditionally prepared when inaugurating a new kitchen or stove, and what two ingredients are always included?"
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "category": "Food processing and consumption",
-    "subcategories": [
-      {
-        "subcategory": "Diet",
-        "topics": [
-          {
-            "topic": "Staple Food Consumption",
-            "questions": [
-              "In your region, what is the most typical source of dietary protein in everyday meals?",
-              "In your region, which type of bread is most commonly eaten as an accompaniment?",
-              "In your region, what are two most common spices typically added to everyday staple dishes?",
-              "In your region, what type of cooking oil is most commonly used for preparing daily meals?",
-              "In your region, which type of lentil is most frequently used in home-cooked meals?",
-              "In your region, what are two common vegetables eaten alongside staple grains in daily meals?",
-              "In your region, what is the most commonly eaten breakfast dish?",
-              "In your region, what is the most commonly eaten snack alongside tea or coffee?",
-              "In your region, what is most commonly eaten animal protein in your traditional dishes?",
-              "In your region, what is the most common accompaniment served with rice?",
-              "In your region, what is the most commonly used flour in daily cooking?",
-              "In your region, what is the most common drink served with meals at home?",
-              "In your region, what type of rice is most commonly used in everyday meals?",
-              "In your region, what type of millet, if any, is commonly used in daily meals?",
-              "In your region, what type of pickled or fermented food is regularly eaten with meals at home?"
+              "In your region, what are the most common after-school activities that students typically engage in outside of formal school hours? Please name two.",
+              "In your region, what are the four most common extracurricular activities offered within schools?",
+              "In your region, are certain types of extracurricular activities commonly expected or required for university or college admission? If so, which ones?",
+              "In your region, what cultural or traditional activities are commonly offered as part of school extracurricular programs?",
+              "In your region, what extracurricular activities related to science and technology are most commonly available to students?",
+              "In your region, what opportunities do students typically have to start their own clubs or groups in school, and what types of student-led activities are most common?",
+              "In your region, what kinds of community service or volunteering activities are commonly included in school-sponsored extracurricular programs?",
+              "In your region, what types of student leadership roles are typically offered to students?",
+              "In your region, during which periods of the school year do students typically pause or reduce participation in extracurricular activities?",
+              "In your region, what national or international competitions are schools most likely to encourage student participation in as part of extracurricular involvement?",
+              "In your region, how are extracurricular activities usually scheduled in relation to academic classes?",
+              "In your region, what are the most commonly played sports in schools as part of extracurricular offerings? Please name three.",
+              "In your region, what types of extracurricular activities are commonly organized around national holidays or cultural celebrations?",
+              "In your region, how do schools typically recognize or reward students for participation or achievement in extracurricular activities?",
+              "In your region, who is usually responsible for organizing and supervising extracurricular activities in schools?"
             ]
           }
         ]
