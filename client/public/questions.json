@@ -1,28 +1,28 @@
 [
   {
-    "category": "Traffic and transport behavior",
+    "category": "Food processing and consumption",
     "subcategories": [
       {
-        "subcategory": "Transportation",
+        "subcategory": "Food preparation",
         "topics": [
           {
-            "topic": "Transport during Special Events",
+            "topic": "Cultural Recipes and Ingredients",
             "questions": [
-              "In your region, what are the most commonly used transportation modes for getting to sports events like cricket matches?",
-              "In your region, during which two festivals are extra transport services added, and what types of transport are used?",
-              "In your region, what temporary changes are made to transport when government officials or famous celebrities visit an area?",
-              "In your region, during major festivals, what changes do people usually make to their regular transportation habits? Please name the regular mode, the changed mode, and the festival.",
-              "In your region, what transportation arrangements are usually made for visitors from other areas during large events or festivals?",
-              "In your region, what transportation methods are traditionally used to carry deities or religious symbols during processions?",
-              "In your region, what areas typically become pedestrian-only zones during festivals or celebrations, and during which festivals does this occur?",
-              "In your region, what decorated vehicles are commonly part of wedding processions, and what features make them stand out?",
-              "In your region, how do drivers usually decorate their commercial vehicles during major festivals?",
-              "In your region, what changes are made to public transport schedules (buses/trains) during evening performances, concerts, or sports events?",
-              "In your region, what vehicle-sharing practices (e.g., carpooling, shared shuttles), if any, are commonly adopted by attendees during large public events?",
-              "In your region, how is transportation affected during local or national strikes? What alternative transport methods do people commonly rely on?",
-              "In your region, what adjustments are made to road traffic when political rallies or election campaigns are held?",
-              "In your region, what types of vehicles are used in parades or public displays during national celebrations? Specify two most common vehicles.",
-              "In your region, during annual school functions or inter-school competitions, what transportation is typically arranged by schools for students?"
+              "In your region, how are traditional recipes usually passed down, example through demonstration, oral instruction, or written notes?",
+              "In your region, what food item is considered essential during major religious festivals in your region? Name two major festivals and two associated food items for each.",
+              "In your region, what are two common ingredients used in home-cooked remedies believed to promote healing?",
+              "In your region, what cooking methods are considered traditional or culturally unique, such as cooking in clay pots or over woodfires?",
+              "In your region, what dish is traditionally prepared during harvest festivals, and what are its two main ingredients?",
+              "In your region, what traditional dish is prepared during marriage ceremonies, and what are its most essential ingredients?",
+              "In your region, what are two traditional dishes prepared for childbirth-related rituals, and what are their key ingredients?",
+              "In your region, what are two traditional dishes prepared for new year related rituals, and what are their key ingredients?",
+              "In your region, what is a traditional beverage served during festivals, and what two ingredients define its flavor?",
+              "In your region, what food ceremony is traditionally associated with a major festival? Please name both the ceremony and the festival it belongs to.",
+              "In your region, what is a dish made during fasting days, and what are two ingredients typically used?",
+              "In your region, what is a traditional dish commonly offered as blessed food?",
+              "In your region, what food item or meal is traditionally used to break a religious fast?",
+              "In your region, what is the most common traditional dish prepared by a daughter-in-law when she first cooks for the family after marriage?",
+              "In your region, what dish is traditionally prepared when inaugurating a new kitchen or stove, and what two ingredients are always included?"
             ]
           }
         ]
@@ -30,29 +30,29 @@
     ]
   },
   {
-    "category": "Education",
+    "category": "Food processing and consumption",
     "subcategories": [
       {
-        "subcategory": "Education system",
+        "subcategory": "Diet",
         "topics": [
           {
-            "topic": "Formal Educational Structure",
+            "topic": "Staple Food Consumption",
             "questions": [
-              "In your region, what are the most common school boards that students attend? Please list all major boards.",
-              "In your region, what are the two most commonly taken entrance exams for college or university admissions?",
-              "In your region, how does the medium of instruction differ across various school boards?",
-              "In your region, what are the specific common subject combinations or streams that students need to choose from in high school?",
-              "In your region, what are the popular international school boards, and how commonly are they chosen?",
-              "In your region, what are the major exams taken during the school years, and at what grade levels are they typically held?",
-              "In your region, what grading system is most commonly used in schools (e.g., letter grades, percentages, GPA)?",
-              "In your region, what grading system is typically used in colleges or universities?",
-              "In your region, do students usually remain in the same classroom while teachers rotate, or do they move between classes for different subjects?",
-              "In your region, what range of grades are typically offered within a single school (e.g., pre-primary to Grade 10)? Please be as specific as possible.",
-              "In your region, what are the standard school levels (e.g., pre-primary, primary, middle, secondary) and the grades they include?",
-              "In your region, what types of schools (e.g., government-run, private, religious, or community-based) are most common?",
-              "In your region, what are the common ways schools communicate important announcements or updates to parents? Specify two most common ways.",
-              "In your region, what is the most common structure for dividing the academic year (e.g., semesters, trimesters), if any?",
-              "In your region, what are the typical administrative roles found in schools (e.g., headmaster, principal, coordinator)? Please name 4 most common ones."
+              "In your region, what is the most typical source of dietary protein in everyday meals?",
+              "In your region, which type of bread is most commonly eaten as an accompaniment?",
+              "In your region, what are two most common spices typically added to everyday staple dishes?",
+              "In your region, what type of cooking oil is most commonly used for preparing daily meals?",
+              "In your region, which type of lentil is most frequently used in home-cooked meals?",
+              "In your region, what are two common vegetables eaten alongside staple grains in daily meals?",
+              "In your region, what is the most commonly eaten breakfast dish?",
+              "In your region, what is the most commonly eaten snack alongside tea or coffee?",
+              "In your region, what is most commonly eaten animal protein in your traditional dishes?",
+              "In your region, what is the most common accompaniment served with rice?",
+              "In your region, what is the most commonly used flour in daily cooking?",
+              "In your region, what is the most common drink served with meals at home?",
+              "In your region, what type of rice is most commonly used in everyday meals?",
+              "In your region, what type of millet, if any, is commonly used in daily meals?",
+              "In your region, what type of pickled or fermented food is regularly eaten with meals at home?"
             ]
           }
         ]
