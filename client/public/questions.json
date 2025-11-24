@@ -1,28 +1,58 @@
 [
   {
-    "category": "Education",
+    "category": "Food processing and consumption",
     "subcategories": [
       {
-        "subcategory": "Teachers and Students",
+        "subcategory": "Diet",
         "topics": [
           {
-            "topic": "Student Extracurricular Activities",
+            "topic": "Seasonal Diet Modifications",
             "questions": [
-              "In your region, what are the most common after-school activities that students typically engage in outside of formal school hours? Please name two.",
-              "In your region, what are the four most common extracurricular activities offered within schools?",
-              "In your region, are certain types of extracurricular activities commonly expected or required for university or college admission? If so, which ones?",
-              "In your region, what cultural or traditional activities are commonly offered as part of school extracurricular programs?",
-              "In your region, what extracurricular activities related to science and technology are most commonly available to students?",
-              "In your region, what opportunities do students typically have to start their own clubs or groups in school, and what types of student-led activities are most common?",
-              "In your region, what kinds of community service or volunteering activities are commonly included in school-sponsored extracurricular programs?",
-              "In your region, what types of student leadership roles are typically offered to students?",
-              "In your region, during which periods of the school year do students typically pause or reduce participation in extracurricular activities?",
-              "In your region, what national or international competitions are schools most likely to encourage student participation in as part of extracurricular involvement?",
-              "In your region, how are extracurricular activities usually scheduled in relation to academic classes?",
-              "In your region, what are the most commonly played sports in schools as part of extracurricular offerings? Please name three.",
-              "In your region, what types of extracurricular activities are commonly organized around national holidays or cultural celebrations?",
-              "In your region, how do schools typically recognize or reward students for participation or achievement in extracurricular activities?",
-              "In your region, who is usually responsible for organizing and supervising extracurricular activities in schools?"
+              "What foods are commonly consumed in your region during summer to reduce body heat? Specify at least two most common ones.",
+              "What types of warm or energy-rich foods are typically prepared in winter across your region? Specify at least two most common ones.",
+              "What traditional drinks or beverages are commonly consumed in summer to stay cool? Specify at least two most common ones.",
+              "What kinds of foods are commonly associated with springtime festivals in your region? Specify the most common.",
+              "What kinds of desserts are only prepared during certain seasons? Please specify the dessert and the season it is associated with.",
+              "Which spices or herbs are used seasonally? Specify the common herbs associated with the seasons.",
+              "What types of snacks are commonly prepared at home during the monsoon? Specify at least two most common ones.",
+              "What traditional foods are believed to help with seasonal allergies or throat irritation in your region?",
+              "What types of vegetables are commonly used in everyday meals during the summer? Specify at least two most common.",
+              "What types of vegetables are commonly used in everyday meals during the winter? Specify at least two most common.",
+              "What types of vegetables are commonly used in everyday meals during the monsoon season? Specify at least two most common.",
+              "What types of vegetables are commonly used in everyday meals during the spring season? Specify at least two most common.",
+              "What foods are commonly avoided during the summer because they are considered too heat-inducing? Specify at least two most common.",
+              "What traditional drinks or beverages are commonly consumed in winter? Specify at least two most common ones.",
+              "What traditional drinks or beverages are commonly consumed in the monsoon season? Specify at least two most common ones."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "category": "Communication",
+    "subcategories": [
+      {
+        "subcategory": "Gestures & Signs",
+        "topics": [
+          {
+            "topic": "Non-Verbal Expression of Respect or Disrespect",
+            "questions": [
+              "In your region, what is the most common nonverbal gesture used to show respect to elders?",
+              "In your region, what nonverbal actions are considered disrespectful when interacting with elders?",
+              "In your region, what hand gestures are considered offensive or inappropriate in social settings? Please describe two.",
+              "In your region, what are common nonverbal ways to show respect to someone senior in the workplace?",
+              "In your region, what gestures are typically used to show respect to guests upon their arrival?",
+              "In your region, what gestures are commonly used to show respect toward public officials?",
+              "In your region, what are the typical gestures used to show respect to soldiers or members of the military?",
+              "In your region, what gestures or actions are used to show respect for the national flag or anthem?",
+              "In your region, how is nonverbal respect commonly shown to someone giving a public speech or presentation?",
+              "In your region, what is the respectful nonverbal gesture used when ending a conversation with someone older or senior?",
+              "In your region, what is the common nonverbal way to respectfully decline an offer made by someone?",
+              "In your region, what is the usual nonverbal gesture used to excuse oneself?",
+              "In your region, what gesture is typically used to silently invite someone senior to speak or proceed first?",
+              "In your region, what is the nonverbal way of signaling that you are giving full attention to someone while they speak?",
+              "In your region, what is the respectful way to accept money from someone?"
             ]
           }
         ]
