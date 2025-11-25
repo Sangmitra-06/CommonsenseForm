@@ -1,28 +1,28 @@
 [
   {
-    "category": "Clothing and adornment",
+    "category": "Food processing and consumption",
     "subcategories": [
       {
-        "subcategory": "Ornament",
+        "subcategory": "Food preparation",
         "topics": [
           {
-            "topic": "Occasions for Wearing Specific Ornaments",
+            "topic": "Food Preparation Techniques",
             "questions": [
-              "In your region, what types of ornaments are traditionally worn by a bride during wedding ceremonies? Name the two most common ones.",
-              "In your region, what types of ornaments are traditionally worn by a groom during wedding ceremonies? Name the two most common ones.",
-              "In your region, what is the most common ornament worn by a woman to indicate marital status?",
-              "In your region, what is the most common ornament worn by a man to indicate marital status?",
-              "In your region, what specific ornaments are traditionally given to a newborn as part of cultural customs? Please name two most common ones.",
-              "In your region, what types of ornaments are typically avoided by women during mourning periods or at funerals? Please name two most common ones.",
-              "In your region, what types of ornaments are typically avoided by men during mourning periods or at funerals? Please name two most common ones.",
-              "In your region, what types of ornaments are commonly avoided by women while travelling or visiting crowded public places? Please name two most common ones.",
-              "In your region, what types of ornaments are commonly avoided by men while travelling or visiting crowded public places? Please name two most common ones.",
-              "In your region, what types of ornaments are traditionally believed to bring good luck or offer protection? Please name two most common ones.",
-              "In your region, what ornaments are commonly worn by women during major religious festivals or celebrations? Please specify two most common ones.",
-              "In your region, what ornaments are commonly worn by men during major religious festivals or celebrations? Please specify two most common ones.",
-              "In your region, what ornaments are commonly worn by women on a daily basis? Please specify two most common ones.",
-              "In your region, what ornaments are commonly worn by men on a daily basis? Please specify two most common ones.",
-              "In your region, what are two most common ornaments worn by the child during its naming ceremony (excluding those gifted to the child)?"
+              "In your region, what is the traditional method for making yogurt at home without using store-bought cultures?",
+              "In your region, what is the most traditional way to make ghee from butter or cream at home?",
+              "In your region what are the traditional tools utilized for grinding spices for food preparation?",
+              "In your region, what are the two most common techniques for marinating meat for daily meals?",
+              "In your region, how are pickles typically prepared and stored?",
+              "In your region, how is coconut milk traditionally extracted from fresh coconut?",
+              "In your region, what are the usual steps for cleaning and marinating fish before cooking?",
+              "In your region, how are leafy greens usually washed and prepared for cooking?",
+              "In your region, how is tea most commonly prepared, and what is usually added during the process?",
+              "In your region, how is rice typically prepared before cooking?",
+              "In your region, what traditional methods are used to ferment batter for foods like idli or dosa?",
+              "In your region, how is paneer usually prepared and stored after being made at home?",
+              "In your region, how is oil traditionally extracted from seeds or nuts for home use?",
+              "In your region, what is the most common method used to prepare lentils like dal before cooking?",
+              "In your region what are typical methods used for preserving food for long periods without using a refrigerator?"
             ]
           }
         ]
