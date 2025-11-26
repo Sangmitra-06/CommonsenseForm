@@ -28,5 +28,35 @@
         ]
       }
     ]
+  },
+  {
+    "category": "Clothing and adornment",
+    "subcategories": [
+      {
+        "subcategory": "Ornament",
+        "topics": [
+          {
+            "topic": "Ornamental Attire and Status Indication",
+            "questions": [
+              "In your region, which gemstones or ornamental stones are most commonly associated with wealth or high social rank? Please name two most common ones.",
+              "In your region, which metals are most commonly associated with wealth or high social rank?  Please name two most common ones.",
+              "In your region, what specific ornaments worn by a bride are seen as indicators of her family's social status? Please name two most common ones.",
+              "In your region, what specific ornaments worn by a groom during weddings reflect his family's social status? Please name two most common ones.",
+              "In your region, which ornaments worn by women are commonly seen as symbols of higher social status? Please name two most common ones.",
+              "In your region, which ornaments worn by men are commonly seen as symbols of higher social status? Please name two most common ones.",
+              "In your region, what types of ornaments are commonly passed down through generations as symbols of family heritage or status? Please name two most common ones.",
+              "In your region, which traditional ornaments are widely recognized as symbols of high status within the community? Please name two most common ones.",
+              "In your region, what types of ornaments are typically worn by children from high-status families during special events? Please name two most common ones.",
+              "In your region, what types of head ornaments or hair accessories worn by women are considered markers of higher social class? Please name two most common ones.",
+              "In your region, what types of head ornaments or hair accessories worn by men are considered markers of higher social class? Please name two most common ones.",
+              "In your region, what types of ornaments are typically worn by women during high-status family celebrations other than weddings? Please mention in detail three most common ones.",
+              "In your region, what types of ornaments are typically worn by men during high-status family celebrations other than weddings? Please mention in detail three most common ones.",
+              "In your region, what kinds of ornaments are most often worn in large quantities by women during important social functions? Please specify the most common one.",
+              "In your region, what kinds of ornaments are most often worn in large quantities by men during important social functions? Please specify the most common one."
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
