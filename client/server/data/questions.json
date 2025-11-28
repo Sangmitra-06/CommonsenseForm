@@ -1,28 +1,28 @@
 [
   {
-    "category": "Communication",
+    "category": "Food processing and consumption",
     "subcategories": [
       {
-        "subcategory": "Gestures & Signs",
+        "subcategory": "Food preparation",
         "topics": [
           {
-            "topic": "Social Expression of Emotions",
+            "topic": "Food Preparation Techniques",
             "questions": [
-              "In your region, what is the most common way people express affection without using words?",
-              "In your region, what is the most common way to convey an apology nonverbally?",
-              "In your region, what common gestures or facial expressions show confusion or lack of understanding?",
-              "In your region, what is the most common way sympathy or condolence is expressed without speaking?",
-              "In your region, what common gestures are used to show admiration or praise?",
-              "In your region, how do people most commonly nonverbally express embarrassment or shame?",
-              "In your region, how do people most commonly show nervousness or anxiety through body language?",
-              "In your region, what is the most common way people show pride or accomplishment through gestures or body language?",
-              "In your region, what are the common hand gestures done to ward off evil?",
-              "In your region, how is deep thought shown nonverbally?",
-              "In your region, how do people commonly signal they are full after a meal without speaking?",
-              "In your region, what common gestures indicate a need for help or assistance?",
-              "In your region, how do people commonly indicate they are leaving or saying goodbye?",
-              "In your region, how is surprise or shock commonly shown through gestures?",
-              "In your region, how do people commonly and nonverbally express grief or sadness?"
+              "In your region, what is the traditional method for making yogurt at home without using store-bought cultures?",
+              "In your region, what is the most traditional way to make ghee from butter or cream at home?",
+              "In your region what are the traditional tools utilized for grinding spices for food preparation?",
+              "In your region, what are the two most common techniques for marinating meat for daily meals?",
+              "In your region, how are pickles typically prepared and stored?",
+              "In your region, how is coconut milk traditionally extracted from fresh coconut?",
+              "In your region, what are the usual steps for cleaning and marinating fish before cooking?",
+              "In your region, how are leafy greens usually washed and prepared for cooking?",
+              "In your region, how is tea most commonly prepared, and what is usually added during the process?",
+              "In your region, how is rice typically prepared before cooking?",
+              "In your region, what traditional methods are used to ferment batter for foods like idli or dosa?",
+              "In your region, how is paneer usually prepared and stored after being made at home?",
+              "In your region, how is oil traditionally extracted from seeds or nuts for home use?",
+              "In your region, what is the most common method used to prepare lentils like dal before cooking?",
+              "In your region what are typical methods used for preserving food for long periods without using a refrigerator?"
             ]
           }
         ]
