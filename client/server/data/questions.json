@@ -1,174 +1,28 @@
 [
   {
-    "category": "Interpersonal Relations",
-    "subcategories": [
-      {
-        "subcategory": "Visiting and hospitality",
-        "topics": [
-          {
-            "topic": "Etiquette in the reception of visitors",
-            "questions": [
-              "In your region, what is the traditional order of serving food to guests, and who is typically served first?",
-              "In your region, what is the usual sequence of serving food to guests? For example, starting with appetizers, then main dishes, then desserts.",
-              "In your region, what is the common proper etiquette for sending off a guest who is visiting from another city?"
-            ]
-          }
-        ]
-      },
-      {
-        "subcategory": "Etiquette",
-        "topics": [
-          {
-            "topic": "Eating, drinking, and smoking etiquette",
-            "questions": [
-              "In your region, how is any form of bread typically eaten during meals? Describe the usual way it is eaten.",
-              "In your region, which two foods are traditionally eaten using hands rather than utensils?",
-              "In your region, what traditional utensils or tools are commonly used to serve food? Please name two that are widely used."
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
     "category": "Festivals and Rituals",
     "subcategories": [
       {
         "subcategory": "Organized ceremonial",
         "topics": [
           {
-            "topic": "Engaging with Religious Music and Dance",
+            "topic": "Timing of Ceremonies",
             "questions": [
-              "In your region, if applicable, what is the common prop used during the traditional dance performance?",
-              "In your region, if applicable, what is the common prop used during the traditional music performance?"
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "category": "Traffic and transport behavior",
-    "subcategories": [
-      {
-        "subcategory": "Streets and traffic",
-        "topics": [
-          {
-            "topic": "Understanding Local Traffic Regulations",
-            "questions": [
-              "In your region, what are the two most widely known rules about vehicle emissions or pollution control for regular vehicles?",
-              "In your region, are tinted windows allowed on vehicles, and what types of vehicles most commonly have them?",
-              "In your region, what animals most commonly appear on roads and occasionally disrupt regular traffic?"
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "category": "Education",
-    "subcategories": [
-      {
-        "subcategory": "Teachers and Students",
-        "topics": [
-          {
-            "topic": "Student Extracurricular Activities",
-            "questions": [
-              "In your region, what are the common school events or festivals where students are expected to perform or display their extracurricular skills?"
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "category": "Clothing and adornment",
-    "subcategories": [
-      {
-        "subcategory": "Special garments",
-        "topics": [
-          {
-            "topic": "Special Occasion Clothing",
-            "questions": [
-              "In your region, what is the appropriate attire worn by government officials or public servants during national celebrations or flag-hoisting events?"
-            ]
-          },
-          {
-            "topic": "Headgear and Footwear Norms",
-            "questions": [
-              "In your region, what specific types of headgear are commonly worn during pilgrimages or religious journeys by women that are not worn at regular religious services?",
-              "In your region, what specific types of headgear are commonly worn during pilgrimages or religious journeys by men that are not worn at regular religious services?"
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "category": "Clothing and adornment",
-    "subcategories": [
-      {
-        "subcategory": "Special garments",
-        "topics": [
-          {
-            "topic": "Headgear and Footwear Norms",
-            "questions": [
-              "In your region, what types of headgear are worn by political or community leaders during formal public events?",
-              "In your region, what types of head coverings are commonly worn by widows or mourners during extended periods of mourning that differ from daily headwear?",
-              "In your region, what headgear is traditionally worn during national or military commemorations that is not used in everyday settings?"
-            ]
-          }
-        ]
-      },
-      {
-        "subcategory": "Ornament",
-        "topics": [
-          {
-            "topic": "Ornamental Attire and Status Indication",
-            "questions": [
-              "In your region, what types of ornaments are commonly gifted at weddings or major events to reflect the giver’s social standing? Please name two most common ones.",
-              "In your region, what types of ornaments are worn by government or community leaders, dignitaries, or respected elders? Please name two most common ones."
-            ]
-          },
-          {
-            "topic": "Occasions for Wearing Specific Ornaments",
-            "questions": [
-              "In your region, what types of ornaments are typically worn during religious pilgrimages or long-distance spiritual journeys by women? Please specify the most common ornament.",
-              "In your region, what types of ornaments are typically worn during religious pilgrimages or long-distance spiritual journeys by men? Please specify the most common ornament.",
-              "In your region, what types of ornaments are commonly worn by a child during their first birthday celebration? Please name two most common ones."
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "category": "Food processing and consumption",
-    "subcategories": [
-      {
-        "subcategory": "Food preparation",
-        "topics": [
-          {
-            "topic": "Food Preparation Techniques",
-            "questions": [
-              "In your region what types of stove or cooking setup is used for making traditional dishes?",
-              "In your region, what is the most common traditional method for drying food items, like chillies, before storage?"
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "category": "Communication",
-    "subcategories": [
-      {
-        "subcategory": "Gestures & Signs",
-        "topics": [
-          {
-            "topic": "Social Expression of Emotions",
-            "questions": [
-              "In your region, what common gestures indicate agreement or affirmation?"
+              "In your region, how is an auspicious time for important ceremonies such as weddings typically chosen, and who is involved in making that decision?",
+              "In your region, what traditional calendar that differs from the international calendar is followed to schedule religious or cultural ceremonies?",
+              "In your region, which days or timings are commonly avoided for starting journeys or taking flights?",
+              "In your region, how do the phases of the moon influence the timing of religious festivals or ceremonies? Please provide examples.",
+              "In your region, which days of the week are considered inauspicious for conducting important ceremonies?",
+              "In your region, what types of common sources, such as religious texts, calendars, or astrological systems, are used to determine the best times for important events?",
+              "In your region, which periods of the year are typically avoided for making major decisions or starting new ventures, and why?",
+              "In your region, how is the date or time of the annual harvest festival decided, and what factors influence that decision?",
+              "In your region, which times of the year are considered unfavorable for purchasing new items or property?",
+              "In your region, at what periods during the year are major activities paused or avoided?",
+              "In your region, which life events (such as childbirth or naming ceremonies) are most sensitive to timing, and how is that timing determined?",
+              "In your region, what are the most commonly used terms or names for inauspicious periods in the local calendar system?",
+              "In your region, what are the most common names or labels given to periods considered especially favorable for beginning new ventures?",
+              "In your region, what are the most typical rules about waiting periods before scheduling a new event after a funeral or death in the family?",
+              "In your region, what are the most frequently consulted community-level sources (such as temples, elders, or religious leaders) for guidance on selecting dates?"
             ]
           }
         ]
