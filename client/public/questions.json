@@ -1,28 +1,28 @@
 [
   {
-    "category": "Finance",
+    "category": "Traffic and transport behavior",
     "subcategories": [
       {
-        "subcategory": "Credit",
+        "subcategory": "Transportation",
         "topics": [
           {
-            "topic": "Navigating Installment Buying",
+            "topic": "Transport during Special Events",
             "questions": [
-              "In your region, what are the two most commonly purchased items through installment plans?",
-              "In your region, what types of sellers or providers most frequently advertise installment offers? (e.g., appliance stores, coaching centers)",
-              "In your region, how are installment schemes for electronics, smartphones, or gold typically structured? (e.g., duration, interest, down payment)",
-              "In your region, what kinds of education or health-related expenses are most commonly paid through installment plans? Please give two examples.",
-              "In your region, during which times of year are installment purchases most common? Please name two such occasions (e.g., festivals, school admissions).",
-              "In your region, what two personal factors most affect eligibility for an installment plan? Please name two common ones (e.g., monthly income, employment type).",
-              "In your region, what installment terms are most commonly negotiated—interest rate, down payment, or repayment period?",
-              "In your region, what types of documentation are most commonly required to approve an installment purchase?",
-              "In your region, how do sellers or lenders usually remind customers about upcoming installment payments?",
-              "In your region, what kinds of penalties are typically applied when someone misses an installment payment?",
-              "In your region, what is the most common duration offered for installment plans on high-cost goods like electronics, houses, or vehicles?",
-              "In your region, which two types of sellers are most likely to offer zero-interest installment plans?",
-              "In your region, what two types of goods are least likely to be available for purchase through installment plans?",
-              "In your region, what are the two most common reasons someone might be denied an installment plan by a seller or provider?",
-              "In your region, what form of installment payment is most commonly used—cash, bank transfer, or digital wallet?"
+              "In your region, what are the most commonly used transportation modes for getting to sports events like cricket matches?",
+              "In your region, during which two festivals are extra transport services added, and what types of transport are used?",
+              "In your region, what temporary changes are made to transport when government officials or famous celebrities visit an area?",
+              "In your region, during major festivals, what changes do people usually make to their regular transportation habits? Please name the regular mode, the changed mode, and the festival.",
+              "In your region, what transportation arrangements are usually made for visitors from other areas during large events or festivals?",
+              "In your region, what transportation methods are traditionally used to carry deities or religious symbols during processions?",
+              "In your region, what areas typically become pedestrian-only zones during festivals or celebrations, and during which festivals does this occur?",
+              "In your region, what decorated vehicles are commonly part of wedding processions, and what features make them stand out?",
+              "In your region, how do drivers usually decorate their commercial vehicles during major festivals?",
+              "In your region, what changes are made to public transport schedules (buses/trains) during evening performances, concerts, or sports events?",
+              "In your region, what vehicle-sharing practices (e.g., carpooling, shared shuttles), if any, are commonly adopted by attendees during large public events?",
+              "In your region, how is transportation affected during local or national strikes? What alternative transport methods do people commonly rely on?",
+              "In your region, what adjustments are made to road traffic when political rallies or election campaigns are held?",
+              "In your region, what types of vehicles are used in parades or public displays during national celebrations? Specify two most common vehicles.",
+              "In your region, during annual school functions or inter-school competitions, what transportation is typically arranged by schools for students?"
             ]
           }
         ]
